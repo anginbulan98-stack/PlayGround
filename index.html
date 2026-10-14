@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KomikVerse — Baca Manhwa, Manhua, Manga & Komik Bahasa Indonesia</title>
+<meta name="description" content="Baca manhwa, manhua, manga dan komik lokal bahasa Indonesia. Update harian, reader cepat, bookmark & history. (Demo front-end)">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topnotice">Demo front-end edukasi — seluruh judul, cover & isi chapter adalah placeholder fiktif, bukan konten bajakan.</div>
+<header class="hdr">
+  <div class="wrap hdr-main">
+    <a href="#/" class="brand"><span class="brand-logo">KV</span><span class="brand-name">Komik<em>Verse</em></span></a>
+    <div class="searchbox">
+      <input id="searchInput" type="search" placeholder="Cari judul komik…" autocomplete="off">
+      <button class="search-btn" id="searchBtn" aria-label="Cari">⌕</button>
+      <div id="searchSuggest" class="suggest hidden"></div>
+    </div>
+    <div class="hdr-actions">
+      <a href="#/bookmark" class="hbtn">🔖 <span id="libCount">0</span></a>
+      <a href="#/history" class="hbtn">🕓</a>
+    </div>
+  </div>
+  <nav class="wrap mainnav">
+    <a href="#/" data-nav="home">Home</a>
+    <a href="#/list" data-nav="list">List Komik</a>
+    <a href="#/list/Manhwa" data-nav="manhwa">Manhwa</a>
+    <a href="#/list/Manhua" data-nav="manhua">Manhua</a>
+    <a href="#/list/Manga" data-nav="manga">Manga</a>
+    <a href="#/list/Komik Lokal" data-nav="lokal">Komik Lokal</a>
+    <a href="#/bookmark" data-nav="bookmark">Bookmark</a>
+    <a href="#/history" data-nav="history">History</a>
+  </nav>
+</header>
+
+<main class="wrap content">
+  <!-- HOME -->
+  <section id="view-home" class="view">
+    <div class="cols">
+      <div class="main">
+        <div class="sechd"><span class="bar"></span><h2>Update Terbaru</h2><a class="more" href="#/list">Lihat Semua ›</a></div>
+        <div id="homeGrid" class="grid"></div>
+        <div class="center"><button id="loadMore" class="btn">Muat Lebih Banyak</button></div>
+        <div id="catSections"></div>
+      </div>
+      <aside class="side">
+        <div class="widget"><div class="whead">🔥 Paling Populer</div><ol id="topList" class="toplist"></ol></div>
+        <div class="widget"><div class="whead">🏷️ Genre</div><div id="genreCloud" class="gcloud"></div></div>
+        <div class="widget"><div class="whead">ℹ️ Info</div><p class="muted small">Reader vertikal, bookmark & history tersimpan otomatis di browser (localStorage). Tanpa akun, tanpa server.</p></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- LIST -->
+  <section id="view-list" class="view hidden">
+    <div class="sechd"><span class="bar"></span><h2 id="listTitle">List Komik</h2></div>
+    <div class="filters">
+      <div class="frow" id="fType"></div>
+      <div class="frow" id="fStatus"></div>
+      <div class="frow" id="fGenre"></div>
+      <div class="frow"><select id="sortSelect" class="select">
+        <option value="updated">Urut: Terbaru</option><option value="rating">Urut: Rating</option>
+        <option value="views">Urut: Views</option><option value="title">Urut: A–Z</option>
+      </select><span id="resultInfo" class="muted small"></span></div>
+      <div class="frow az" id="azRow"></div>
+    </div>
+    <div id="listGrid" class="grid"></div>
+  </section>
+
+  <!-- DETAIL -->
+  <section id="view-detail" class="view hidden"></section>
+  <!-- READER -->
+  <section id="view-reader" class="view hidden"></section>
+  <!-- BOOKMARK -->
+  <section id="view-bookmark" class="view hidden"></section>
+  <!-- HISTORY -->
+  <section id="view-history" class="view hidden"></section>
+</main>
+
+<footer class="footer">
+  <div class="wrap fgrid">
+    <div><div class="brand-name">Komik<em>Verse</em></div>
+      <p class="muted small">Portal baca komik demo. Jangan unggah konten berhak cipta milik orang lain ke sini. Seluruh data pada demo ini fiktif & dibuat lokal.</p></div>
+    <div><strong>Kategori</strong><div class="flinks"><a href="#/list/Manhwa">Manhwa</a><a href="#/list/Manhua">Manhua</a><a href="#/list/Manga">Manga</a><a href="#/list/Komik Lokal">Komik Lokal</a></div></div>
+    <div><strong>Navigasi</strong><div class="flinks"><a href="#/">Home</a><a href="#/list">List Komik</a><a href="#/bookmark">Bookmark</a><a href="#/history">History</a></div></div>
+  </div>
+  <div class="wrap copy muted small">© 2026 KomikVerse (demo) • Dibuat dengan HTML + CSS + JS murni</div>
+</footer>
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
