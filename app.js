@@ -115,7 +115,8 @@ function setCat(cat) {
     b.classList.toggle('active', on);
     if (on) b.setAttribute('aria-selected', 'true'); else b.removeAttribute('aria-selected');
   });
-  const showTiktok = cat === 'semua' || cat === 'tiktok';
+  // Semua A/M = khusus Anime + Manhwa (tool TikTok hanya di tabnya sendiri)
+  const showTiktok = cat === 'tiktok';
   const showManhwa = cat === 'semua' || cat === 'manhwa';
   const showAnime = cat === 'semua' || cat === 'anime';
   TIKTOK_SELS.forEach((s) => document.querySelectorAll(s).forEach((el) => { el.hidden = !showTiktok; }));
@@ -134,13 +135,11 @@ document.querySelectorAll('[data-goto-tiktok]').forEach((b) =>
 );
 setCat('semua');
 
-/* ---------- 4. ANIME: nonton langsung (data nyaa.si) ---------- */
+/* ---------- 4. ANIME: nonton langsung di situs ---------- */
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => (
   { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const GUOKE_URL = 'https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/';
-const WT_CDN = 'https://cdn.jsdelivr.net/npm/webtorrent@1/webtorrent.min.js';
-let NYAA = { updated: '', shows: [] };
-let wtClient = null, wtLoading = null, wtTimer = null;
+let ANI = { updated: '', shows: [] };
+let MW = { updated: '', titles: [] };
 /* Streaming (anikoto API via proxy — direct fetch diblokir CORS) */
 let AKMAP = {};
 const API_PROXY = [
@@ -189,40 +188,29 @@ function initials(t) {
 }
 function showCard(s) {
   const ak = akOf(s.id);
-  const eps = ak ? ak.episodes : s.entries.length;
+  const eps = ak ? ak.episodes : s.episodes;
   return '<article class="show-card" data-show="' + s.id + '">' +
     '<div class="show-cover"><i>' + esc(initials(s.title)) + '</i>' +
     (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" onerror="this.remove()">' : '') +
     '<span class="show-badge">' + eps + ' EP</span></div>' +
     '<div class="show-info"><strong>' + esc(s.title) + '</strong>' +
-    '<small>' + eps + ' episode • streaming + torrent</small>' +
-    '<div class="show-btns"><button class="btn" data-watch="' + s.id + '" type="button">▶ Nonton</button>' +
-    '<a class="btn btn-ghost" href="' + GUOKE_URL + '" target="_blank" rel="noopener">Guoke</a></div></div></article>';
+    '<small>' + eps + ' episode • tonton di sini</small>' +
+    '<div class="show-btns"><button class="btn" data-watch="' + s.id + '" type="button">▶ Nonton</button></div></div></article>';
 }
-function relRow(s, e, i) {
-  return '<div class="rel"><div class="rel-title">' + esc(e.t) + '</div>' +
-    '<div class="rel-meta"><span class="tag q">' + esc(e.q) + '</span>' +
-    '<span class="tag">' + esc(e.codec) + '</span><span class="tag">' + esc(e.kind) + '</span>' +
-    '<span class="tag' + (e.ext === 'MP4' ? ' mp4' : '') + '">' + esc(e.ext) + '</span>' +
-    (e.trusted ? '<span class="tag trust">✓ Trusted</span>' : '') + '</div>' +
-    '<div class="rel-sub">' + esc(e.size) + ' • ▲ ' + e.seeders + ' • ' + esc(e.date) + '</div>' +
-    '<div class="rel-btns"><button class="btn" data-play="' + s.id + ':' + i + '" type="button">▶ Tonton</button>' +
-    '<button class="btn btn-ghost" data-magnet="' + i + '" data-show="' + s.id + '" type="button">🧲 Magnet</button>' +
-    '<button class="btn btn-ghost" data-copy="' + i + '" data-show="' + s.id + '" type="button">Salin</button></div></div>';
-}
-function findShow(id) { return NYAA.shows.find((s) => s.id === id); }
-function findEntry(showId, i) { const s = findShow(showId); return s ? s.entries[Number(i)] : null; }
+/* (daftar torrent dihapus — semua nonton/baca langsung di situs) */
+function findShow(id) { return ANI.shows.find((s) => s.id === id); }
 
 function renderShows(filter) {
   const grid = $('showGrid'), q = (filter || '').toLowerCase().trim();
-  const list = NYAA.shows.filter((s) => !q || s.title.toLowerCase().includes(q) ||
-    s.entries.some((e) => e.t.toLowerCase().includes(q)));
+  const list = ANI.shows.filter((s) => !q || s.title.toLowerCase().includes(q));
   grid.innerHTML = list.map(showCard).join('') ||
-    '<p class="muted">Tidak ketemu. Coba kata lain atau tombol “Cari live di nyaa.si”.</p>';
-  $('aniCount').textContent = list.length + ' anime • streaming episode + torrent nyaa.si';
+    '<p class="muted">Tidak ketemu. Coba kata lain.</p>';
+  $('aniCount').textContent = list.length + ' anime • ' +
+    list.reduce((a, s) => a + (akOf(s.id) ? akOf(s.id).episodes : s.episodes), 0) + ' episode • tonton langsung di sini';
   $('relWrap').hidden = true;
   grid.hidden = false;
 }
+let epReqSeq = 0; // anti-campur: abaikan respons basi saat pindah serial
 function renderReleases(showId) {
   const s = findShow(showId);
   if (!s) return;
@@ -230,143 +218,44 @@ function renderReleases(showId) {
   $('showGrid').hidden = true;
   $('relWrap').hidden = false;
   $('relTitle').textContent = s.title + (ak ? ' (' + ak.episodes + ' episode)' : '');
-  $('relList').innerHTML =
-    '<div class="src-tabs"><button class="btn btn-small" data-srcmode="stream" type="button">▶ Streaming</button>' +
-    '<button class="btn btn-small btn-ghost" data-srcmode="torrent" type="button">🧲 Torrent</button></div>' +
-    '<div id="streamBox"><p class="muted">Memuat daftar episode…</p></div>' +
-    '<div id="torrentBox" hidden>' +
-    (s.entries.length ? s.entries.map((e, i) => relRow(s, e, i)).join('') : '<p class="muted">Tidak ada rilis torrent.</p>') +
-    '</div>';
+  $('relList').innerHTML = '<div id="streamBox"><p class="muted">Memuat daftar episode…</p></div>';
   $('relWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
   loadEpisodes(showId);
 }
 function loadEpisodes(showId) {
   const ak = akOf(showId);
+  const myReq = ++epReqSeq;
   const box = $('streamBox');
   if (!box) return;
   if (!ak || !ak.id) {
-    box.innerHTML = '<p class="muted">Streaming belum tersedia untuk judul ini — pakai tab Torrent / Guoke.</p>';
+    box.innerHTML = '<p class="muted">Streaming belum tersedia untuk judul ini.</p>';
     return;
   }
   apiSeries(ak.id).then((data) => {
+    if (myReq !== epReqSeq || !$('streamBox')) return; // respons basi / sudah pindah
     const eps = data.episodes || [];
     if (!eps.length) {
-      box.innerHTML = '<p class="muted">Episode kosong — pakai tab Torrent / Guoke.</p>';
+      box.innerHTML = '<p class="muted">Episode kosong.</p>';
       return;
     }
     box.innerHTML = '<div class="ep-grid">' + eps.map((ep) =>
       '<button class="ep-btn" data-ep="' + showId + ':' + ep.number + '" type="button" title="' + esc(ep.title || ('Episode ' + ep.number)) + '">' + ep.number + '</button>'
-    ).join('') + '</div><p class="muted small">Klik nomor episode untuk menonton langsung di situs.</p>';
+    ).join('') + '</div><p class="muted small">' + eps.length + ' episode lengkap — klik nomor untuk menonton langsung di situs.</p>';
   }).catch(() => {
-    box.innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button> atau pakai tab Torrent.</p>';
+    if (myReq !== epReqSeq || !$('streamBox')) return;
+    box.innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button></p>';
   });
 }
 
-function loadWT() {
-  if (window.WebTorrent) return Promise.resolve();
-  if (wtLoading) return wtLoading;
-  wtLoading = new Promise((resolve, reject) => {
-    const sc = document.createElement('script');
-    sc.src = WT_CDN;
-    sc.onload = () => resolve();
-    sc.onerror = () => reject(new Error('CDN WebTorrent tidak terjangkau'));
-    document.head.appendChild(sc);
-    setTimeout(() => reject(new Error('Timeout memuat WebTorrent')), 25000);
-  });
-  return wtLoading;
-}
-function openPlayer(title, magnet) {
-  $('playerModal').hidden = false;
-  document.body.style.overflow = 'hidden';
-  $('pTitle').textContent = title.length > 60 ? title.slice(0, 60) + '…' : title;
-  const v = $('pVideo');
-  v.hidden = false;
-  v.pause();
-  v.removeAttribute('src');
-  v.load();
-  $('pFrame').removeAttribute('src');
-  $('pFrame').hidden = true;
-  $('pServers').hidden = true;
-  $('pFiles').hidden = true;
-  $('pFiles').innerHTML = '';
-  $('pStatus').textContent = 'Menyiapkan WebTorrent…';
-  $('pMagnet').onclick = () => { window.location.href = magnet; };
-  $('pCopy').onclick = async () => {
-    try { await navigator.clipboard.writeText(magnet); toast('Magnet disalin!'); }
-    catch { toast('Gagal menyalin'); }
-  };
-  clearInterval(wtTimer);
-  loadWT().then(() => {
-    $('pStatus').textContent = 'Mencari peer WebRTC & metadata… (bisa 30–60 dtk; torrent biasa sering tak ada peer browser)';
-    if (!wtClient) wtClient = new WebTorrent();
-    let done = false;
-    const failTimer = setTimeout(() => {
-      if (!done) {
-        done = true;
-        try { wtClient.remove(magnet); } catch (e) {}
-        $('pStatus').textContent = 'Tidak dapat peer/metadata dalam 60 dtk. Pakai “Buka Magnet” di aplikasi torrent (qBittorrent/uTorrent) — itu cara paling pasti.';
-      }
-    }, 60000);
-    try {
-      wtClient.add(magnet, (torrent) => {
-        const vids = torrent.files.filter((f) => /\.(mp4|mkv|webm|m4v)$/i.test(f.name));
-        if (!vids.length) {
-          clearTimeout(failTimer); done = true;
-          $('pStatus').textContent = 'Tidak ada file video di torrent ini. Pakai “Buka Magnet”.';
-          return;
-        }
-        vids.sort((a, b) => {
-          const am = /\.mp4$/i.test(a.name) ? 0 : 1, bm = /\.mp4$/i.test(b.name) ? 0 : 1;
-          return am - bm || b.length - a.length;
-        });
-        const sel = $('pFiles');
-        sel.innerHTML = vids.map((f, i) => '<option value="' + i + '">' + esc(f.name) + '</option>').join('');
-        sel.hidden = vids.length < 2;
-        sel.onchange = () => playFile(vids[Number(sel.value)], torrent);
-        playFile(vids[0], torrent);
-        function playFile(f, t) {
-          clearTimeout(failTimer); done = true;
-          const mp4 = /\.mp4$/i.test(f.name);
-          $('pStatus').textContent = mp4
-            ? 'Streaming… ' + f.name
-            : 'Streaming… ' + f.name + ' (MKV/HEVC mungkin tidak bisa diputar browser — kalau macet, pakai Magnet).';
-          try {
-            f.renderTo(v, (err) => {
-              if (err) $('pStatus').textContent = 'Browser tidak bisa memutar file ini (' + (err.message || err) + '). Pakai “Buka Magnet”.';
-            });
-          } catch (err) {
-            $('pStatus').textContent = 'Gagal memutar. Pakai “Buka Magnet”.';
-          }
-          clearInterval(wtTimer);
-          wtTimer = setInterval(() => {
-            const pct = (t.progress * 100).toFixed(1);
-            const sp = (t.downloadSpeed / 1048576).toFixed(2);
-            $('pStatus').textContent = '▶ ' + pct + '% • ' + sp + ' MB/s • peer: ' + t.numPeers + ' • ' + f.name;
-          }, 1500);
-        }
-      });
-    } catch (err) {
-      clearTimeout(failTimer);
-      $('pStatus').textContent = 'Gagal memulai torrent. Pakai “Buka Magnet”.';
-    }
-  }).catch(() => {
-    $('pStatus').textContent = 'WebTorrent tidak bisa dimuat (offline/CDN diblokir). Pakai “Buka Magnet” / “Salin Magnet”.';
-  });
-}
+/* (player torrent/WebTorrent dihapus — semua diputar langsung di situs) */
 function closePlayer() {
   $('playerModal').hidden = true;
   document.body.style.overflow = '';
-  const v = $('pVideo');
-  v.pause();
-  v.removeAttribute('src');
-  v.load();
-  v.hidden = false;
   const f = $('pFrame');
   f.removeAttribute('src');
   f.hidden = true;
   $('pServers').hidden = true;
   $('pServers').innerHTML = '';
-  clearInterval(wtTimer);
 }
 function streamServers(ep) {
   const u = ep.embed_url || {};
@@ -379,12 +268,10 @@ function streamServers(ep) {
 }
 function openPlayerStream(showTitle, epNum, ep) {
   const servers = streamServers(ep);
-  if (!servers.length) { toast('Server tidak tersedia — coba Torrent'); return; }
+  if (!servers.length) { toast('Server tidak tersedia untuk episode ini'); return; }
   $('playerModal').hidden = false;
   document.body.style.overflow = 'hidden';
   $('pTitle').textContent = (showTitle + ' — E' + epNum).slice(0, 70);
-  $('pVideo').hidden = true;
-  $('pFiles').hidden = true;
   const f = $('pFrame');
   f.hidden = false;
   const box = $('pServers');
@@ -394,67 +281,147 @@ function openPlayerStream(showTitle, epNum, ep) {
   ).join('');
   const play = (i) => {
     f.src = servers[i].url;
-    $('pStatus').textContent = 'Memutar Episode ' + epNum + ' (' + servers[i].label + ') langsung di situs. Kalau macet, ganti server atau pakai Torrent.';
+    $('pStatus').textContent = 'Memutar Episode ' + epNum + ' (' + servers[i].label + ') langsung di situs. Kalau macet, ganti server di atas.';
     box.querySelectorAll('button').forEach((b, j) => b.classList.toggle('btn-ghost', j !== i));
   };
   box.querySelectorAll('button').forEach((b) => {
     b.onclick = () => play(Number(b.dataset.srv));
   });
-  $('pMagnet').onclick = null;
-  $('pCopy').onclick = null;
   play(0);
 }
 
-async function liveSearchNyaa(query) {
-  const proxies = [
-    (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-    (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
-    (u) => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
-  ];
-  const url = 'https://nyaa.si/?page=rss&q=' + encodeURIComponent(query) + '&c=1_2&f=0';
-  let xml = '';
-  for (const p of proxies) {
+/* ---------- 5. MANHWA: baca langsung di situs (Komiku) ---------- */
+function findMw(id) { return MW.titles.find((t) => t.id === id); }
+function mwCard(t) {
+  return '<article class="show-card">' +
+    '<div class="show-cover"><i>' + esc(initials(t.title)) + '</i>' +
+    (t.cover ? '<img src="' + esc(t.cover) + '" alt="' + esc(t.title) + '" loading="lazy" onerror="this.remove()">' : '') +
+    '<span class="show-badge">' + t.total + ' CH</span></div>' +
+    '<div class="show-info"><strong>' + esc(t.title) + '</strong>' +
+    '<small>' + t.total + ' chapter lengkap • baca di sini</small>' +
+    '<div class="show-btns"><button class="btn" data-mread="' + t.id + '" type="button">📖 Baca</button></div></div></article>';
+}
+function renderMw(filter) {
+  const grid = $('mwGrid'), q = (filter || '').toLowerCase().trim();
+  mwCurrent = null;
+  const list = MW.titles.filter((t) => !q || t.title.toLowerCase().includes(q));
+  grid.innerHTML = list.map(mwCard).join('') || '<p class="muted">Tidak ketemu. Coba kata lain.</p>';
+  $('mwCount').textContent = list.length + ' manhwa • ' +
+    list.reduce((a, t) => a + t.total, 0) + ' chapter • baca langsung di sini';
+  $('mwDetail').hidden = true;
+  grid.hidden = false;
+}
+function renderMwDetail(id, chFilter) {
+  const t = findMw(id);
+  if (!t) return;
+  mwCurrent = id;
+  const q = (chFilter || '').toLowerCase().trim();
+  const list = t.chapters.filter((c) => !q || c.n.toLowerCase().includes(q) || c.t.toLowerCase().includes(q));
+  $('mwGrid').hidden = true;
+  $('mwDetail').hidden = false;
+  $('mwTitle').textContent = t.title + ' (' + t.total + ' chapter)';
+  $('chList').innerHTML = list.map((c) => {
+    const idx = t.chapters.indexOf(c);
+    return '<button class="ch-row" data-ch="' + t.id + ':' + idx + '" type="button">' +
+      '<span class="ch-num">CH ' + esc(c.n) + '</span>' +
+      '<span><strong>' + esc(c.t) + '</strong><small>' + esc(c.d || '') + '</small></span></button>';
+  }).join('') || '<p class="muted">Chapter tidak ketemu.</p>';
+  $('mwDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+let rdCtx = null, rdReqSeq = 0, mwCurrent = null;
+async function chapterImages(t, chUrl) {
+  const slug = t.slug;
+  if (MW.pages && MW.pages[slug] && MW.pages[slug][chUrl]) return MW.pages[slug][chUrl];
+  if (!MW.pages) MW.pages = {};
+  // sumber utama: file bawaan per judul (lengkap, tanpa proxy)
+  if (!MW.pages[slug]) {
+    const r = await fetch('data/mw/' + slug + '.json');
+    if (!r.ok) throw new Error('no file');
+    const j = await r.json();
+    MW.pages[slug] = j.pages || {};
+    const hit = MW.pages[slug][chUrl];
+    if (hit && hit.length) return hit;
+  } else {
+    const hit = MW.pages[slug][chUrl];
+    if (hit && hit.length) return hit;
+  }
+  // cadangan: ambil live bila file tidak memuat chapter ini
+  const url = 'https://komiku.org' + chUrl;
+  let html = '';
+  for (const p of API_PROXY) {
     try {
       const r = await fetch(p(url));
       if (!r.ok) continue;
-      xml = await r.text();
-      if (xml.includes('<item')) break;
-      xml = '';
-    } catch (e) { /* coba proxy berikut */ }
+      html = await r.text();
+      if (html.includes('Baca_Komik') && html.includes('komiku.to')) break;
+      html = '';
+    } catch (e) { /* proxy berikut */ }
   }
-  if (!xml) throw new Error('proxy');
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  const items = Array.from(doc.querySelectorAll('item')).slice(0, 10).map((it) => {
-    const g = (t) => (it.querySelector(t) || {}).textContent || '';
-    const ns = (t) => {
-      const el = it.getElementsByTagNameNS('https://nyaa.si/xmlns/nyaa', t)[0];
-      return el ? el.textContent : '';
-    };
-    const title = g('title'), hash = ns('infoHash');
-    const tr = ['wss://tracker.openwebtorrent.com', 'wss://tracker.btorrent.xyz']
-      .map((t) => 'tr=' + encodeURIComponent(t)).join('&');
-    return { t: title, magnet: 'magnet:?xt=urn:btih:' + hash + '&dn=' + encodeURIComponent(title) + '&' + tr,
-      size: ns('size'), seeders: Number(ns('seeders') || 0), date: g('pubDate').slice(0, 16),
-      q: /2160p/.test(title) ? '2160p' : /1080p/.test(title) ? '1080p' : /720p/.test(title) ? '720p' : 'SD',
-      codec: /x265|hevc/i.test(title) ? 'HEVC' : 'H.264', kind: 'Live', ext: /\.mp4/i.test(title) ? 'MP4' : 'MKV', trusted: ns('trusted') === 'Yes' };
-  }).filter((e) => e.t && e.magnet.includes('btih:') && !/:$/.test(e.magnet));
-  return items;
+  if (!html) throw new Error('fetch gagal');
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const sec = doc.getElementById('Baca_Komik') || doc;
+  const imgs = Array.from(sec.querySelectorAll('img'))
+    .map((im) => im.getAttribute('src') || im.getAttribute('data-src') || '')
+    .filter((u) => u.indexOf('http') === 0 && !/promosi|logo|avatar|gravatar|gstatic/i.test(u));
+  if (!imgs.length) throw new Error('gambar kosong');
+  return imgs;
+}
+function openReader(titleId, chIdx) {
+  const t = findMw(titleId);
+  if (!t) return;
+  rdCtx = { id: titleId, i: Number(chIdx) };
+  const c = t.chapters[rdCtx.i];
+  $('readModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+  $('rdTitle').textContent = t.title + ' — ' + c.t;
+  const sel = $('rdSelect');
+  sel.innerHTML = t.chapters.map((x, j) =>
+    '<option value="' + j + '"' + (j === rdCtx.i ? ' selected' : '') + '>CH ' + esc(x.n) + ' — ' + esc(x.d || '') + '</option>'
+  ).join('');
+  sel.onchange = () => openReader(titleId, Number(sel.value));
+  const atFirst = rdCtx.i <= 0, atLast = rdCtx.i >= t.chapters.length - 1;
+  [$('rdPrev'), $('rdPrev2')].forEach((b) => { b.disabled = atLast; b.onclick = () => openReader(titleId, rdCtx.i + 1); });
+  [$('rdNext'), $('rdNext2')].forEach((b) => { b.disabled = atFirst; b.onclick = () => openReader(titleId, rdCtx.i - 1); });
+  loadChapter();
+}
+function loadChapter() {
+  if (!rdCtx) return;
+  const t = findMw(rdCtx.id), c = t.chapters[rdCtx.i];
+  const myReq = ++rdReqSeq;
+  $('rdStatus').textContent = 'Memuat gambar ' + c.t + '…';
+  $('rdPages').innerHTML = '';
+  $('rdTitle').textContent = t.title + ' — ' + c.t;
+  chapterImages(t, c.u).then((imgs) => {
+    if (!rdCtx || myReq !== rdReqSeq) return; // anti-campur
+    $('rdPages').innerHTML = imgs.map((u, k) =>
+      '<img src="' + esc(u) + '" alt="Halaman ' + (k + 1) + '" loading="lazy" onerror="this.style.display=\'none\'">'
+    ).join('');
+    $('rdStatus').textContent = imgs.length + ' halaman • ' + c.t + ' • geser ke bawah untuk membaca.';
+    $('readModal').scrollTop = 0;
+  }).catch(() => {
+    if (!rdCtx || myReq !== rdReqSeq) return;
+    $('rdStatus').textContent = 'Gagal memuat gambar (jaringan sibuk). Tutup lalu buka lagi, atau coba beberapa saat lagi.';
+  });
+}
+function closeReader() {
+  $('readModal').hidden = true;
+  document.body.style.overflow = '';
+  rdCtx = null;
 }
 
 function initAnime() {
   Promise.all([
-    fetch('data/nyaa.json').then((r) => { if (!r.ok) throw new Error(); return r.json(); }),
+    fetch('data/anime.json').then((r) => { if (!r.ok) throw new Error(); return r.json(); }),
     fetch('data/anikoto.json').then((r) => (r.ok ? r.json() : [])).catch(() => []),
   ])
     .then(([d, ak]) => {
-      NYAA = d;
-      (ak || []).forEach((o) => { if (o.id) AKMAP[o.show.toLowerCase().replace(/[^a-z0-9]+/g, '-') ] = o; });
-      // cocokkan AKMAP ke id show nyaa (samakan pola id)
-      NYAA.shows.forEach((s) => {
-        const hit = (ak || []).find((o) => o.show === s.title);
-        if (hit && hit.id) AKMAP[s.id] = hit;
+      ANI = d;
+      (ak || []).forEach((o) => {
+        if (!o.id) return;
+        const hit = ANI.shows.find((s) => s.title === o.show);
+        if (hit) AKMAP[hit.id] = o;
       });
-      $('nyaaDate').textContent = d.updated || '';
+      $('aniDate').textContent = d.updated || '';
       renderShows('');
     })
     .catch(() => {
@@ -462,79 +429,62 @@ function initAnime() {
     });
   $('aniSearch').addEventListener('input', (e) => renderShows(e.target.value));
   $('relBack').addEventListener('click', () => renderShows($('aniSearch').value));
-  $('aniLive').addEventListener('click', async () => {
-    const q = $('aniSearch').value.trim();
-    if (!q) { toast('Ketik judul dulu'); return; }
-    $('aniLive').disabled = true;
-    $('aniLive').textContent = 'Mencari…';
-    try {
-      const items = await liveSearchNyaa(q);
-      $('showGrid').hidden = true;
-      $('relWrap').hidden = false;
-      $('relTitle').textContent = 'Hasil live: ' + q;
-      const fake = { id: 'live' };
-      NYAA.shows = NYAA.shows.filter((s) => s.id !== 'live');
-      NYAA.shows.unshift({ id: 'live', title: q, cover: '', seeders: 0, entries: items });
-      $('relList').innerHTML = items.length
-        ? items.map((e, i) => relRow(fake, e, i)).join('')
-        : '<p class="muted">Tidak ada hasil.</p>';
-    } catch (e) {
-      toast('Live search gagal (proxy diblokir) — pakai data lokal');
-    } finally {
-      $('aniLive').disabled = false;
-      $('aniLive').textContent = 'Cari live di nyaa.si';
-    }
-  });
   document.addEventListener('click', (e) => {
     const w = e.target.closest('[data-watch]');
     if (w) { renderReleases(w.dataset.watch); return; }
-    const sm = e.target.closest('[data-srcmode]');
-    if (sm) {
-      const stream = sm.dataset.srcmode === 'stream';
-      $('streamBox').hidden = !stream;
-      $('torrentBox').hidden = stream;
-      document.querySelectorAll('[data-srcmode]').forEach((b) =>
-        b.classList.toggle('btn-ghost', (b.dataset.srcmode === 'stream') !== stream));
-      return;
-    }
     const rt = e.target.closest('[data-retry]');
     if (rt) { loadEpisodes(rt.dataset.retry); return; }
     const ep = e.target.closest('[data-ep]');
     if (ep) {
-      const [sid, num] = ep.dataset.ep.split(':');
+      const parts = ep.dataset.ep.split(':');
+      const sid = parts[0], num = parts.slice(1).join(':');
       const s = findShow(sid);
       const ak = akOf(sid);
       if (!s || !ak) return;
       ep.disabled = true;
-      apiSeries(ak.id).then((data) => {
+      const cached = seriesCache[ak.id];
+      const done = (data) => {
         const found = (data.episodes || []).find((x) => String(x.number) === String(num));
         if (found) openPlayerStream(s.title, num, found);
         else toast('Episode tidak ketemu');
-      }).catch(() => toast('Gagal memuat episode')).finally(() => { ep.disabled = false; });
+      };
+      if (cached) { done(cached); ep.disabled = false; }
+      else apiSeries(ak.id).then(done).catch(() => toast('Gagal memuat episode')).finally(() => { ep.disabled = false; });
       return;
     }
-    const p = e.target.closest('[data-play]');
-    if (p) {
-      const [sid, i] = p.dataset.play.split(':');
-      const en = findEntry(sid, i);
-      if (en) openPlayer(en.t, en.magnet);
-      return;
-    }
-    const m = e.target.closest('[data-magnet]');
-    if (m) {
-      const en = findEntry(m.dataset.show, m.dataset.magnet);
-      if (en) window.location.href = en.magnet;
-      return;
-    }
-    const c = e.target.closest('[data-copy]');
-    if (c) {
-      const en = findEntry(c.dataset.show, c.dataset.copy);
-      if (en) navigator.clipboard.writeText(en.magnet)
-        .then(() => toast('Magnet disalin!')).catch(() => toast('Gagal menyalin'));
+    const mr = e.target.closest('[data-mread]');
+    if (mr) { renderMwDetail(mr.dataset.mread, $('mwSearch').value); return; }
+    const ch = e.target.closest('[data-ch]');
+    if (ch) {
+      const [tid, idx] = ch.dataset.ch.split(':');
+      openReader(tid, Number(idx));
     }
   });
   $('pClose').addEventListener('click', closePlayer);
   $('playerModal').addEventListener('click', (e) => { if (e.target === $('playerModal')) closePlayer(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('playerModal').hidden) closePlayer(); });
+  $('rdClose').addEventListener('click', closeReader);
+  $('readModal').addEventListener('click', (e) => { if (e.target === $('readModal')) closeReader(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !$('playerModal').hidden) closePlayer();
+    if (e.key === 'Escape' && !$('readModal').hidden) closeReader();
+  });
+}
+function initManhwa() {
+  fetch('data/manhwa.json')
+    .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+    .then((d) => {
+      MW = d;
+      $('mwDate').textContent = d.updated || '';
+      renderMw('');
+    })
+    .catch(() => {
+      $('mwGrid').innerHTML = '<p class="muted">Data manhwa tidak termuat. Periksa koneksi lalu refresh.</p>';
+    });
+  $('mwSearch').addEventListener('input', (e) => renderMw(e.target.value));
+  $('mwBack').addEventListener('click', () => renderMw($('mwSearch').value));
+  $('chSearch').addEventListener('input', (e) => {
+    if (!$('mwDetail').hidden && mwCurrent) renderMwDetail(mwCurrent, e.target.value);
+  });
 }
 initAnime();
+initManhwa();

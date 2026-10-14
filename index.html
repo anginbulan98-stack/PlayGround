@@ -35,45 +35,57 @@
 <main id="top">
   <!-- KATEGORI: Semua / Anime / Manhwa / Upload TikTok Quality -->
   <div class="catbar" role="tablist" aria-label="Kategori">
-    <button class="cat active" data-cat="semua" role="tab" aria-selected="true">Semua</button>
+    <button class="cat active" data-cat="semua" role="tab" aria-selected="true">Semua A/M</button>
     <button class="cat" data-cat="anime" role="tab">Anime</button>
     <button class="cat" data-cat="manhwa" role="tab">Manhwa</button>
     <button class="cat cat-tiktok" data-cat="tiktok" role="tab">Upload TikTok Quality</button>
   </div>
 
-  <!-- MANHWA -->
+  <!-- MANHWA : baca langsung di sini -->
   <section id="manhwaPanel" class="panel">
-    <p class="eyebrow">◆ MANHWA • GUOKE</p>
-    <h2>Koleksi Manhwa</h2>
-    <p class="muted">Koleksi lengkap ada di website Guoke asli — klik Buka Guoke di bawah. Menu <strong>“Upload TikTok Quality”</strong> di Guoke juga dipasang persis di pinggir kategori <strong>Manhwa</strong>.</p>
-    <div class="manhwa-grid">
-      <a class="manhwa-card" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">
-        <span class="m-cover m1"><i>SL</i><img src="https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx105398-b673Vt5ZSuz3.jpg" alt="Solo Leveling" loading="lazy" onerror="this.remove()"></span>
-        <strong>Solo Leveling</strong><small>Manhwa • Action</small>
-      </a>
-      <a class="manhwa-card" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">
-        <span class="m-cover m2"><i>ORV</i><img src="https://s4.anilist.co/file/anilistcdn/media/manga/cover/medium/bx119257-Pi21aq3ey9GG.jpg" alt="Omniscient Reader" loading="lazy" onerror="this.remove()"></span>
-        <strong>Omniscient Reader</strong><small>Manhwa • Fantasy</small>
-      </a>
-      <a class="manhwa-card" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">
-        <span class="m-cover m3"><i>TBATE</i><img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx183161-5M054tuPmZJX.jpg" alt="The Beginning After The End" loading="lazy" onerror="this.remove()"></span>
-        <strong>The Beginning After The End</strong><small>Manhwa • Action</small>
-      </a>
+    <p class="eyebrow">◆ MANHWA • BACA LANGSUNG</p>
+    <h2>Baca Manhwa di sini</h2>
+    <p class="muted">Chapter lengkap + gambar, dibaca langsung di situs ini (<span id="mwDate">–</span>).</p>
+    <div class="ani-search">
+      <input id="mwSearch" type="search" placeholder="Cari judul manhwa…" autocomplete="off" />
     </div>
-    <div class="cta-row">
-      <a class="btn btn-primary" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">Buka Guoke Asli</a>
-      <button class="btn btn-ghost" data-goto-tiktok type="button">Ke Tool TikTok HD →</button>
+    <p id="mwCount" class="muted small"></p>
+    <div id="mwGrid" class="show-grid"></div>
+    <div id="mwDetail" hidden>
+      <button id="mwBack" class="btn btn-small btn-ghost" type="button">← Semua Manhwa</button>
+      <h3 id="mwTitle"></h3>
+      <div class="ani-search">
+        <input id="chSearch" type="search" placeholder="Cari chapter… (mis. 12)" autocomplete="off" />
+      </div>
+      <div id="chList" class="rel-list"></div>
     </div>
   </section>
+
+  <!-- READER -->
+  <div id="readModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Baca manhwa">
+    <div class="pbox">
+      <div class="phead"><strong id="rdTitle">Baca</strong><button id="rdClose" type="button" aria-label="Tutup">✕</button></div>
+      <div class="rd-nav">
+        <button id="rdPrev" class="btn btn-small btn-ghost" type="button">← Prev</button>
+        <select id="rdSelect" class="pfiles" style="margin-top:0"></select>
+        <button id="rdNext" class="btn btn-small btn-ghost" type="button">Next →</button>
+      </div>
+      <p id="rdStatus" class="muted small"></p>
+      <div id="rdPages" class="rd-pages"></div>
+      <div class="rd-nav rd-bottom">
+        <button id="rdPrev2" class="btn btn-small btn-ghost" type="button">← Prev</button>
+        <button id="rdNext2" class="btn btn-small btn-ghost" type="button">Next →</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ANIME : nonton langsung di sini -->
   <section id="animePanel" class="panel" hidden>
     <p class="eyebrow">◆ ANIME • NONTON LANGSUNG</p>
     <h2>Nonton Anime di sini</h2>
-    <p class="muted">Data rilis dari nyaa.si (diperbarui <span id="nyaaDate">–</span>). Klik <strong>Nonton</strong> untuk streaming langsung di browser, atau buka magnet di aplikasi torrent-mu.</p>
+    <p class="muted">Pilih judul, pilih episode, langsung putar di sini (<span id="aniDate">–</span>).</p>
     <div class="ani-search">
-      <input id="aniSearch" type="search" placeholder="Cari judul anime / rilis…" autocomplete="off" />
-      <button id="aniLive" class="btn btn-small btn-ghost" type="button">Cari live di nyaa.si</button>
+      <input id="aniSearch" type="search" placeholder="Cari judul anime…" autocomplete="off" />
     </div>
     <p id="aniCount" class="muted small"></p>
     <div id="showGrid" class="show-grid"></div>
@@ -82,26 +94,15 @@
       <h3 id="relTitle"></h3>
       <div id="relList" class="rel-list"></div>
     </div>
-    <div class="cta-row">
-      <a class="btn btn-ghost" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">Lihat di Guoke</a>
-    </div>
-    <p class="muted small">Catatan jujur: streaming browser butuh peer WebRTC — untuk torrent biasa sering tidak tersedia, kalau begitu pakai tombol Magnet. Format MKV/HEVC tidak bisa diputar browser; pilih rilis MP4 bila ada.</p>
   </section>
 
   <!-- PLAYER -->
   <div id="playerModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Nonton anime">
     <div class="pbox">
       <div class="phead"><strong id="pTitle">Nonton</strong><button id="pClose" type="button" aria-label="Tutup">✕</button></div>
-      <video id="pVideo" controls playsinline preload="metadata"></video>
       <iframe id="pFrame" title="Streaming anime" hidden allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>
       <p id="pStatus" class="muted small"></p>
       <div id="pServers" class="btn-row" hidden></div>
-      <select id="pFiles" class="pfiles" hidden></select>
-      <div class="btn-row">
-        <button id="pMagnet" class="btn btn-small" type="button">Buka Magnet</button>
-        <button id="pCopy" class="btn btn-small btn-ghost" type="button">Salin Magnet</button>
-        <a id="pGuoke" class="btn btn-small btn-ghost" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">Lihat di Guoke</a>
-      </div>
     </div>
   </div>
 
