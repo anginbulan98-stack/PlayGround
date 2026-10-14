@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>HDPlus — Upload TikTok HD, 2K & 120FPS Anti Burik</title>
+<title>Guoke AMHDQ — Nonton Anime & Baca Manhwa Langsung</title>
 <meta name="description" content="Panduan + tool gratis biar upload TikTok tetap HD: setting 1080p/2K, 60/120FPS, bitrate tinggi, preset CapCut/Premiere & cek video sebelum upload." />
 <link rel="stylesheet" href="styles.css" />
 </head>
@@ -20,7 +20,7 @@
     <span class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 48 48"><path d="M24 3 27.5 20.5 45 24 27.5 27.5 24 45 20.5 27.5 3 24 20.5 20.5Z"/></svg>
     </span>
-    <span class="brand-text">HD<span>PLUS</span><small>v1.0 • 2K / 120FPS</small></span>
+    <span class="brand-text">Guoke <span>AMHDQ</span><small>ANIME • MANHWA • HD</small></span>
   </a>
   <nav class="nav">
     <a href="#manhwaPanel">Manhwa</a>
@@ -51,15 +51,19 @@
     </div>
     <p id="mwCount" class="muted small"></p>
     <div id="mwGrid" class="show-grid"></div>
-    <div id="mwDetail" hidden>
-      <button id="mwBack" class="btn btn-small btn-ghost" type="button">← Semua Manhwa</button>
-      <h3 id="mwTitle"></h3>
-      <div class="ani-search">
-        <input id="chSearch" type="search" placeholder="Cari chapter… (mis. 12)" autocomplete="off" />
-      </div>
-      <div id="chList" class="rel-list"></div>
-    </div>
   </section>
+
+  <!-- HALAMAN DETAIL (episode / chapter) -->
+  <div id="detailView" class="pageview" hidden>
+    <div class="pv-inner">
+      <div class="pv-top">
+        <button id="dvBack" type="button">← Kembali</button>
+        <strong id="dvTitle"></strong>
+        <span class="pv-sp"></span>
+      </div>
+      <div id="dvBody"></div>
+    </div>
+  </div>
 
   <!-- READER -->
   <div id="readModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Baca manhwa">
@@ -89,11 +93,6 @@
     </div>
     <p id="aniCount" class="muted small"></p>
     <div id="showGrid" class="show-grid"></div>
-    <div id="relWrap" hidden>
-      <button id="relBack" class="btn btn-small btn-ghost" type="button">← Semua Anime</button>
-      <h3 id="relTitle"></h3>
-      <div id="relList" class="rel-list"></div>
-    </div>
   </section>
 
   <!-- PLAYER -->
@@ -298,7 +297,7 @@
   </section>
 
   <footer class="footer">
-    <p><strong>HDPlus</strong> — tool gratis, 100% jalan lokal di browser. Nggak ada upload server.</p>
+    <p><strong>Guoke AMHDQ</strong> — nonton & baca gratis, semua jalan di situs ini.</p>
     <p class="muted small">Dibuat untuk kreator Indonesia • Setting mengikuti panduan bitrate umum TikTok 2025–2026 • Hasil akhir tetap tergantung koneksi & server TikTok.</p>
   </footer>
 </main>

@@ -207,50 +207,68 @@ function renderShows(filter) {
     '<p class="muted">Tidak ketemu. Coba kata lain.</p>';
   $('aniCount').textContent = list.length + ' anime • ' +
     list.reduce((a, s) => a + (akOf(s.id) ? akOf(s.id).episodes : s.episodes), 0) + ' episode • tonton langsung di sini';
-  $('relWrap').hidden = true;
   grid.hidden = false;
 }
+/* Halaman detail (overlay penuh) — episode/chapter tidak lagi dibuka di bawah */
+function openDetail(title) {
+  $('dvTitle').textContent = title;
+  $('dvBody').innerHTML = '';
+  $('detailView').hidden = false;
+  document.body.style.overflow = 'hidden';
+  $('detailView').scrollTop = 0;
+}
+function closeDetail() {
+  $('detailView').hidden = true;
+  if ($('playerModal').hidden && $('readModal').hidden) document.body.style.overflow = '';
+}
+let DV = { type: null, id: null, eps: [], filter: '' };
+let DVM = { id: null, filter: '' };
 let epReqSeq = 0; // anti-campur: abaikan respons basi saat pindah serial
-function renderReleases(showId) {
+function openDetailAnime(showId) {
   const s = findShow(showId);
   if (!s) return;
   const ak = akOf(showId);
-  $('showGrid').hidden = true;
-  $('relWrap').hidden = false;
-  $('relTitle').textContent = s.title + (ak ? ' (' + ak.episodes + ' episode)' : '');
-  $('relList').innerHTML = '<div id="streamBox"><p class="muted">Memuat daftar episode…</p></div>';
-  $('relWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  loadEpisodes(showId);
-}
-function loadEpisodes(showId) {
-  const ak = akOf(showId);
-  const myReq = ++epReqSeq;
-  const box = $('streamBox');
-  if (!box) return;
+  openDetail(s.title);
+  DV = { type: 'anime', id: showId, eps: [], filter: '' };
+  $('dvBody').innerHTML =
+    '<div class="dv-hero">' +
+    (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '">' : '') +
+    '<div><h2>' + esc(s.title) + '</h2><p class="muted small">' +
+    (ak ? ak.episodes + ' episode lengkap' : '') + ' • tonton langsung di sini</p></div></div>' +
+    '<div class="ani-search"><input id="dvEpSearch" type="search" placeholder="Cari episode… (mis. 12)" autocomplete="off"></div>' +
+    '<div id="dvEps"><p class="muted">Memuat daftar episode…</p></div>';
   if (!ak || !ak.id) {
-    box.innerHTML = '<p class="muted">Streaming belum tersedia untuk judul ini.</p>';
+    $('dvEps').innerHTML = '<p class="muted">Streaming belum tersedia untuk judul ini.</p>';
     return;
   }
+  const myReq = ++epReqSeq;
   apiSeries(ak.id).then((data) => {
-    if (myReq !== epReqSeq || !$('streamBox')) return; // respons basi / sudah pindah
-    const eps = data.episodes || [];
-    if (!eps.length) {
-      box.innerHTML = '<p class="muted">Episode kosong.</p>';
+    if (myReq !== epReqSeq || $('detailView').hidden || DV.id !== showId) return; // anti-campur
+    DV.eps = data.episodes || [];
+    if (!DV.eps.length) {
+      $('dvEps').innerHTML = '<p class="muted">Episode kosong.</p>';
       return;
     }
-    box.innerHTML = '<div class="ep-grid">' + eps.map((ep) =>
-      '<button class="ep-btn" data-ep="' + showId + ':' + ep.number + '" type="button" title="' + esc(ep.title || ('Episode ' + ep.number)) + '">' + ep.number + '</button>'
-    ).join('') + '</div><p class="muted small">' + eps.length + ' episode lengkap — klik nomor untuk menonton langsung di situs.</p>';
+    paintEps();
   }).catch(() => {
-    if (myReq !== epReqSeq || !$('streamBox')) return;
-    box.innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button></p>';
+    if (myReq !== epReqSeq || $('detailView').hidden) return;
+    $('dvEps').innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button></p>';
   });
+}
+function paintEps() {
+  const box = $('dvEps');
+  if (!box || !DV.eps.length) return;
+  const q = DV.filter.trim();
+  const list = DV.eps.filter((ep) => !q || String(ep.number).includes(q));
+  box.innerHTML = '<div class="ep-grid">' + list.map((ep) =>
+    '<button class="ep-btn" data-ep="' + DV.id + ':' + ep.number + '" type="button" title="' + esc(ep.title || ('Episode ' + ep.number)) + '">' + ep.number + '</button>'
+  ).join('') + '</div><p class="muted small">' + list.length + ' episode — klik nomor untuk menonton.</p>';
 }
 
 /* (player torrent/WebTorrent dihapus — semua diputar langsung di situs) */
 function closePlayer() {
   $('playerModal').hidden = true;
-  document.body.style.overflow = '';
+  if ($('readModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
   const f = $('pFrame');
   f.removeAttribute('src');
   f.hidden = true;
@@ -308,25 +326,33 @@ function renderMw(filter) {
   grid.innerHTML = list.map(mwCard).join('') || '<p class="muted">Tidak ketemu. Coba kata lain.</p>';
   $('mwCount').textContent = list.length + ' manhwa • ' +
     list.reduce((a, t) => a + t.total, 0) + ' chapter • baca langsung di sini';
-  $('mwDetail').hidden = true;
   grid.hidden = false;
 }
-function renderMwDetail(id, chFilter) {
+function openDetailMw(id) {
   const t = findMw(id);
   if (!t) return;
-  mwCurrent = id;
-  const q = (chFilter || '').toLowerCase().trim();
-  const list = t.chapters.filter((c) => !q || c.n.toLowerCase().includes(q) || c.t.toLowerCase().includes(q));
-  $('mwGrid').hidden = true;
-  $('mwDetail').hidden = false;
-  $('mwTitle').textContent = t.title + ' (' + t.total + ' chapter)';
-  $('chList').innerHTML = list.map((c) => {
+  openDetail(t.title);
+  DVM = { id, filter: '' };
+  $('dvBody').innerHTML =
+    '<div class="dv-hero">' +
+    (t.cover ? '<img src="' + esc(t.cover) + '" alt="' + esc(t.title) + '">' : '') +
+    '<div><h2>' + esc(t.title) + '</h2><p class="muted small">' + t.total + ' chapter lengkap • baca di sini</p></div></div>' +
+    '<div class="ani-search"><input id="dvChSearch" type="search" placeholder="Cari chapter… (mis. 12)" autocomplete="off"></div>' +
+    '<div id="dvChList" class="rel-list"></div>';
+  paintCh();
+}
+function paintCh() {
+  const t = findMw(DVM.id);
+  const box = $('dvChList');
+  if (!t || !box) return;
+  const q = DVM.filter.trim().toLowerCase();
+  const list = t.chapters.filter((c) => !q || c.n.toLowerCase().includes(q));
+  box.innerHTML = list.map((c) => {
     const idx = t.chapters.indexOf(c);
     return '<button class="ch-row" data-ch="' + t.id + ':' + idx + '" type="button">' +
       '<span class="ch-num">CH ' + esc(c.n) + '</span>' +
       '<span><strong>' + esc(c.t) + '</strong><small>' + esc(c.d || '') + '</small></span></button>';
   }).join('') || '<p class="muted">Chapter tidak ketemu.</p>';
-  $('mwDetail').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 let rdCtx = null, rdReqSeq = 0, mwCurrent = null;
 async function chapterImages(t, chUrl) {
@@ -405,7 +431,7 @@ function loadChapter() {
 }
 function closeReader() {
   $('readModal').hidden = true;
-  document.body.style.overflow = '';
+  if ($('playerModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
   rdCtx = null;
 }
 
@@ -428,32 +454,44 @@ function initAnime() {
       $('showGrid').innerHTML = '<p class="muted">Data anime tidak termuat. Periksa koneksi lalu refresh.</p>';
     });
   $('aniSearch').addEventListener('input', (e) => renderShows(e.target.value));
-  $('relBack').addEventListener('click', () => renderShows($('aniSearch').value));
+  $('dvBack').addEventListener('click', closeDetail);
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.id === 'dvEpSearch' && DV.type === 'anime') {
+      DV.filter = e.target.value;
+      paintEps();
+    }
+    if (e.target && e.target.id === 'dvChSearch' && DVM.id) {
+      DVM.filter = e.target.value;
+      paintCh();
+    }
+  });
   document.addEventListener('click', (e) => {
     const w = e.target.closest('[data-watch]');
-    if (w) { renderReleases(w.dataset.watch); return; }
+    if (w) { openDetailAnime(w.dataset.watch); return; }
     const rt = e.target.closest('[data-retry]');
-    if (rt) { loadEpisodes(rt.dataset.retry); return; }
+    if (rt) { openDetailAnime(rt.dataset.retry); return; }
     const ep = e.target.closest('[data-ep]');
     if (ep) {
       const parts = ep.dataset.ep.split(':');
       const sid = parts[0], num = parts.slice(1).join(':');
       const s = findShow(sid);
+      if (!s) return;
+      // anti-campur: pakai daftar episode halaman detail yang sedang dibuka
+      const found = (DV.type === 'anime' && DV.id === sid)
+        ? DV.eps.find((x) => String(x.number) === String(num)) : null;
+      if (found) { openPlayerStream(s.title, num, found); return; }
       const ak = akOf(sid);
-      if (!s || !ak) return;
+      if (!ak) return;
       ep.disabled = true;
-      const cached = seriesCache[ak.id];
-      const done = (data) => {
-        const found = (data.episodes || []).find((x) => String(x.number) === String(num));
-        if (found) openPlayerStream(s.title, num, found);
+      apiSeries(ak.id).then((data) => {
+        const f2 = (data.episodes || []).find((x) => String(x.number) === String(num));
+        if (f2) openPlayerStream(s.title, num, f2);
         else toast('Episode tidak ketemu');
-      };
-      if (cached) { done(cached); ep.disabled = false; }
-      else apiSeries(ak.id).then(done).catch(() => toast('Gagal memuat episode')).finally(() => { ep.disabled = false; });
+      }).catch(() => toast('Gagal memuat episode')).finally(() => { ep.disabled = false; });
       return;
     }
     const mr = e.target.closest('[data-mread]');
-    if (mr) { renderMwDetail(mr.dataset.mread, $('mwSearch').value); return; }
+    if (mr) { openDetailMw(mr.dataset.mread); return; }
     const ch = e.target.closest('[data-ch]');
     if (ch) {
       const [tid, idx] = ch.dataset.ch.split(':');
@@ -466,7 +504,8 @@ function initAnime() {
   $('readModal').addEventListener('click', (e) => { if (e.target === $('readModal')) closeReader(); });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !$('playerModal').hidden) closePlayer();
-    if (e.key === 'Escape' && !$('readModal').hidden) closeReader();
+    else if (e.key === 'Escape' && !$('readModal').hidden) closeReader();
+    else if (e.key === 'Escape' && !$('detailView').hidden) closeDetail();
   });
 }
 function initManhwa() {
@@ -481,10 +520,6 @@ function initManhwa() {
       $('mwGrid').innerHTML = '<p class="muted">Data manhwa tidak termuat. Periksa koneksi lalu refresh.</p>';
     });
   $('mwSearch').addEventListener('input', (e) => renderMw(e.target.value));
-  $('mwBack').addEventListener('click', () => renderMw($('mwSearch').value));
-  $('chSearch').addEventListener('input', (e) => {
-    if (!$('mwDetail').hidden && mwCurrent) renderMwDetail(mwCurrent, e.target.value);
-  });
 }
 initAnime();
 initManhwa();
