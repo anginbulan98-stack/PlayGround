@@ -174,11 +174,25 @@ function apiSeries(id) {
       }
     }
   } catch (e) {}
-  return apiGet('/series/' + id).then((j) => {
-    seriesCache[id] = j.data;
-    try { localStorage.setItem('ak_' + id, JSON.stringify({ t: Date.now(), d: j.data })); } catch (e) {}
-    return j.data;
-  });
+  // sumber utama: file episode bawaan (instan, tanpa proxy)
+  return fetch('data/eps/' + id + '.json')
+    .then((r) => {
+      if (!r.ok) throw new Error('no file');
+      return r.json();
+    })
+    .then((j) => {
+      const d = { episodes: (j.episodes || []).map((e) => ({
+        number: e.n, title: e.t, embed_url: e.e || {},
+      })) };
+      seriesCache[id] = d;
+      try { localStorage.setItem('ak_' + id, JSON.stringify({ t: Date.now(), d })); } catch (e) {}
+      return d;
+    })
+    .catch(() => apiGet('/series/' + id).then((j) => {
+      seriesCache[id] = j.data;
+      try { localStorage.setItem('ak_' + id, JSON.stringify({ t: Date.now(), d: j.data })); } catch (e) {}
+      return j.data;
+    }));
 }
 function akOf(showId) { return AKMAP[showId] || null; }
 
@@ -399,6 +413,7 @@ function openReader(titleId, chIdx) {
   const c = t.chapters[rdCtx.i];
   $('readModal').hidden = false;
   document.body.style.overflow = 'hidden';
+  paintFullBtns();
   $('rdTitle').textContent = t.title + ' — ' + c.t;
   const sel = $('rdSelect');
   sel.innerHTML = t.chapters.map((x, j) =>
@@ -431,8 +446,22 @@ function loadChapter() {
 }
 function closeReader() {
   $('readModal').hidden = true;
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   if ($('playerModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
   rdCtx = null;
+}
+function toggleFull() {
+  const el = $('readModal');
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(() => {});
+    return;
+  }
+  if (el.requestFullscreen) el.requestFullscreen().catch(() => toast('Layar penuh ditolak browser'));
+  else toast('Browser tidak mendukung layar penuh');
+}
+function paintFullBtns() {
+  const on = !!document.fullscreenElement;
+  document.querySelectorAll('[data-full]').forEach((b) => { b.textContent = on ? '✕ Keluar' : '⛶ Penuh'; });
 }
 
 function initAnime() {
@@ -496,8 +525,11 @@ function initAnime() {
     if (ch) {
       const [tid, idx] = ch.dataset.ch.split(':');
       openReader(tid, Number(idx));
+      return;
     }
+    if (e.target.closest('[data-full]')) { toggleFull(); return; }
   });
+  document.addEventListener('fullscreenchange', paintFullBtns);
   $('pClose').addEventListener('click', closePlayer);
   $('playerModal').addEventListener('click', (e) => { if (e.target === $('playerModal')) closePlayer(); });
   $('rdClose').addEventListener('click', closeReader);
