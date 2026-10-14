@@ -1,0 +1,282 @@
+[
+ {
+  "show": "Solo Leveling",
+  "id": 6224,
+  "slug": "solo-leveling-ilh08",
+  "apiTitle": "Solo Leveling",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Frieren",
+  "id": 6351,
+  "slug": "frieren-beyond-journey-s-end-c6fbj",
+  "apiTitle": "Frieren: Beyond Journey's End",
+  "episodes": 28,
+  "match": true
+ },
+ {
+  "show": "Jujutsu Kaisen",
+  "id": 1103,
+  "slug": "jujutsu-kaisen-tv-8ssye",
+  "apiTitle": "Jujutsu Kaisen (TV)",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Demon Slayer",
+  "id": 1551,
+  "slug": "demon-slayer-kimetsu-no-yaiba-rzepv",
+  "apiTitle": "Demon Slayer: Kimetsu no Yaiba",
+  "episodes": 26,
+  "match": true
+ },
+ {
+  "show": "One Piece",
+  "id": 1642,
+  "slug": "one-piece-odmau",
+  "apiTitle": "One Piece",
+  "episodes": 1180,
+  "match": true
+ },
+ {
+  "show": "Attack on Titan",
+  "id": 1631,
+  "slug": "attack-on-titan-bgaoa",
+  "apiTitle": "Attack on Titan",
+  "episodes": 25,
+  "match": true
+ },
+ {
+  "show": "Chainsaw Man",
+  "id": 6805,
+  "slug": "chainsaw-man-efeig",
+  "apiTitle": "Chainsaw Man",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Spy x Family",
+  "id": 7095,
+  "slug": "spy-x-family-6zlbz",
+  "apiTitle": "Spy x Family",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Oshi no Ko",
+  "id": 6475,
+  "slug": "my-star-hg319",
+  "apiTitle": "My Star",
+  "episodes": 11,
+  "match": true
+ },
+ {
+  "show": "Dan Da Dan",
+  "id": 4,
+  "slug": "dandadan-lzcmw",
+  "apiTitle": "Dandadan",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Re:Zero",
+  "id": 1468,
+  "slug": "re-zero-starting-life-in-another-world-scuep",
+  "apiTitle": "Re:ZERO -Starting Life in Another World-",
+  "episodes": 25,
+  "match": true
+ },
+ {
+  "show": "My Hero Academia",
+  "id": 6,
+  "slug": "my-hero-academia-kuzfp",
+  "apiTitle": "My Hero Academia",
+  "episodes": 13,
+  "match": true
+ },
+ {
+  "show": "Mushoku Tensei",
+  "id": 5694,
+  "slug": "mushoku-tensei-jobless-reincarnation-g20z1",
+  "apiTitle": "Mushoku Tensei: Jobless Reincarnation",
+  "episodes": 11,
+  "match": true
+ },
+ {
+  "show": "Overlord",
+  "id": 1086,
+  "slug": "overlord-ebnqo",
+  "apiTitle": "Overlord",
+  "episodes": 13,
+  "match": true
+ },
+ {
+  "show": "Kaiju No. 8",
+  "id": 6089,
+  "slug": "kaiju-no-8-ewvpr",
+  "apiTitle": "Kaiju No. 8",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Sakamoto Days",
+  "id": 7498,
+  "slug": "sakamoto-days-sfdxz",
+  "apiTitle": "Sakamoto Days",
+  "episodes": 11,
+  "match": true
+ },
+ {
+  "show": "Wind Breaker",
+  "id": 6098,
+  "slug": "wind-breaker-xly8i",
+  "apiTitle": "Wind Breaker",
+  "episodes": 13,
+  "match": true
+ },
+ {
+  "show": "Tokyo Revengers",
+  "id": 5728,
+  "slug": "tokyo-revengers-hcwuw",
+  "apiTitle": "Tokyo Revengers",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Naruto",
+  "id": 958,
+  "slug": "naruto-eybxz",
+  "apiTitle": "Naruto",
+  "episodes": 220,
+  "match": true
+ },
+ {
+  "show": "Bleach",
+  "id": 1057,
+  "slug": "bleach-yaa9n",
+  "apiTitle": "Bleach",
+  "episodes": 366,
+  "match": true
+ },
+ {
+  "show": "Death Note",
+  "id": 1610,
+  "slug": "death-note-fc8mq",
+  "apiTitle": "Death Note",
+  "episodes": 37,
+  "match": true
+ },
+ {
+  "show": "One Punch Man",
+  "id": 1607,
+  "slug": "one-punch-man-jylym",
+  "apiTitle": "One Punch Man",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Mob Psycho 100",
+  "id": 1641,
+  "slug": "mob-psycho-100-dxslo",
+  "apiTitle": "Mob Psycho 100",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Vinland Saga",
+  "id": 1558,
+  "slug": "vinland-saga-83zsx",
+  "apiTitle": "Vinland Saga",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Steins;Gate",
+  "id": 67,
+  "slug": "steins-gate-c93ww",
+  "apiTitle": "Steins;Gate",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Fullmetal Alchemist: Brotherhood",
+  "id": 69,
+  "slug": "fullmetal-alchemist-brotherhood-9s0fl",
+  "apiTitle": "Fullmetal Alchemist: Brotherhood",
+  "episodes": 64,
+  "match": true
+ },
+ {
+  "show": "Hunter x Hunter",
+  "id": 1334,
+  "slug": "hunter-x-hunter-u6ozo",
+  "apiTitle": "Hunter x Hunter",
+  "episodes": 62,
+  "match": true
+ },
+ {
+  "show": "Cowboy Bebop",
+  "id": 1571,
+  "slug": "cowboy-bebop-kb7hu",
+  "apiTitle": "Cowboy Bebop",
+  "episodes": 26,
+  "match": true
+ },
+ {
+  "show": "Violet Evergarden",
+  "id": 1611,
+  "slug": "violet-evergarden-uxbvu",
+  "apiTitle": "Violet Evergarden",
+  "episodes": 13,
+  "match": true
+ },
+ {
+  "show": "Your Name",
+  "id": 61,
+  "slug": "your-name-mwvi0",
+  "apiTitle": "Your Name",
+  "episodes": 1,
+  "match": true
+ },
+ {
+  "show": "Suzume",
+  "id": 7201,
+  "slug": "suzume-s-door-locking-co2lr",
+  "apiTitle": "Suzume’s Door-Locking",
+  "episodes": 1,
+  "match": true
+ },
+ {
+  "show": "A Silent Voice",
+  "id": 60,
+  "slug": "a-silent-voice-fghla",
+  "apiTitle": "A Silent Voice",
+  "episodes": 1,
+  "match": true
+ },
+ {
+  "show": "Gintama",
+  "id": 58,
+  "slug": "gintama-e280d",
+  "apiTitle": "Gintama",
+  "episodes": 201,
+  "match": true
+ },
+ {
+  "show": "March Comes in Like a Lion",
+  "id": 1624,
+  "slug": "march-comes-in-like-a-lion-uryck",
+  "apiTitle": "March comes in like a lion",
+  "episodes": 22,
+  "match": true
+ },
+ {
+  "show": "Magical Girl Raising Project",
+  "id": 2870,
+  "slug": "magical-girl-raising-project-sqqyd",
+  "apiTitle": "Magical Girl Raising Project",
+  "episodes": 12,
+  "match": true
+ }
+]

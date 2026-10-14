@@ -141,18 +141,61 @@ const GUOKE_URL = 'https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com
 const WT_CDN = 'https://cdn.jsdelivr.net/npm/webtorrent@1/webtorrent.min.js';
 let NYAA = { updated: '', shows: [] };
 let wtClient = null, wtLoading = null, wtTimer = null;
+/* Streaming (anikoto API via proxy — direct fetch diblokir CORS) */
+let AKMAP = {};
+const API_PROXY = [
+  (u) => 'https://proxy.corsfix.com/?' + u,
+  (u) => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+];
+const seriesCache = {};
+async function apiGet(path) {
+  const url = 'https://anikotoapi.site' + path;
+  let lastErr = null;
+  for (const p of API_PROXY) {
+    try {
+      const r = await fetch(p(url));
+      if (!r.ok) { lastErr = r.status; continue; }
+      const j = await r.json();
+      if (j && j.ok !== false) return j;
+      lastErr = 'bad json';
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || 'proxy gagal';
+}
+function apiSeries(id) {
+  if (seriesCache[id]) return Promise.resolve(seriesCache[id]);
+  try {
+    const raw = localStorage.getItem('ak_' + id);
+    if (raw) {
+      const o = JSON.parse(raw);
+      if (Date.now() - o.t < 24 * 3600 * 1000) {
+        seriesCache[id] = o.d;
+        return Promise.resolve(o.d);
+      }
+    }
+  } catch (e) {}
+  return apiGet('/series/' + id).then((j) => {
+    seriesCache[id] = j.data;
+    try { localStorage.setItem('ak_' + id, JSON.stringify({ t: Date.now(), d: j.data })); } catch (e) {}
+    return j.data;
+  });
+}
+function akOf(showId) { return AKMAP[showId] || null; }
 
 function initials(t) {
   return t.split(/[\s:;]+/).filter(Boolean).slice(0, 2)
     .map((w) => w[0]).join('').toUpperCase().slice(0, 2);
 }
 function showCard(s) {
+  const ak = akOf(s.id);
+  const eps = ak ? ak.episodes : s.entries.length;
   return '<article class="show-card" data-show="' + s.id + '">' +
     '<div class="show-cover"><i>' + esc(initials(s.title)) + '</i>' +
     (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" onerror="this.remove()">' : '') +
-    '<span class="show-badge">' + s.entries.length + ' RILIS</span></div>' +
+    '<span class="show-badge">' + eps + ' EP</span></div>' +
     '<div class="show-info"><strong>' + esc(s.title) + '</strong>' +
-    '<small>▲ ' + s.seeders + ' seeder • ' + s.entries.length + ' rilis</small>' +
+    '<small>' + eps + ' episode • streaming + torrent</small>' +
     '<div class="show-btns"><button class="btn" data-watch="' + s.id + '" type="button">▶ Nonton</button>' +
     '<a class="btn btn-ghost" href="' + GUOKE_URL + '" target="_blank" rel="noopener">Guoke</a></div></div></article>';
 }
@@ -176,19 +219,47 @@ function renderShows(filter) {
     s.entries.some((e) => e.t.toLowerCase().includes(q)));
   grid.innerHTML = list.map(showCard).join('') ||
     '<p class="muted">Tidak ketemu. Coba kata lain atau tombol “Cari live di nyaa.si”.</p>';
-  $('aniCount').textContent = list.length + ' anime • ' +
-    list.reduce((a, s) => a + s.entries.length, 0) + ' rilis • sumber nyaa.si';
+  $('aniCount').textContent = list.length + ' anime • streaming episode + torrent nyaa.si';
   $('relWrap').hidden = true;
   grid.hidden = false;
 }
 function renderReleases(showId) {
   const s = findShow(showId);
   if (!s) return;
+  const ak = akOf(showId);
   $('showGrid').hidden = true;
   $('relWrap').hidden = false;
-  $('relTitle').textContent = s.title;
-  $('relList').innerHTML = s.entries.map((e, i) => relRow(s, e, i)).join('');
+  $('relTitle').textContent = s.title + (ak ? ' (' + ak.episodes + ' episode)' : '');
+  $('relList').innerHTML =
+    '<div class="src-tabs"><button class="btn btn-small" data-srcmode="stream" type="button">▶ Streaming</button>' +
+    '<button class="btn btn-small btn-ghost" data-srcmode="torrent" type="button">🧲 Torrent</button></div>' +
+    '<div id="streamBox"><p class="muted">Memuat daftar episode…</p></div>' +
+    '<div id="torrentBox" hidden>' +
+    (s.entries.length ? s.entries.map((e, i) => relRow(s, e, i)).join('') : '<p class="muted">Tidak ada rilis torrent.</p>') +
+    '</div>';
   $('relWrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  loadEpisodes(showId);
+}
+function loadEpisodes(showId) {
+  const ak = akOf(showId);
+  const box = $('streamBox');
+  if (!box) return;
+  if (!ak || !ak.id) {
+    box.innerHTML = '<p class="muted">Streaming belum tersedia untuk judul ini — pakai tab Torrent / Guoke.</p>';
+    return;
+  }
+  apiSeries(ak.id).then((data) => {
+    const eps = data.episodes || [];
+    if (!eps.length) {
+      box.innerHTML = '<p class="muted">Episode kosong — pakai tab Torrent / Guoke.</p>';
+      return;
+    }
+    box.innerHTML = '<div class="ep-grid">' + eps.map((ep) =>
+      '<button class="ep-btn" data-ep="' + showId + ':' + ep.number + '" type="button" title="' + esc(ep.title || ('Episode ' + ep.number)) + '">' + ep.number + '</button>'
+    ).join('') + '</div><p class="muted small">Klik nomor episode untuk menonton langsung di situs.</p>';
+  }).catch(() => {
+    box.innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button> atau pakai tab Torrent.</p>';
+  });
 }
 
 function loadWT() {
@@ -209,9 +280,13 @@ function openPlayer(title, magnet) {
   document.body.style.overflow = 'hidden';
   $('pTitle').textContent = title.length > 60 ? title.slice(0, 60) + '…' : title;
   const v = $('pVideo');
+  v.hidden = false;
   v.pause();
   v.removeAttribute('src');
   v.load();
+  $('pFrame').removeAttribute('src');
+  $('pFrame').hidden = true;
+  $('pServers').hidden = true;
   $('pFiles').hidden = true;
   $('pFiles').innerHTML = '';
   $('pStatus').textContent = 'Menyiapkan WebTorrent…';
@@ -285,7 +360,49 @@ function closePlayer() {
   v.pause();
   v.removeAttribute('src');
   v.load();
+  v.hidden = false;
+  const f = $('pFrame');
+  f.removeAttribute('src');
+  f.hidden = true;
+  $('pServers').hidden = true;
+  $('pServers').innerHTML = '';
   clearInterval(wtTimer);
+}
+function streamServers(ep) {
+  const u = ep.embed_url || {};
+  const out = [];
+  if (u.sub) out.push({ label: 'SUB', url: u.sub });
+  Object.keys(u).forEach((k) => {
+    if (k !== 'sub' && u[k] && u[k] !== u.sub) out.push({ label: k.toUpperCase(), url: u[k] });
+  });
+  return out;
+}
+function openPlayerStream(showTitle, epNum, ep) {
+  const servers = streamServers(ep);
+  if (!servers.length) { toast('Server tidak tersedia — coba Torrent'); return; }
+  $('playerModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+  $('pTitle').textContent = (showTitle + ' — E' + epNum).slice(0, 70);
+  $('pVideo').hidden = true;
+  $('pFiles').hidden = true;
+  const f = $('pFrame');
+  f.hidden = false;
+  const box = $('pServers');
+  box.hidden = servers.length < 2;
+  box.innerHTML = servers.map((s, i) =>
+    '<button class="btn btn-small' + (i ? ' btn-ghost' : '') + '" data-srv="' + i + '" type="button">' + esc(s.label) + '</button>'
+  ).join('');
+  const play = (i) => {
+    f.src = servers[i].url;
+    $('pStatus').textContent = 'Memutar Episode ' + epNum + ' (' + servers[i].label + ') langsung di situs. Kalau macet, ganti server atau pakai Torrent.';
+    box.querySelectorAll('button').forEach((b, j) => b.classList.toggle('btn-ghost', j !== i));
+  };
+  box.querySelectorAll('button').forEach((b) => {
+    b.onclick = () => play(Number(b.dataset.srv));
+  });
+  $('pMagnet').onclick = null;
+  $('pCopy').onclick = null;
+  play(0);
 }
 
 async function liveSearchNyaa(query) {
@@ -325,10 +442,18 @@ async function liveSearchNyaa(query) {
 }
 
 function initAnime() {
-  fetch('data/nyaa.json')
-    .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-    .then((d) => {
+  Promise.all([
+    fetch('data/nyaa.json').then((r) => { if (!r.ok) throw new Error(); return r.json(); }),
+    fetch('data/anikoto.json').then((r) => (r.ok ? r.json() : [])).catch(() => []),
+  ])
+    .then(([d, ak]) => {
       NYAA = d;
+      (ak || []).forEach((o) => { if (o.id) AKMAP[o.show.toLowerCase().replace(/[^a-z0-9]+/g, '-') ] = o; });
+      // cocokkan AKMAP ke id show nyaa (samakan pola id)
+      NYAA.shows.forEach((s) => {
+        const hit = (ak || []).find((o) => o.show === s.title);
+        if (hit && hit.id) AKMAP[s.id] = hit;
+      });
       $('nyaaDate').textContent = d.updated || '';
       renderShows('');
     })
@@ -363,6 +488,31 @@ function initAnime() {
   document.addEventListener('click', (e) => {
     const w = e.target.closest('[data-watch]');
     if (w) { renderReleases(w.dataset.watch); return; }
+    const sm = e.target.closest('[data-srcmode]');
+    if (sm) {
+      const stream = sm.dataset.srcmode === 'stream';
+      $('streamBox').hidden = !stream;
+      $('torrentBox').hidden = stream;
+      document.querySelectorAll('[data-srcmode]').forEach((b) =>
+        b.classList.toggle('btn-ghost', (b.dataset.srcmode === 'stream') !== stream));
+      return;
+    }
+    const rt = e.target.closest('[data-retry]');
+    if (rt) { loadEpisodes(rt.dataset.retry); return; }
+    const ep = e.target.closest('[data-ep]');
+    if (ep) {
+      const [sid, num] = ep.dataset.ep.split(':');
+      const s = findShow(sid);
+      const ak = akOf(sid);
+      if (!s || !ak) return;
+      ep.disabled = true;
+      apiSeries(ak.id).then((data) => {
+        const found = (data.episodes || []).find((x) => String(x.number) === String(num));
+        if (found) openPlayerStream(s.title, num, found);
+        else toast('Episode tidak ketemu');
+      }).catch(() => toast('Gagal memuat episode')).finally(() => { ep.disabled = false; });
+      return;
+    }
     const p = e.target.closest('[data-play]');
     if (p) {
       const [sid, i] = p.dataset.play.split(':');
