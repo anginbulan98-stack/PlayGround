@@ -158,23 +158,46 @@
     return vf + ',' + fpsF + ',format=yuv420p';
   }
 
-  function ffArgs(inName, filter) {
-    return ['-i', inName, '-vf', filter,
-      '-c:v', 'libx264', '-preset', 'slow', '-crf', '16',
-      '-maxrate', '25M', '-bufsize', '50M', '-profile:v', 'high',
-      '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'out.mp4'];
+  function ffArgs(inName, filter, S, preset, xparams) {
+    // Umpan bitrate tertinggi yang masih aman diupload (best-effort lawan
+    // kompres TikTok; 2K dapat jatah lebih besar). 100% anti-kompres tidak
+    // mungkin — TikTok selalu re-encode ke ~3–8 Mbps.
+    const maxr = S >= 1440 ? '35M' : '25M';
+    const buf = S >= 1440 ? '70M' : '50M';
+    const a = ['-i', inName, '-vf', filter,
+      '-c:v', 'libx264', '-preset', preset || 'slow', '-crf', '16'];
+    if (xparams) a.push('-x264-params', xparams); // darurat: matikan lookahead (hemat RAM)
+    return a.concat(['-maxrate', maxr, '-bufsize', buf, '-profile:v', 'high',
+      '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'out.mp4']);
   }
+
+  /* Klasifikasi error memori: instance wasm yang abort/OOM hukumnya MATI dan
+     wajib dibuat ulang sebelum percobaan berikutnya. */
+  const isMemErr = (e) => /memory|alloc|abort|OOM|out of memory|enlarge memory|Maximum call stack/i
+    .test(String((e && e.message) || e || ''));
+  /* Error file rusak (bukan memori/filter): setting apa pun pasti gagal,
+     jadi langsung berhenti tanpa buang waktu. */
+  const isInputErr = (e) => /invalid data|moov atom|could not find.*stream|unsupported codec|failed to decode|Invalid data found/i
+    .test(String((e && e.message) || e || ''));
+  const freshFF = async () => {
+    try { if (ff) ff.exit(); } catch (e) {}
+    ff = null; ffLoading = null;
+    return loadFF();
+  };
 
   function loadFF() {
     if (ff) return Promise.resolve(ff);
     if (ffLoading) return ffLoading;
     ffLoading = (async () => {
       if (!window.FFmpeg || !window.FFmpeg.createFFmpeg) {
-        throw new Error('Pustaka ffmpeg.wasm gagal dimuat (CDN unpkg diblokir/offline). Sambungkan internet lalu coba lagi.');
+        throw new Error('Pustaka ffmpeg gagal dimuat (CDN unpkg diblokir/offline). Sambungkan internet lalu coba lagi.');
       }
       const { createFFmpeg, fetchFile } = window.FFmpeg;
+      // Build SINGLE-THREAD (core-st): tidak butuh SharedArrayBuffer, jadi
+      // jalan di hosting statis/GitHub Pages tanpa header COOP/COEP.
+      // (Build multithread lama melempar "SharedArrayBuffer is not defined".)
       const inst = createFFmpeg({
-        corePath: 'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js',
+        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js',
         log: false,
       });
       inst.setProgress(({ ratio }) => {
@@ -202,42 +225,84 @@
     $('pzDone').hidden = true;
     $('pzProg').style.width = '0%';
     try {
-      const inst = await loadFF();
-      if (cancelled) throw { cancelled: true };
       const mode = ($('pzMode') && $('pzMode').value) || 'auto';
-      const fpsOut = ($('pzFps') && $('pzFps').value) || '60';
-      const interp = !!($('pzInterp') && $('pzInterp').checked);
+      const fpsWant = ($('pzFps') && $('pzFps').value) || '60';
+      const interpWant = !!($('pzInterp') && $('pzInterp').checked);
       const hdr = !!($('pzHdr') && $('pzHdr').checked);
       const S = (mode === 'auto2k') ? 1440 : 1080;
       const w = meta && meta.w ? meta.w : 0, h = meta && meta.h ? meta.h : 0;
-      const base = buildFilter(mode, w, h, fpsOut, interp, S);
+      const isHP = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent || '');
+      if (isHP && interpWant) {
+        toast('HP terdeteksi: interpolasi rakus memori — bila setting penuh gagal, otomatis dicoba setting ringan.');
+      }
+      const baseFull = buildFilter(mode, w, h, fpsWant, interpWant, S);
       // Varian filter: HDR→SDR dulu bila diminta, lalu versi polos. "Bila tersedia":
       // bila core tak punya tonemap/zscale, run gagal dan otomatis fallback.
-      const variants = hdr
-        ? ['tonemap=hable:desat=0,' + base, 'tonemap=clip,' + base, base]
-        : [base];
+      const variantsFull = hdr
+        ? ['tonemap=hable:desat=0,' + baseFull, 'tonemap=clip,' + baseFull, baseFull]
+        : [baseFull];
+      const baseLight = buildFilter(mode, w, h, '30', false, S);
+      // Tahap darurat: resolusi 2K diturunkan ke 1080 (tetap HD), preset
+      // tercepat + lookahead encoder dimatikan → RAM minimal. Input resolusi
+      // APAPUN (8K/vertikal/persegi/HDR) tetap diterima; yang menyesuaikan
+      // adalah tangga usaha, bukan menolak file.
+      const S3 = S >= 1440 ? 1080 : S;
+      const baseUltra = buildFilter(mode, w, h, '30', false, S3);
+      // Tangga 3 tahap: penuh → ringan → darurat. Lanjut ke tahap berikut
+      // untuk SEMUA error kecuali file rusak (input error). Instance wasm
+      // yang OOM/abort wajib dibuat ulang tiap tahap.
+      const LV = ['', '[Ringan] ', '[Darurat] '];
+      const tries = [
+        { preset: 'slow', vfList: variantsFull, fps: fpsWant, xp: '', S: S },
+        { preset: 'veryfast', vfList: [baseLight], fps: '30', xp: '', S: S },
+        { preset: 'ultrafast', vfList: [baseUltra], fps: '30', xp: 'rc-lookahead=0:sync-lookahead=0', S: S3 },
+      ];
       const inName = 'in_' + Date.now() + '_' + baseName(file.name).replace(/[^a-zA-Z0-9.]/g, '_');
-      try { inst.FS('unlink', inName); } catch (e) {}
-      try { inst.FS('unlink', 'out.mp4'); } catch (e) {}
-      say('Menyalin file ke memori…');
-      inst.FS('writeFile', inName, await inst._fetchFile(file));
-      let lastErr = null, ok = false;
-      for (const vf of variants) {
-        if (cancelled) throw { cancelled: true };
-        try {
-          say(hdr && vf !== base ? 'Mencoba konversi HDR→SDR…' : 'Memproses… 0%');
-          await inst.run(...ffArgs(inName, vf));
-          ok = true;
-          say(hdr && vf !== base ? 'Selesai dengan konversi HDR→SDR.' : 'Selesai.');
-          break;
-        } catch (e) {
+      let inst = await loadFF();
+      if (cancelled) throw { cancelled: true };
+      let lastErr = null, ok = false, fpsOut = fpsWant, outS = S;
+      for (let ti = 0; ti < tries.length && !ok; ti++) {
+        const tr = tries[ti];
+        if (ti > 0) {
           if (cancelled) throw { cancelled: true };
-          lastErr = e;
+          say(tr.preset === 'ultrafast'
+            ? 'Masih berat — mencoba tahap darurat (super-hemat memori, tetap HD)…'
+            : 'Setting penuh kehabisan memori — mencoba otomatis dengan setting ringan…');
+          $('pzProg').style.width = '0%';
+          inst = await freshFF();
+          if (cancelled) throw { cancelled: true };
         }
+        try { inst.FS('unlink', inName); } catch (e) {}
+        try { inst.FS('unlink', 'out.mp4'); } catch (e) {}
+        say(ti > 0 ? 'Menyalin file (' + tr.preset + ')…' : 'Menyalin file ke memori…');
+        inst.FS('writeFile', inName, await inst._fetchFile(file));
+        for (const vf of tr.vfList) {
+          if (cancelled) throw { cancelled: true };
+          try {
+            const isBase = vf === tr.vfList[tr.vfList.length - 1];
+            say(LV[ti] + (!isBase ? 'Mencoba konversi HDR→SDR…' : 'Memproses… 0%'));
+            await inst.run(...ffArgs(inName, vf, tr.S, tr.preset, tr.xp));
+            ok = true;
+            fpsOut = tr.fps;
+            outS = tr.S;
+            say('Selesai' + (ti > 0 ? ' (' + tr.preset + (tr.S !== S ? ', 1080p' : '') + ').' : '.'));
+            break;
+          } catch (e) {
+            if (cancelled) throw { cancelled: true };
+            lastErr = e;
+          }
+        }
+        // File rusak → tahap apa pun pasti gagal; langsung tampilkan error.
+        if (!ok && isInputErr(lastErr)) break;
       }
-      if (!ok) throw lastErr || new Error('ffmpeg gagal');
+      if (!ok) {
+        const e2 = lastErr || new Error('ffmpeg gagal');
+        e2._lightTried = true;
+        throw e2;
+      }
       const data = inst.FS('readFile', 'out.mp4');
-      const blob = new Blob([data.buffer], { type: 'video/mp4' });
+      const bytes = data.buffer ? data.slice(data.byteOffset, data.byteOffset + data.byteLength) : data;
+      const blob = new Blob([bytes], { type: 'video/mp4' });
       if (outUrl) { try { URL.revokeObjectURL(outUrl); } catch (e) {} }
       outUrl = URL.createObjectURL(blob);
       const out = $('pzOut');
@@ -249,7 +314,25 @@
       $('pzMeta').textContent = 'Hasil: ' + fpsOut + ' fps, ukuran file ' + fmtMB(blob.size) + '.';
       const dl = $('pzDl');
       dl.href = outUrl;
-      dl.setAttribute('download', 'guoke-tiktok-hd.mp4');
+      const fname = 'guoke-tiktok-hd-' + outS + 'p-' + fpsOut + 'fps.mp4';
+      dl.setAttribute('download', fname);
+      dl.textContent = '⬇ Download (' + fname + ')';
+      // Bagikan langsung ke aplikasi TikTok (Android/HP modern): buka
+      // share-sheet sistem, pilih TikTok → masuk layar upload dengan
+      // video sudah terlampir. Sembunyi bila browser tak mendukung.
+      const sh = $('pzShare');
+      if (sh) {
+        try {
+          const f = new File([blob], fname, { type: 'video/mp4' });
+          if (navigator.canShare && navigator.canShare({ files: [f] })) {
+            sh.hidden = false;
+            sh.onclick = async () => {
+              try { await navigator.share({ files: [f], title: fname }); }
+              catch (e) { /* pengguna batal */ }
+            };
+          } else sh.hidden = true;
+        } catch (e) { sh.hidden = true; }
+      }
       $('pzDone').hidden = false;
       say('Selesai — putar pratinjau lalu tekan Download.');
       appToast('Video HD siap didownload ⬇');
@@ -260,9 +343,9 @@
       if (e && e.cancelled) { say('Dibatalkan.'); }
       else {
         const msg = String((e && e.message) || e || '');
-        if (/memory|alloc|abort|OOM/i.test(msg)) {
+        if (/memory|alloc|abort|OOM|out of memory|enlarge memory/i.test(msg)) {
           say('');
-          toast('Memori habis — tutup tab/aplikasi lain, pakai video lebih pendek, atau pilih 30fps lalu coba lagi.');
+          toast('RAM HP tidak cukup (3 tahap otomatis sudah dicoba). Jalan keluar: potong video jadi <10 dtk, atau tanpa proses — salin Preset di bawah untuk export via CapCut (tanpa makan RAM).');
         } else if (/filter|vf|tonemap|zscale|Invalid argument|EINVAL/i.test(msg)) {
           say('');
           toast('Filter video ditolak mesin — coba mode “Otomatis”, matikan opsi HDR/interpolasi, lalu ulangi.');

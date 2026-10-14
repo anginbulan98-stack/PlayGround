@@ -1,7 +1,7 @@
 /* Guoke AMHDQ service worker: cache aplikasi + data agar bisa dibuka
    offline / dipasang ke layar HP. Gambar chapter TIDAK di-cache
    (hemat penyimpanan); selalu diambil langsung saat online. */
-const CACHE = 'guoke-amhdq-v4';
+const CACHE = 'guoke-amhdq-v7';
 const CORE = [
   './', './index.html', './styles.css', './app.js', './proses.js', './data-anime.js',
   './manifest.webmanifest', './sitemap.xml',

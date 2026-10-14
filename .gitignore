@@ -17,3 +17,7 @@ screenshots/
 
 node_modules/
 tools/__pycache__/
+data/bulk_anilist_state.json
+data/bulk_mw_state.json
+data/mw_refresh_cursor.txt
+*.bak-inline

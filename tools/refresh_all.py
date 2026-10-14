@@ -155,7 +155,8 @@ def sync_anime_js(anime, ak):
         manual_n = o.get("episodes", 0) or 0
         out.append({
             "id": s["id"], "title": s["title"], "cover": s.get("cover", ""),
-            "akid": akid.get(s["title"], o.get("akid")),
+            "akid": akid.get(s["title"]) or s.get("akid") or o.get("akid"),
+            "alt": o.get("alt", ""),
             "episodes": max(manual_n, live_n),
             "status": o.get("status", "tayang"), "kind": o.get("kind", "series"),
             "year": o.get("year", year_now),
@@ -218,11 +219,43 @@ def chapter_imgs(ch_url):
                 r"promosi|logo|avatar|gravatar|gstatic|googletag", u, re.I)]
 
 
+MWCH_DIR = "data/mwch"
+MW_CURSOR = "data/mw_refresh_cursor.txt"
+MW_BUDGET = int(os.environ.get("MW_BUDGET", "300"))
+
+
+def mwch_load(slug):
+    fp = os.path.join(MWCH_DIR, slug + ".json")
+    if os.path.exists(fp):
+        try:
+            return json.load(open(fp)).get("chapters", [])
+        except Exception:
+            return []
+    return []
+
+
+def mwch_save(slug, chapters):
+    os.makedirs(MWCH_DIR, exist_ok=True)
+    json.dump({"slug": slug, "chapters": chapters},
+              open(os.path.join(MWCH_DIR, slug + ".json"), "w"), ensure_ascii=False)
+
+
 def refresh_manhwa():
     from concurrent.futures import ThreadPoolExecutor
     d = json.load(open("data/manhwa.json"))
+    # Rotasi harian: 3.679 judul tak mungkin dicek semua tiap hari
+    # (MW_BUDGET judul/run, kursor berputar; siklus penuh ~12 hari).
+    try:
+        cursor = int(open(MW_CURSOR).read().strip() or 0)
+    except Exception:
+        cursor = 0
+    titles = d["titles"]
+    if cursor >= len(titles):
+        cursor = 0
+    batch = (titles[cursor:] + titles[:cursor])[:MW_BUDGET]
+    print("  refresh manhwa: %d judul (kursor %d/%d)" % (len(batch), cursor, len(titles)))
     changed = False
-    for t in d["titles"]:
+    for t in batch:
         try:
             det = komiku_detail(t["slug"])
         except Exception as e:
@@ -230,11 +263,17 @@ def refresh_manhwa():
             continue
         if not det or not det["chapters"]:
             continue
-        old_urls = {c["u"] for c in t["chapters"]}
+        old = mwch_load(t["slug"])
+        old_urls = {c["u"] for c in old}
         new_ch = [c for c in det["chapters"] if c["u"] not in old_urls]
-        if new_ch or len(det["chapters"]) != len(t["chapters"]):
-            t["chapters"] = det["chapters"]
+        if new_ch or len(det["chapters"]) != len(old):
+            mwch_save(t["slug"], det["chapters"])
             t["total"] = len(det["chapters"])
+            last = ""
+            for c in det["chapters"]:
+                if (c.get("d") or "") > last:
+                    last = c["d"] or last
+            t["lastUpdate"] = last
             if det["cover"]:
                 t["cover"] = det["cover"]
             changed = True
@@ -252,7 +291,11 @@ def refresh_manhwa():
             json.dump({"slug": t["slug"], "pages": pages}, open(fp, "w"), ensure_ascii=False)
             print("    gambar baru: %d ch" % sum(1 for c in new_ch if c["u"] in pages))
         time.sleep(0.6)
-    # --- temukan judul baru dari beranda ---
+    try:
+        open(MW_CURSOR, "w").write(str((cursor + len(batch)) % max(len(titles), 1)))
+    except Exception:
+        pass
+    # --- temukan judul baru dari beranda (impor massal via bulk_mw_titles.py) ---
     try:
         home = get("https://komiku.org/").decode("utf-8", "replace")
         slugs = sorted(set(re.findall(r"/manga/([a-z0-9-]+)/", home)))
@@ -268,8 +311,11 @@ def refresh_manhwa():
             if not det or len(det["chapters"]) < 5:
                 continue
             t = {"id": slug, "title": det["title"], "slug": slug, "cover": det["cover"],
-                 "total": len(det["chapters"]), "chapters": det["chapters"]}
+                 "total": len(det["chapters"]), "type": "Manhwa",
+                 "genres": ["Manhwa"], "status": "Ongoing",
+                 "lastUpdate": (det["chapters"][0].get("d") or "")}
             d["titles"].append(t)
+            mwch_save(slug, det["chapters"])
             pages = {}
             for c in det["chapters"]:
                 imgs = chapter_imgs(c["u"])

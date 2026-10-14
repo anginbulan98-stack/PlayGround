@@ -110,6 +110,13 @@
       </div>
       <p class="muted small req-hint">Tidak ketemu? <button class="linkbtn" data-reqopen="manhwa" type="button">Request judul</button></p>
       <div class="mw-filters">
+        <label>Tipe
+          <select id="mwType">
+            <option value="">Manhwa + Manhua</option>
+            <option value="Manhwa">Manhwa</option>
+            <option value="Manhua">Manhua</option>
+          </select>
+        </label>
         <label>Genre
           <select id="mwGenre"><option value="">Semua genre</option></select>
         </label>
@@ -243,6 +250,11 @@
         <button id="pNext" class="btn btn-small btn-ghost" type="button">Next →</button>
       </div>
       <div id="pServers" class="btn-row" hidden></div>
+      <div class="btn-row">
+        <button id="pDl" class="btn" type="button">⬇ Download episode</button>
+      </div>
+      <p id="pDlStatus" class="muted small" hidden></p>
+      <div id="pDlBtns" class="btn-row" hidden></div>
     </div>
   </div>
 
@@ -353,10 +365,13 @@
       <video id="pzOut" controls playsinline preload="metadata"></video>
       <div class="btn-row">
         <a id="pzDl" class="btn btn-primary" download="guoke-tiktok-hd.mp4">⬇ Download (guoke-tiktok-hd.mp4)</a>
+        <button id="pzShare" class="btn" type="button" hidden>📤 Bagikan ke TikTok</button>
+        <a class="btn btn-ghost" href="https://www.tiktok.com/upload" target="_blank" rel="noopener">⬆ Buka Upload TikTok</a>
       </div>
+      <p class="muted small">Alur: Download dulu (atau Bagikan langsung di HP) → di halaman upload TikTok pilih file hasilnya → pastikan “Kualitas tinggi / Izinkan unggahan HD” aktif.</p>
     </div>
     <div class="honest">
-      <strong>Jujur:</strong> video kecil yang diperbesar <em>tidak jadi lebih tajam</em>, tapi resolusi + bitrate tinggi membuat kompres TikTok lebih bersih.
+      <strong>Jujur:</strong> video kecil yang diperbesar <em>tidak jadi lebih tajam</em>, dan <em>tidak ada</em> video yang 100% anti-kompres — TikTok <em>selalu</em> me-re-encode ke bitrate rendah. Yang alat ini lakukan: memberi “umpan” terbaik (2K + CRF 16 + bitrate 25–35 Mbps + faststart) supaya sisa setelah kompres tetap bersih.
       30→60fps biasa <em>menduplikasi frame</em>; centang “Kualitas maksimal” untuk interpolasi gerak (minterpolate, jauh lebih lama).
     </div>
   </section>

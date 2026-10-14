@@ -215,14 +215,17 @@ function fmtTglID(d) {
   if (!m) return '';
   return 'Diperbarui ' + (+m[1]) + ' ' + BULAN_ID[(+m[2]) - 1] + ' ' + m[3];
 }
-/* Update terakhir = tanggal chapter paling baru (anti salah urut data) */
+/* Update terakhir = tanggal chapter paling baru (anti salah urut data).
+   Index menyimpan lastUpdate agar kartu/sortir jalan tanpa unduh chapters. */
 function mwUpdated(t) {
+  const chs = (t.chapters || CHC[t.id]);
+  if (!chs) return t.lastUpdate || '';
   let best = 0, raw = '';
-  (t.chapters || []).forEach((c) => {
+  chs.forEach((c) => {
     const ts = parseTgl(c.d);
     if (ts > best) { best = ts; raw = c.d; }
   });
-  return raw;
+  return raw || t.lastUpdate || '';
 }
 function mwStatus(t) { return t.status || 'Ongoing'; } // dari Komiku; default Ongoing
 function mwGenres(t) {
@@ -354,17 +357,33 @@ const API_PROXY = [
   (u) => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
 ];
 const seriesCache = {};
-async function apiGet(path) {
+/* Fetch berbatas waktu: daftar episode TIDAK BOLEH macet di "Memuat..."
+   selamanya. Tiap percobaan jaringan dibatalkan setelah ms. */
+function fetchTimeout(url, ms, opts) {
+  const c = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const t = setTimeout(() => { try { if (c) c.abort(); } catch (e) {} }, ms || 12000);
+  const o = Object.assign({}, opts || {});
+  if (c) o.signal = c.signal;
+  return fetch(url, o).finally(() => clearTimeout(t));
+}
+/* Timeout untuk BODY (r.text()/r.json() tanpa ini bisa gantung selamanya
+   bila header sudah datang tapi badan macet — inilah "Memuat..." abadi). */
+function bodyTimeout(promise, ms) {
+  let t = null;
+  const gate = new Promise((_, rej) => { t = setTimeout(() => rej(new Error('body timeout')), ms || 12000); });
+  return Promise.race([promise, gate]).finally(() => { if (t) clearTimeout(t); });
+}
+async function apiGet(path, tryMs) {
   const url = 'https://anikotoapi.site' + path;
   let lastErr = null;
   for (const p of API_PROXY) {
     try {
-      const r = await fetch(p(url));
+      const r = await fetchTimeout(p(url), tryMs || 12000);
       if (!r.ok) { lastErr = r.status; continue; }
-      const j = await r.json();
+      const j = await bodyTimeout(r.json(), tryMs || 12000);
       if (j && j.ok !== false) return j;
       lastErr = 'bad json';
-    } catch (e) { lastErr = e; }
+    } catch (e) { lastErr = (e && e.name === 'AbortError') ? 'timeout' : e; }
   }
   throw lastErr || 'proxy gagal';
 }
@@ -380,11 +399,11 @@ function apiSeries(id) {
       }
     }
   } catch (e) {}
-  // sumber utama: file episode bawaan (instan, tanpa proxy)
-  return fetch('data/eps/' + id + '.json')
+  // sumber utama: file episode bawaan (instan, tanpa proxy; timeout 10 dtk)
+  return fetchTimeout('data/eps/' + id + '.json', 10000)
     .then((r) => {
       if (!r.ok) throw new Error('no file');
-      return r.json();
+      return bodyTimeout(r.json(), 10000);
     })
     .then((j) => {
       const d = { episodes: (j.episodes || []).map((e) => ({
@@ -418,6 +437,7 @@ function showCard(s) {
     (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" onerror="this.remove()">' : '') +
     '<span class="show-badge">' + (s.kind === 'film' ? 'FILM' : eps + ' EP') + '</span></div>' +
     '<div class="show-info"><strong>' + esc(s.title) + '</strong>' +
+    (s.alt ? '<small class="show-alt">(' + esc(s.alt) + ')</small>' : '') +
     '<small>' + esc(meta) + '</small>' +
     '<div class="show-btns"><button class="btn" data-watch="' + s.id + '" type="button">▶ Nonton</button></div></div></article>';
 }
@@ -468,7 +488,7 @@ const ANI_UI = { q: '', f: 'semua', limit: 12, per: 12 };
 function aniFiltered() {
   return ANI.shows.filter((s) => s.id.indexOf('rx_') !== 0 &&
     aniMatchF(s, ANI_UI.f) &&
-    (!ANI_UI.q || s.title.toLowerCase().includes(ANI_UI.q)));
+    (!ANI_UI.q || (s.title + ' ' + (s.alt || '')).toLowerCase().includes(ANI_UI.q)));
 }
 function renderShows(filter) {
   return keepScroll(() => {
@@ -654,6 +674,8 @@ function buildFullEps(showId, total, items) {
   });
   let N = Math.max(Number(total) || 0, 0);
   Object.keys(play).forEach((k) => { if (Number(k) > N) N = Number(k); });
+  // Batas aman: judul super-panjang (mis. >2000) tetap dirender tanpa macet
+  if (N > 2000) N = 2000;
   const eps = [];
   for (let n = 1; n <= N; n++) {
     eps.push(play[n]
@@ -698,8 +720,24 @@ function openDetailAnime(showId, nav) {
     return;
   }
   const myReq = ++epReqSeq;
+  // Anti-stuck: daftar 1..N langsung tampil SEGERA (tombol gelap = "Segera
+  // hadir") selagi sumber video diperiksa di latar. Teks "Memuat..." tidak
+  // pernah dibiarkan menggantung: selalu ada daftar + tombol Coba lagi.
+  buildFullEps(showId, DV.total, []);
+  if (!DV.eps.length) {
+    $('dvEps').innerHTML = '<p class="muted">Episode kosong.</p>';
+    return;
+  }
+  paintEps();
+  const note = document.createElement('p');
+  note.className = 'muted small';
+  note.id = 'dvEpsNote';
+  note.textContent = 'Memeriksa sumber video…';
+  $('dvEps').appendChild(note);
+  const dropNote = () => { const n = $('dvEpsNote'); if (n) n.remove(); };
   apiSeries(ak.id).then((data) => {
     if (myReq !== epReqSeq || $('detailView').hidden || DV.id !== showId) return; // anti-campur
+    dropNote();
     buildFullEps(showId, Number(s.episodes) || 0, data.episodes || []);
     if (!DV.eps.length) {
       $('dvEps').innerHTML = '<p class="muted">Episode kosong.</p>';
@@ -709,7 +747,13 @@ function openDetailAnime(showId, nav) {
     refreshEps(showId, ak.id, myReq); // cek episode terbaru di latar
   }).catch(() => {
     if (myReq !== epReqSeq || $('detailView').hidden) return;
-    $('dvEps').innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button></p>';
+    dropNote();
+    // Daftar tetap tampil (bukan error penuh): tambah tombol Coba lagi di atas
+    const bar = document.createElement('p');
+    bar.className = 'muted small';
+    bar.innerHTML = 'Sumber video belum bisa diperiksa (jaringan/API sibuk). Daftar di bawah tetap bisa dijelajahi. ' +
+      '<button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button>';
+    $('dvEps').prepend(bar);
   });
 }
 /* Tambahan otomatis: episode yang rilis setelah data dibakar ikut masuk
@@ -774,6 +818,9 @@ function closePlayer() {
   f.hidden = true;
   $('pServers').hidden = true;
   $('pServers').innerHTML = '';
+  pDlBusy = false;
+  pDlSay('', false);
+  try { pDlBtnsClear(); } catch (e) {}
   paintLanjutHome();
 }
 function streamServers(ep) {
@@ -794,7 +841,7 @@ function openPlayerStream(showTitle, epNum, ep, nav) {
   $('pTitle').textContent = (showTitle + ' — E' + epNum).slice(0, 70);
   // B3+B1: simpan episode terakhir + riwayat; tampilkan info tontonan sebelumnya
   const sid = DV && DV.type === 'anime' ? DV.id : (findShowByTitle(showTitle) || '');
-  PCtx = { showId: sid, epNum: String(epNum) };
+  PCtx = { showId: sid, epNum: String(epNum), srv: 0, servers: servers.map((s) => ({ label: s.label, url: s.url })) };
   // URL unik per episode tayang (push bila bukaan baru; ganti server = diam; route = diam)
   if (nav !== false && sid) pushView('#/tonton/' + sid + '/e' + epNum,
     { cat: CURCAT, view: 'play', id: sid, ep: String(epNum) }, playFresh);
@@ -818,6 +865,7 @@ function openPlayerStream(showTitle, epNum, ep, nav) {
   ).join('');
   const play = (i) => {
     f.src = servers[i].url;
+    if (PCtx) PCtx.srv = i;
     $('pStatus').textContent = 'Memutar Episode ' + epNum + ' (' + servers[i].label + ') langsung di situs. Kalau macet, ganti server di atas.';
     box.querySelectorAll('button').forEach((b, j) => b.classList.toggle('btn-ghost', j !== i));
   };
@@ -825,13 +873,246 @@ function openPlayerStream(showTitle, epNum, ep, nav) {
     b.onclick = () => play(Number(b.dataset.srv));
   });
   play(0);
+  // Reset baris download tiap ganti episode
+  const ds = $('pDlStatus');
+  if (ds) { ds.hidden = true; ds.textContent = ''; }
+  try { pDlBtnsClear(); } catch (e) {}
+  const db = $('pDl');
+  if (db) db.disabled = false;
   paintEpNav();
+}
+/* Download episode: klik → file MASUK ke Download manager bawaan browser
+    (folder Download, muncul di aplikasi Downloads Android seperti screenshot).
+    Caranya: pakai anchor navigasi native (<a href download>), BUKAN fetch-blob.
+    Fetch-blob gagal di HP (CORS + RAM ratusan MB + tidak tercatat di Downloads).
+    Alur per server: cari file langsung (.mp4/.mkv/.webm/.mov) lewat HTML player
+    via proxy (paralel, anti-stuck) → ketemu = langsung trigger native download.
+    HLS (.m3u8) / server mati = fallback jujur + tombol aksi (tetap ada file
+    yang masuk Downloads + bisa buka server di tab baru untuk simpan manual). */
+let pDlBusy = false;
+function pDlSay(msg, show) {
+  const ds = $('pDlStatus');
+  if (!ds) return;
+  ds.hidden = !show && !msg;
+  ds.textContent = msg || '';
+}
+function pDlBtnsClear() {
+  const w = $('pDlBtns');
+  if (!w) return;
+  w.hidden = true;
+  w.innerHTML = '';
+}
+/* Tampilkan tombol-tombol fallback di bawah status download. */
+function pDlBtnsShow(list) {
+  let w = $('pDlBtns');
+  if (!w) return;
+  w.innerHTML = list.map((b, i) =>
+    '<button class="btn btn-small' + (b.ghost ? ' btn-ghost' : '') + '" data-dlbtn="' + i + '" type="button">' + esc(b.label) + '</button>'
+  ).join('');
+  w.hidden = false;
+  w.querySelectorAll('button').forEach((el) => {
+    el.onclick = () => {
+      const b = list[Number(el.dataset.dlbtn)];
+      if (!b) return;
+      if (b.url) {
+        if (b.fname) triggerNativeDownload(b.url, b.fname);
+        else { try { window.open(b.url, '_blank', 'noopener'); } catch (e) { location.href = b.url; } }
+      } else if (b.act === 'retry') dlEpisode();
+    };
+  });
+}
+/* Nama file aman untuk folder Download. */
+function dlFileName(title, epNum, label, ext) {
+  const safe = String(title + '-E' + epNum + '-' + label).replace(/[^\w\- ]+/g, '').trim().slice(0, 60) || 'episode';
+  return safe + '.' + (ext || 'mp4');
+}
+/* Trigger download NATIVE → ditangani Download Manager (masuk folder Download).
+   Tidak pakai fetch/blob sehingga bebas CORS, hemat RAM, tercatat di sistem. */
+function triggerNativeDownload(url, fname) {
+  try {
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', fname || '');
+    a.setAttribute('target', '_blank');
+    a.setAttribute('rel', 'noopener');
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { a.remove(); } catch (e) {} }, 2000);
+    return true;
+  } catch (e) {
+    try { window.open(url, '_blank', 'noopener'); return true; }
+    catch (_) { return false; }
+  }
+}
+function withTimeout(promise, ms, tag) {
+  let t = null;
+  const gate = new Promise((_, rej) => { t = setTimeout(() => rej(new Error(tag || 'timeout')), ms); });
+  return Promise.race([promise, gate]).finally(() => { if (t) clearTimeout(t); });
+}
+async function dlEpisode() {
+  if (pDlBusy) return;
+  if (!PCtx || !PCtx.servers || !PCtx.servers.length) { toast('Buka episode dulu'); return; }
+  const s = findShow(PCtx.showId);
+  const title = s ? s.title : 'episode';
+  pDlBusy = true;
+  pDlBtnsClear();
+  const db = $('pDl');
+  if (db) db.disabled = true;
+  try {
+    const order = [PCtx.srv || 0].concat(
+      PCtx.servers.map((_, i) => i).filter((i) => i !== (PCtx.srv || 0)));
+    const hlsUrls = [];
+    let alive = 0;
+    for (const i of order) {
+      const srv = PCtx.servers[i];
+      pDlSay('Mencari file di server ' + srv.label + '… (' + (order.indexOf(i) + 1) + '/' + order.length + ')', true);
+      let files = null;
+      try {
+        files = await withTimeout(resolveServerFiles(srv.url), 16000, 'srv timeout');
+      } catch (e) { files = null; }
+      if (!files) continue; // server mati / tak terbaca → lanjut server berikut, tanpa macet
+      alive++;
+      if (files.mp4 && files.mp4.length) {
+        const cand = files.mp4[0];
+        const ext = (/\.mkv/i.test(cand) ? 'mkv' : (/\.webm/i.test(cand) ? 'webm' : 'mp4'));
+        const fname = dlFileName(title, PCtx.epNum, srv.label, ext);
+        pDlSay('Mengunduh dari server ' + srv.label + '… cek folder Download.', true);
+        triggerNativeDownload(cand, fname);
+        pDlSay('✓ Unduhan dimulai: ' + fname + ' — cek folder Download / aplikasi Downloads.', true);
+        toast('Mengunduh ⬇ cek folder Download');
+        pDlBusy = false;
+        if (db) db.disabled = false;
+        return;
+      }
+      if (files.hls) hlsUrls.push({ url: files.hls, label: srv.label, page: srv.url });
+    }
+    if (!alive) {
+      pDlSay('Semua server tidak aktif untuk episode ini. Coba episode lain, atau buka server di tab baru untuk simpan manual.', true);
+      pDlBtnsShow(PCtx.servers.map((sv) => ({ label: '↗ Buka server ' + sv.label, url: sv.url, ghost: true })));
+    } else if (hlsUrls.length) {
+      const h = hlsUrls[0];
+      const fname = dlFileName(title, PCtx.epNum, h.label, 'm3u8');
+      // Tetap ada file yang masuk Downloads (playlist stream) + jalur simpan video penuh.
+      triggerNativeDownload(h.url, fname);
+      pDlSay('Episode ini streaming HLS terproteksi — file .m3u8 tersimpan di folder Download. Untuk video penuh: buka server di tab baru lalu pakai ⋮ → Download di pemutar, atau aplikasi 1DM.', true);
+      pDlBtnsShow([
+        { label: '↗ Buka server ' + h.label + ' & simpan video', url: h.page },
+        { label: '↻ Coba lagi', act: 'retry', ghost: true },
+      ]);
+      toast('Stream tersimpan — buka server untuk video penuh');
+    } else {
+      pDlSay('File unduhan tidak ditemukan di server yang aktif. Coba ganti server lalu tekan Download lagi, atau buka server di tab baru.', true);
+      pDlBtnsShow(PCtx.servers.map((sv) => ({ label: '↗ Buka server ' + sv.label, url: sv.url, ghost: true })));
+    }
+  } finally {
+    pDlBusy = false;
+    if (db) db.disabled = false;
+  }
+}
+/* Ambil HTML halaman player via proxy SECARA PARALEL (bukan satu-satu, agar
+   tidak macet di "Mencari file… (1/2)") → cari file video langsung + .m3u8.
+   Kembalikan null bila server mati/tak terbaca; {mp4:[], hls:url|null} bila hidup. */
+async function fetchHtmlParallel(pageUrl, ms) {
+  const wait = ms || 9000;
+  const jobs = API_PROXY.map((p) => (async () => {
+    try {
+      const r = await fetchTimeout(p(pageUrl), wait);
+      if (!r.ok) return '';
+      const txt = await bodyTimeout(r.text(), wait);
+      return (txt && txt.length > 500) ? txt : '';
+    } catch (e) { return ''; }
+  })());
+  const all = await Promise.all(jobs);
+  for (const t of all) if (t) return t;
+  return '';
+}
+function absolutize(u, base) {
+  try {
+    if (/^https?:\/\//i.test(u)) return u;
+    if (u.indexOf('//') === 0) return 'https:' + u;
+    return new URL(u, base).href;
+  } catch (e) { return u; }
+}
+function extractServerFiles(html, base) {
+  const norm = String(html || '').replace(/\\\//g, '/');
+  const mp4 = [];
+  const push = (u) => {
+    if (!u) return;
+    let x = String(u).trim().replace(/&amp;/g, '&');
+    if (!/^https?:\/\//i.test(x) && x.indexOf('//') !== 0 && x.charAt(0) !== '/') return;
+    x = absolutize(x, base);
+    if (!/^https?:\/\//i.test(x)) return;
+    if (/jquery|bootstrap|font-?awesome|gstatic|googletag|analytics|theme|skin|logo|placeholder/i.test(x)) return;
+    if (mp4.indexOf(x) < 0 && mp4.length < 8) mp4.push(x);
+  };
+  let m;
+  // 1) URL file langsung (mp4/mkv/webm/mov + query token)
+  const reDirect = /https?:\/\/[^\s"'<>\\]+\.(?:mp4|mkv|webm|mov)(?:\?[^\s"'<>\\]*)?/gi;
+  while ((m = reDirect.exec(norm))) push(m[0]);
+  // 2) field JSON player: "file":"...", 'file':'...', source src=..., data-src=...
+  const reField = /["']file["']\s*:\s*["']([^"']+)["']|["']source["']\s*:\s*["']([^"']+)["']|<(?:source|video)[^>]+src\s*=\s*["']([^"']+)["']|data-src\s*=\s*["']([^"']+)["']/gi;
+  while ((m = reField.exec(norm))) {
+    const u = m[1] || m[2] || m[3] || m[4];
+    if (u && /\.(mp4|mkv|webm|mov|m3u8)(\?|$)/i.test(u)) push(u);
+  }
+  // 3) URL base64 (player obfuscated): decode lalu cek pola video
+  const reB64 = /["']([A-Za-z0-9+/=]{60,})["']/g;
+  let n = 0;
+  while ((m = reB64.exec(norm)) && n < 40) {
+    n++;
+    try {
+      const dec = atob(m[1].slice(0, 4000));
+      const hit = dec.match(/https?:\/\/[^\s"'<>\\]+\.(?:mp4|mkv|webm|mov|m3u8)(?:\?[^\s"'<>\\]*)?/i);
+      if (hit) push(hit[0]);
+    } catch (e) { /* bukan base64 valid */ }
+  }
+  // 4) HLS playlist
+  let hls = null;
+  const hm = norm.match(/https?:\/\/[^\s"'<>\\]+\.m3u8(?:\?[^\s"'<>\\]*)?/i);
+  if (hm) hls = absolutize(hm[0].replace(/&amp;/g, '&'), base);
+  return { mp4: mp4, hls: hls };
+}
+async function resolveServerFiles(pageUrl) {
+  if (/\.(mp4|mkv|webm|mov)(\?|$)/i.test(pageUrl)) return { mp4: [pageUrl], hls: null };
+  const hm = pageUrl.match(/https?:\/\/[^\s"'<>]+\.m3u8(?:\?[^\s"'<>]*)?/i);
+  if (hm) return { mp4: [], hls: hm[0] };
+  const html = await fetchHtmlParallel(pageUrl, 9000);
+  if (!html) return null;
+  if (/We're Sorry|Error Code:\s*<span>4\d\d<\/span>|can't find the file|file.{0,20}(deleted|removed)/i.test(html)) return null;
+  return extractServerFiles(html, pageUrl);
+}
+/* Unduh NATIVE ke folder Download (tanpa fetch/blob → tanpa CORS/RAM jebol).
+   Kembalikan true (browser Download Manager yang melanjutkan di latar). */
+async function downloadToGallery(fileUrl, title, epNum, label, say) {
+  const ext = (/\.mkv/i.test(fileUrl) ? 'mkv' : (/\.webm/i.test(fileUrl) ? 'webm' : 'mp4'));
+  const fname = dlFileName(title, epNum, label, ext);
+  triggerNativeDownload(fileUrl, fname);
+  if (say) say('✓ Unduhan dimulai: ' + fname + ' — cek folder Download / aplikasi Downloads.', true);
+  toast('Mengunduh ⬇ cek folder Download');
+  return true;
 }
 
 /* ---------- 5. MANHWA: baca langsung di situs (Komiku) ---------- */
 /* State katalog baca: filter genre, urutan, pencarian, bookmark, status, muat-lebih */
-const MW_UI = { q: '', genre: '', sort: 'terbaru', bookOnly: false, bmStatus: '', limit: 24, per: 24 };
+const MW_UI = { q: '', genre: '', type: '', sort: 'terbaru', bookOnly: false, bmStatus: '', limit: 24, per: 24 };
 function findMw(id) { return MW.titles.find((t) => t.id === id); }
+/* Daftar chapter LAZY: index (manhwa.json) ringan tanpa chapters; daftar per
+   judul diambil dari data/mwch/{slug}.json saat dibuka, cache di sesi. */
+const CHC = {};
+function mwChapters(t) { return (t && (t.chapters || CHC[t.id])) || null; }
+async function ensureChapters(id) {
+  const t = findMw(id);
+  if (!t) throw new Error('no title');
+  const hit = mwChapters(t);
+  if (hit) return hit;
+  const r = await fetchTimeout('data/mwch/' + t.slug + '.json', 15000);
+  if (!r.ok) throw new Error('no file');
+  const j = await bodyTimeout(r.json(), 15000);
+  const chs = j.chapters || [];
+  CHC[t.id] = chs;
+  t.chapters = chs;
+  return chs;
+}
 /* Kartu: seluruh kartu bisa diklik; .show-info flex column + tombol
    didorong ke bawah (margin-top:auto di CSS); judul max 2 baris (CSS clamp) */
 function mwCard(t) {
@@ -854,6 +1135,7 @@ function mwFiltered() {
   let list = MW.titles.filter((t) =>
     (!MW_UI.q || t.title.toLowerCase().includes(MW_UI.q)) &&
     (!MW_UI.genre || (t.genres || []).includes(MW_UI.genre)) &&
+    (!MW_UI.type || (t.type || 'Manhwa') === MW_UI.type) &&
     (!MW_UI.bookOnly || isBookmarked(t.id)) &&
     (!MW_UI.bmStatus || bmStatus(t.id) === MW_UI.bmStatus));
   if (MW_UI.sort === 'az') list.sort((a, b) => a.title.localeCompare(b.title, 'id'));
@@ -886,7 +1168,8 @@ function renderMw() {
   const list = mwFiltered();
   const slice = list.slice(0, MW_UI.limit);
   grid.innerHTML = slice.map(mwCard).join('') || '<p class="muted">Tidak ketemu. Coba kata lain.</p>';
-  $('mwCount').textContent = 'Menampilkan ' + slice.length + ' dari ' + list.length + ' manhwa • ' +
+  $('mwCount').textContent = 'Menampilkan ' + slice.length + ' dari ' + list.length + ' judul (' +
+    (MW_UI.type || 'manhwa + manhua') + ') • ' +
     list.reduce((a, t) => a + t.total, 0) + ' chapter';
   const more = $('mwMore');
   if (more) more.hidden = slice.length >= list.length;
@@ -969,7 +1252,26 @@ function openDetailMw(id, pushHash) {
     stBtn('ongoing', 'Sedang dibaca') + stBtn('wishlist', 'Mau dibaca') + stBtn('done', 'Selesai') + '</div></div></div>' +
     '<div class="ani-search"><input id="dvChSearch" type="search" placeholder="Cari chapter… (mis. 12)" autocomplete="off" aria-label="Cari chapter"></div>' +
     '<div id="dvChList" class="rel-list"></div>';
-  paintCh();
+  paintCh(); // "Memuat…" bila chapters belum di-cache; isi di bawah
+  if (!mwChapters(t)) {
+    const chReq = id;
+    const chFail = () => {
+      if (DVM.id !== chReq || $('detailView').hidden) return;
+      const box = $('dvChList');
+      if (box && !box.querySelector('[data-mchretry]')) {
+        box.innerHTML = '<p class="muted">Gagal memuat daftar chapter (jaringan sibuk / file belum ikut ter-deploy). ' +
+          '<button class="btn btn-small btn-ghost" data-mchretry="' + chReq + '" type="button">Coba lagi</button></p>';
+      }
+    };
+    // Pengaman anti-gantung: fetch yang macet total (>25 dtk tanpa selesai)
+    // tetap berakhir di tombol Coba lagi, bukan loading abadi.
+    const chWatch = setTimeout(chFail, 25000);
+    ensureChapters(id).then(() => {
+      clearTimeout(chWatch);
+      if (DVM.id !== id || $('detailView').hidden) return;
+      paintCh();
+    }).catch(chFail);
+  }
   setSEO(t.title + ' — Baca Manhwa | Guoke AMHDQ',
     'Baca ' + t.title + ' (' + mwStatus(t) + ', ' + t.total + ' chapter) langsung di Guoke AMHDQ.');
 }
@@ -977,58 +1279,141 @@ function paintCh() {
   const t = findMw(DVM.id);
   const box = $('dvChList');
   if (!t || !box) return;
+  const chs = mwChapters(t);
+  if (!chs) { box.innerHTML = '<p class="muted">Memuat daftar chapter…</p>'; return; }
   const q = DVM.filter.trim().toLowerCase();
-  const list = t.chapters.filter((c) => !q || c.n.toLowerCase().includes(q));
+  const list = chs.filter((c) => !q || String(c.n).toLowerCase().includes(q));
   box.innerHTML = list.map((c) => {
-    const idx = t.chapters.indexOf(c);
+    const idx = chs.indexOf(c);
     return '<button class="ch-row" data-ch="' + t.id + ':' + idx + '" type="button">' +
       '<span class="ch-num">CH ' + esc(c.n) + '</span>' +
       '<span><strong>' + esc(c.t) + '</strong><small>' + esc(c.d || '') + '</small></span></button>';
   }).join('') || '<p class="muted">Chapter tidak ketemu.</p>';
 }
 let rdCtx = null, rdReqSeq = 0;
+/* Fallback gambar per-halaman: bila CDN menolak hotlink (403), coba sekali
+   lewat proxy gambar weserv; bila tetap gagal, sembunyikan + hitung.
+   Bila SEMUA halaman gagal tampil, tawarkan tombol Coba lagi (bukan diam). */
+let RDIMG = { total: 0, fail: 0, noticed: false };
+function imgFallback(el) {
+  try {
+    if (!el.dataset.pb) {
+      el.dataset.pb = '1';
+      el.src = 'https://images.weserv.nl/?url=' + encodeURIComponent(String(el.src).replace(/^https?:\/\//, ''));
+      return;
+    }
+  } catch (e) {}
+  el.dataset.pb = '2';
+  el.style.display = 'none';
+  RDIMG.fail++;
+  if (RDIMG.total > 0 && RDIMG.fail >= RDIMG.total && !RDIMG.noticed) {
+    RDIMG.noticed = true;
+    rdFailBar('Semua gambar gagal tampil (CDN menolak / jaringan sibuk).');
+  }
+}
+/* Bar error di bawah status reader: pesan + tombol Coba lagi */
+function rdFailBar(msg) {
+  const st = $('rdStatus');
+  if (!st || $('rdRetryBtn')) return;
+  const b = document.createElement('button');
+  b.id = 'rdRetryBtn';
+  b.className = 'btn btn-small';
+  b.type = 'button';
+  b.style.marginTop = '8px';
+  b.textContent = '↻ Coba lagi';
+  b.onclick = () => { const r = $('rdRetryBtn'); if (r) r.remove(); loadChapter(); };
+  st.appendChild(document.createElement('br'));
+  st.appendChild(document.createTextNode(msg + ' '));
+  st.appendChild(b);
+}
+function parseChapterImgs(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const sec = doc.getElementById('Baca_Komik') || doc;
+  const out = [];
+  const push = (u) => {
+    if (!u || u.indexOf('http') !== 0) return;
+    if (/promosi|logo|avatar|gravatar|gstatic|googletag|ads|banner|sponsor|pixel|tracking/i.test(u)) return;
+    if (out.indexOf(u) < 0) out.push(u);
+  };
+  sec.querySelectorAll('img').forEach((im) => {
+    push(im.getAttribute('src') || im.getAttribute('data-src') ||
+      im.getAttribute('data-lazy-src') || im.getAttribute('data-original') ||
+      (im.getAttribute('srcset') || '').split(/[\s,]+/)[0] || '');
+  });
+  // cadangan: regex mentah bila DOM tidak menemukan apa pun (markup aneh)
+  if (!out.length) {
+    const raw = String(html || '');
+    const re = /<img[^>]+(?:src|data-src|data-lazy-src|data-original)\s*=\s*["'](https?:\/\/[^"']+)["']/gi;
+    let m;
+    while ((m = re.exec(raw))) push(m[1]);
+  }
+  return out;
+}
+/* Ambil HTML via SEMUA proxy sekaligus (paralel): yang pertama mengembalikan
+   halaman baca yang valid langsung dipakai — tidak menunggu proxy mati satu
+   per satu (dulu di sinilah reader macet 36 dtk lalu gagal total). */
+async function fetchChapterHtml(url) {
+  const jobs = API_PROXY.map((p) => (async () => {
+    try {
+      const r = await fetchTimeout(p(url), 10000);
+      if (!r.ok) return '';
+      const txt = await bodyTimeout(r.text(), 10000);
+      if (!txt || txt.length < 2000) return '';
+      if (txt.includes('Baca_Komik')) return txt;
+      const nImg = (txt.match(/komiku\.to/g) || []).length;
+      if (nImg >= 3) return txt;
+      // halaman kecil tapi mungkin valid (chapter pendek): terima bila ada
+      // minimal 1 URL gambar konten komiku.to di dalamnya
+      if (/https?:\/\/[^"'\s]*komiku\.to\/[^"'\s]*\.(jpe?g|png|webp)/i.test(txt)) return txt;
+      return '';
+    } catch (e) { return ''; }
+  })());
+  const all = await Promise.all(jobs);
+  for (const t of all) if (t) return t;
+  return '';
+}
 async function chapterImages(t, chUrl) {
   const slug = t.slug;
   if (MW.pages && MW.pages[slug] && MW.pages[slug][chUrl]) return MW.pages[slug][chUrl];
   if (!MW.pages) MW.pages = {};
-  // sumber utama: file bawaan per judul (lengkap, tanpa proxy)
+  // sumber utama: file bawaan per judul (instan, tanpa proxy; timeout 12 dtk).
+  // Bila file TAK ADA / tak memuat chapter ini: LANJUT ke jalur live di bawah
+  // (jangan throw — dulu di sinilah 233 judul selalu gagal total).
   if (!MW.pages[slug]) {
-    const r = await fetch('data/mw/' + slug + '.json');
-    if (!r.ok) throw new Error('no file');
-    const j = await r.json();
-    MW.pages[slug] = j.pages || {};
-    const hit = MW.pages[slug][chUrl];
-    if (hit && hit.length) return hit;
+    try {
+      const r = await fetchTimeout('data/mw/' + slug + '.json', 12000);
+      if (r.ok) {
+        const j = await bodyTimeout(r.json(), 10000);
+        MW.pages[slug] = j.pages || {};
+        const hit = MW.pages[slug][chUrl];
+        if (hit && hit.length) return hit;
+      }
+    } catch (e) { /* lanjut ke live */ }
+    if (!MW.pages[slug]) MW.pages[slug] = {};
   } else {
     const hit = MW.pages[slug][chUrl];
     if (hit && hit.length) return hit;
   }
-  // cadangan: ambil live bila file tidak memuat chapter ini
+  // cadangan: ambil live bila file tidak memuat chapter ini (paralel, anti-gantung)
   const url = 'https://komiku.org' + chUrl;
-  let html = '';
-  for (const p of API_PROXY) {
-    try {
-      const r = await fetch(p(url));
-      if (!r.ok) continue;
-      html = await r.text();
-      if (html.includes('Baca_Komik') && html.includes('komiku.to')) break;
-      html = '';
-    } catch (e) { /* proxy berikut */ }
-  }
+  const html = await withTimeout(fetchChapterHtml(url), 15000, 'chapter timeout');
   if (!html) throw new Error('fetch gagal');
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  const sec = doc.getElementById('Baca_Komik') || doc;
-  const imgs = Array.from(sec.querySelectorAll('img'))
-    .map((im) => im.getAttribute('src') || im.getAttribute('data-src') || '')
-    .filter((u) => u.indexOf('http') === 0 && !/promosi|logo|avatar|gravatar|gstatic/i.test(u));
+  const imgs = parseChapterImgs(html);
   if (!imgs.length) throw new Error('gambar kosong');
+  MW.pages[slug][chUrl] = imgs; // cache sesi agar Prev/Next instan
   return imgs;
 }
-function openReader(titleId, chIdx, pushHash) {
+async function openReader(titleId, chIdx, pushHash) {
   const t = findMw(titleId);
   if (!t) return;
+  if (!mwChapters(t)) {
+    toast('Memuat daftar chapter…');
+    try { await ensureChapters(titleId); }
+    catch (e) { toast('Gagal memuat daftar chapter'); return; }
+  }
+  const chs = mwChapters(t) || [];
   rdCtx = { id: titleId, i: Number(chIdx) };
-  const c = t.chapters[rdCtx.i];
+  const c = chs[rdCtx.i];
   if (!c) return;
   const rdFresh = $('readModal').hidden; // true = bukaan baru dari daftar
   $('readModal').hidden = false;
@@ -1044,11 +1429,11 @@ function openReader(titleId, chIdx, pushHash) {
   setSEO(t.title + ' ' + c.t + ' | Guoke AMHDQ', 'Baca ' + t.title + ' ' + c.t + ' langsung di Guoke AMHDQ.');
   $('rdTitle').textContent = t.title + ' — ' + c.t;
   const sel = $('rdSelect');
-  sel.innerHTML = t.chapters.map((x, j) =>
+  sel.innerHTML = chs.map((x, j) =>
     '<option value="' + j + '"' + (j === rdCtx.i ? ' selected' : '') + '>CH ' + esc(x.n) + ' — ' + esc(x.d || '') + '</option>'
   ).join('');
   sel.onchange = () => openReader(titleId, Number(sel.value));
-  const atFirst = rdCtx.i <= 0, atLast = rdCtx.i >= t.chapters.length - 1;
+  const atFirst = rdCtx.i <= 0, atLast = rdCtx.i >= chs.length - 1;
   [$('rdPrev'), $('rdPrev2')].forEach((b) => { b.disabled = atLast; b.onclick = () => openReader(titleId, rdCtx.i + 1); });
   [$('rdNext'), $('rdNext2'), $('rdFloatNext')].forEach((b) => { if (b) { b.disabled = atFirst; b.onclick = () => openReader(titleId, rdCtx.i - 1); } });
   // A4: tombol lapor terisi otomatis judul + chapter
@@ -1066,24 +1451,42 @@ function applyRdWidth() {
 }
 function loadChapter() {
   if (!rdCtx) return;
-  const t = findMw(rdCtx.id), c = t.chapters[rdCtx.i];
+  const t = findMw(rdCtx.id), chs = mwChapters(t) || [], c = chs[rdCtx.i];
+  if (!c) return;
   const myReq = ++rdReqSeq;
   $('rdStatus').textContent = 'Memuat gambar ' + c.t + '…';
   $('rdPages').innerHTML = '';
   $('rdTitle').textContent = t.title + ' — ' + c.t;
+  // Pengaman anti-gantung: bila 40 dtk belum ada hasil maupun error,
+  // tampilkan tombol Coba lagi (fetch lama tetap jalan; hasilnya diabaikan
+  // bila pengguna sudah pindah chapter via anti-campur myReq).
+  try { clearTimeout(window.__rdWatch); } catch (e) {}
+  try {
+    window.__rdWatch = setTimeout(() => {
+      if (!rdCtx || myReq !== rdReqSeq) return;
+      if ($('rdPages') && $('rdPages').children.length) return;
+      rdFailBar('Masih memuat terlalu lama (jaringan lambat).');
+    }, 40000);
+  } catch (e) {}
+  const clearWatch = () => { try { clearTimeout(window.__rdWatch); } catch (e) {} };
   chapterImages(t, c.u).then((imgs) => {
+    clearWatch();
     if (!rdCtx || myReq !== rdReqSeq) return; // anti-campur
+    RDIMG = { total: imgs.length, fail: 0, noticed: false };
+    const rb = $('rdRetryBtn'); if (rb) rb.remove();
     $('rdPages').innerHTML = imgs.map((u, k) =>
       '<img src="' + esc(cdn(u)) + '" alt="' + esc(t.title + ' ' + c.t + ' halaman ' + (k + 1)) +
-      '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'">'
+      '" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFallback(this)">'
     ).join('');
     $('rdStatus').textContent = imgs.length + ' halaman • ' + c.t + ' • geser ke bawah untuk membaca.';
     rdScroller().scrollTop = 0;
     restorePos(); // kembali ke posisi terakhir bila ada
     preloadNext(t, rdCtx.i); // siapkan gambar chapter berikut
   }).catch(() => {
+    clearWatch();
     if (!rdCtx || myReq !== rdReqSeq) return;
-    $('rdStatus').textContent = 'Gagal memuat gambar (jaringan sibuk). Tutup lalu buka lagi, atau coba beberapa saat lagi.';
+    $('rdStatus').textContent = 'Gagal memuat gambar (jaringan sibuk).';
+    rdFailBar('Tutup lalu buka lagi, atau tekan tombol di bawah.');
   });
 }
 /* Ingat posisi baca terakhir per chapter (disimpan berkala saat scroll).
@@ -1109,16 +1512,18 @@ function savePosSoon() {
 }
 /* Preload 2 gambar pertama chapter berikut (lebih halus saat Next) */
 function preloadNext(t, i) {
-  const nx = t.chapters[i + 1] || t.chapters[i - 1];
+  const chs = mwChapters(t) || [];
+  const nx = chs[i + 1] || chs[i - 1];
   if (!nx) return;
   const slug = t.slug;
   const go = (imgs) => (imgs || []).slice(0, 2).forEach((u) => {
     const im = new Image();
     im.decoding = 'async';
+    try { im.referrerPolicy = 'no-referrer'; } catch (e) {}
     im.src = cdn(u);
   });
   if (MW.pages && MW.pages[slug] && MW.pages[slug][nx.u]) go(MW.pages[slug][nx.u]);
-  else fetch('data/mw/' + slug + '.json').then((r) => r.json()).then((j) => {
+  else fetchTimeout('data/mw/' + slug + '.json', 12000).then((r) => bodyTimeout(r.json(), 10000)).then((j) => {
     MW.pages = MW.pages || {};
     MW.pages[slug] = j.pages || {};
     go(MW.pages[slug][nx.u]);
@@ -1164,8 +1569,8 @@ function initAnime() {
     bootAnime({ updated: window.GQ_ANIME.updated || '', shows: window.GQ_ANIME.shows });
   } else {
   Promise.all([
-    fetch('data/anime.json').then((r) => { if (!r.ok) throw new Error(); return r.json(); }),
-    fetch('data/anikoto.json').then((r) => (r.ok ? r.json() : [])).catch(() => []),
+    fetchTimeout('data/anime.json', 15000).then((r) => { if (!r.ok) throw new Error(); return bodyTimeout(r.json(), 15000); }),
+    fetchTimeout('data/anikoto.json', 15000).then((r) => (r.ok ? bodyTimeout(r.json(), 15000) : [])).catch(() => []),
   ])
     .then(([d, ak]) => {
       ANI = d;
@@ -1236,6 +1641,8 @@ function initAnime() {
     }
     const rt = e.target.closest('[data-retry]');
     if (rt) { openDetailAnime(rt.dataset.retry); return; }
+    const mcr = e.target.closest('[data-mchretry]');
+    if (mcr) { openDetailMw(mcr.dataset.mchretry, false); return; }
     const ep = e.target.closest('[data-ep]');
     if (ep) {
       const parts = ep.dataset.ep.split(':');
@@ -1333,6 +1740,8 @@ function initManhwa() {
     const b = $('mwSuggest'); if (b) { b.hidden = true; input.setAttribute('aria-expanded', 'false'); }
   }, 150));
   $('mwGenre').addEventListener('change', (e) => { MW_UI.genre = e.target.value; MW_UI.limit = MW_UI.per; renderMw(); });
+  const mty = $('mwType');
+  if (mty) mty.addEventListener('change', (e) => { MW_UI.type = e.target.value; MW_UI.limit = MW_UI.per; renderMw(); });
   $('mwSort').addEventListener('change', (e) => { MW_UI.sort = e.target.value; MW_UI.limit = MW_UI.per; renderMw(); });
   $('mwBookmarked').addEventListener('change', (e) => { MW_UI.bookOnly = e.target.checked; MW_UI.limit = MW_UI.per; renderMw(); });
   const bms = $('mwBmStatus');
@@ -1377,8 +1786,8 @@ function ensureMw() {
   if (MW.loading) return MW._p || Promise.resolve();
   MW.loading = true;
   mwSkeleton(); // skeleton dulu, bukan blank
-  MW._p = fetch('data/manhwa.json')
-    .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+  MW._p = fetchTimeout('data/manhwa.json', 15000)
+    .then((r) => { if (!r.ok) throw new Error(); return bodyTimeout(r.json(), 20000); })
     .then((d) => {
       MW = Object.assign(d, { loaded: true, loading: false });
       $('mwDate').textContent = d.updated || '';
@@ -1495,6 +1904,8 @@ function wireModals() {
   const pp = $('pPrev'), pn = $('pNext');
   if (pp) pp.addEventListener('click', () => stepEpisode(-1));
   if (pn) pn.addEventListener('click', () => stepEpisode(1));
+  const pd = $('pDl');
+  if (pd) pd.addEventListener('click', dlEpisode);
   const aa = $('aniAcak');
   if (aa) aa.addEventListener('click', openRandomAnime);
   const at = $('acakBtnTop');
@@ -1631,7 +2042,7 @@ function paintJx() {
       (JX.busy ? '<p class="muted">Memuat…</p>' : '<p class="muted">Belum ada data live.</p>');
     if (more) { more.hidden = JX.liveDone; more.textContent = JX.busy ? 'Memuat…' : 'Muat lagi (hal. ' + (JX.livePage + 1) + ')'; }
   } else {
-    const poolL = jxLocal().filter((s) => !q || s.title.toLowerCase().includes(q));
+    const poolL = jxLocal().filter((s) => !q || (s.title + ' ' + (s.alt || '')).toLowerCase().includes(q));
     const poolV = JX.live.filter((it) => q && String(it.title || it.alternative || '').toLowerCase().includes(q));
     const slice = poolL.slice(0, JX.page * JX.per);
     grid.innerHTML = (slice.map(showCard).join('') + poolV.slice(0, 12).map(jxCardLive).join('')) ||
