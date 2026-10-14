@@ -1,0 +1,16 @@
+{
+  "name": "Guoke AMHDQ — Nonton Anime & Baca Manhwa",
+  "short_name": "Guoke AMHDQ",
+  "description": "Nonton anime, baca manhwa chapter lengkap, dan preset upload TikTok HD — semua langsung di situs.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0e17",
+  "theme_color": "#0a0e17",
+  "lang": "id",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

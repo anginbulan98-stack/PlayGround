@@ -53,8 +53,31 @@ def refresh_anime():
                 "t": ep.get("title") or ("Episode %s" % ep.get("number")),
                 "e": ep.get("embed_url") or {}}
                for ep in (d.get("data", {}).get("episodes") or [])]
+        # Serial multi-part (S1+S2 satu entri katalog): gabung part sequel
+        # dengan offset nomor (peta "parts" ditulis tools/fill_episodes.py).
+        for p in o.get("parts") or []:
+            try:
+                pd = api_series(p["id"])
+            except Exception as e:
+                print("  part gagal:", o["show"], p["id"], str(e)[:40])
+                continue
+            for ep in (pd.get("data", {}).get("episodes") or []):
+                try:
+                    n = int(ep.get("number"))
+                except (TypeError, ValueError):
+                    continue
+                eps.append({"n": p["offset"] + n,
+                            "t": ep.get("title") or ("Episode %s" % (p["offset"] + n)),
+                            "e": ep.get("embed_url") or {}})
+            time.sleep(1.0)
+        eps.sort(key=lambda e: (e["n"] if isinstance(e["n"], int) else 99999))
         fp = "data/eps/%d.json" % o["id"]
         old = json.load(open(fp))["episodes"] if os.path.exists(fp) else []
+        if len(eps) < len(old):
+            # Part sequel gagal diambil hari ini → jangan susutkan file gabungan.
+            print("  anime skip (part tak lengkap): %s tetap %d eps" % (o["show"], len(old)))
+            time.sleep(1.2)
+            continue
         if [e["n"] for e in eps] != [e["n"] for e in old]:
             json.dump({"id": o["id"], "updated": TODAY, "episodes": eps},
                       open(fp, "w"), ensure_ascii=False)
@@ -102,7 +125,56 @@ def refresh_anime():
     anime["updated"] = TODAY
     json.dump(ak, open("data/anikoto.json", "w"), ensure_ascii=False, indent=1)
     json.dump(anime, open("data/anime.json", "w"), ensure_ascii=False)
+    sync_anime_js(anime, ak)
     return changed
+
+
+def sync_anime_js(anime, ak):
+    """Tulis ulang data-anime.js (sumber runtime) dari anime.json + anikoto.json.
+    Kolom manual (status/kind/year/genres/synopsis) dipertahankan; judul baru
+    dapat default (tayang/series/tahun berjalan). Total episode = max(manual, live)
+    agar angka 'segera hadir' yang disengaja tidak turun sendiri."""
+    import re as _re
+    fp = "data-anime.js"
+    old_shows = []
+    if os.path.exists(fp):
+        try:
+            raw = open(fp, encoding="utf-8").read()
+            m = _re.search(r"window\.GQ_ANIME\s*=\s*(\{.*\});?\s*$", raw, _re.S)
+            if m:
+                old_shows = json.loads(m.group(1)).get("shows", [])
+        except Exception as e:
+            print("  anime-js baca gagal:", str(e)[:60])
+    old = {s["id"]: s for s in old_shows}
+    akid = {o["show"]: o["id"] for o in ak if o.get("id")}
+    year_now = int(TODAY[:4])
+    out = []
+    for s in anime["shows"]:
+        o = old.get(s["id"], {})
+        live_n = s.get("episodes", 0) or 0
+        manual_n = o.get("episodes", 0) or 0
+        out.append({
+            "id": s["id"], "title": s["title"], "cover": s.get("cover", ""),
+            "akid": akid.get(s["title"], o.get("akid")),
+            "episodes": max(manual_n, live_n),
+            "status": o.get("status", "tayang"), "kind": o.get("kind", "series"),
+            "year": o.get("year", year_now),
+            "genres": o.get("genres", []), "synopsis": o.get("synopsis", ""),
+        })
+    head = ("/* Guoke AMHDQ — KATALOG ANIME (satu-satunya file yang perlu diedit\n"
+            "   untuk menambah/mengubah judul).\n"
+            "   - episodes = TOTAL episode sebenarnya. Kalau file embed di data/eps/\n"
+            "     belum selengkap itu, sisanya otomatis berlabel \"Segera hadir\".\n"
+            "   - status: \"tayang\" | \"tamat\" • kind: \"series\" | \"film\"\n"
+            "   - akid: id API anikoto (embed). Kosongkan (null) bila belum ada.\n"
+            "   Dibuat otomatis oleh tools/gen_anime_js.py; refresh harian via\n"
+            "   tools/refresh_all.py (sync_anime_js) mempertahankan kolom manual. */\n"
+            "window.GQ_ANIME = ")
+    with open(fp, "w", encoding="utf-8") as f:
+        f.write(head)
+        json.dump({"updated": TODAY, "shows": out}, f, ensure_ascii=False, indent=1)
+        f.write(";\n")
+    print("  anime-js sync: %d judul" % len(out))
 
 
 def komiku_detail(slug):
@@ -221,6 +293,12 @@ def main():
     c1 = refresh_anime()
     print("== refresh manhwa ==")
     c2 = refresh_manhwa()
+    # Sitemap selalu diregenerasi agar URL chapter baru ikut terdata
+    try:
+        import subprocess
+        subprocess.run(["python3", "tools/build_sitemap.py"], check=True)
+    except Exception as e:
+        print("  sitemap gagal:", str(e)[:80])
     print("berubah:", bool(c1 or c2))
 
 

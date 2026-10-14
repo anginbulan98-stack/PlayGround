@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Logo Guoke AMHDQ - GAnimeH Yosh">
+  <defs>
+    <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8fd0f5"/>
+      <stop offset=".5" stop-color="#c9a9e8"/>
+      <stop offset="1" stop-color="#f5a3c8"/>
+    </linearGradient>
+    <radialGradient id="skin" cx=".5" cy=".4" r=".8">
+      <stop offset="0" stop-color="#ffe9d6"/>
+      <stop offset="1" stop-color="#ffd9bd"/>
+    </radialGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f9bcd6"/>
+      <stop offset="1" stop-color="#f191bd"/>
+    </linearGradient>
+    <linearGradient id="hairD" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f5a3c8"/>
+      <stop offset="1" stop-color="#e87ba9"/>
+    </linearGradient>
+    <radialGradient id="iris" cx=".5" cy=".4" r=".7">
+      <stop offset="0" stop-color="#7cc9f5"/>
+      <stop offset=".6" stop-color="#2f9fe0"/>
+      <stop offset="1" stop-color="#1668a8"/>
+    </radialGradient>
+    <path id="arcTop" d="M 28,124 A 94,94 0 0 1 212,124" fill="none"/>
+    <path id="arcBot" d="M 36,150 A 86,86 0 0 0 204,150" fill="none"/>
+  </defs>
+
+  <!-- nickname melengkung -->
+  <text font-family="'Comic Sans MS','Chalkboard SE','Segoe UI',sans-serif" font-weight="900"
+        font-size="33" letter-spacing="3" fill="url(#lg)">
+    <textPath href="#arcTop" startOffset="50%" text-anchor="middle">GANIMEH</textPath>
+  </text>
+
+  <g transform="translate(14.4,-10) scale(0.88)">
+  <!-- rambut belakang -->
+  <path d="M120 78 C 82 78 70 108 72 140 C 73 162 68 184 62 200 C 78 196 86 184 88 170
+           L88 200 C 104 208 136 208 152 200 L152 170 C 154 184 162 196 178 200
+           C 172 184 167 162 168 140 C 170 108 158 78 120 78 Z" fill="url(#hairD)"/>
+  <!-- kaki + sepatu -->
+  <rect x="106" y="212" width="9" height="15" rx="4" fill="#ffd9bd"/>
+  <rect x="125" y="212" width="9" height="15" rx="4" fill="#ffd9bd"/>
+  <ellipse cx="109" cy="230" rx="10" ry="6" fill="#333a45"/>
+  <ellipse cx="131" cy="230" rx="10" ry="6" fill="#333a45"/>
+  <!-- rok -->
+  <path d="M94 194 L146 194 L154 214 L86 214 Z" fill="#8b93a7"/>
+  <path d="M106 194 L104 214 M120 194 L120 214 M134 194 L136 214" stroke="#6d7488" stroke-width="2"/>
+  <!-- badan seragam -->
+  <path d="M98 166 L142 166 L147 196 L93 196 Z" fill="#2b2f3a"/>
+  <path d="M108 166 L120 178 L132 166 L128 164 L112 164 Z" fill="#f2f5f9"/>
+  <path d="M117 172 L123 172 L124 188 L120 192 L116 188 Z" fill="#d94f5c"/>
+  <!-- lengan + tangan -->
+  <path d="M98 168 C 90 176 88 186 90 192 L98 194 C 97 187 99 178 104 172 Z" fill="#23262f"/>
+  <path d="M142 168 C 150 176 152 186 150 192 L142 194 C 143 187 141 178 136 172 Z" fill="#23262f"/>
+  <circle cx="93" cy="194" r="5" fill="#ffd9bd"/>
+  <circle cx="147" cy="194" r="5" fill="#ffd9bd"/>
+  <!-- wajah -->
+  <ellipse cx="120" cy="136" rx="33" ry="31" fill="url(#skin)"/>
+  <!-- poni -->
+  <path d="M87 132 C 86 104 100 88 120 88 C 140 88 154 104 153 132
+           L146 128 L142 138 L134 126 L128 138 L120 126 L112 138 L106 126 L98 138 L94 128 Z"
+        fill="url(#hair)"/>
+  <!-- jambul samping depan -->
+  <path d="M88 120 C 84 140 82 160 84 178 C 90 172 93 158 93 142 Z" fill="url(#hair)"/>
+  <path d="M152 120 C 156 140 158 160 156 178 C 150 172 147 158 147 142 Z" fill="url(#hair)"/>
+  <!-- mata -->
+  <ellipse cx="107" cy="140" rx="9" ry="12" fill="#fff"/>
+  <ellipse cx="133" cy="140" rx="9" ry="12" fill="#fff"/>
+  <ellipse cx="107" cy="141" rx="6" ry="9" fill="url(#iris)"/>
+  <ellipse cx="133" cy="141" rx="6" ry="9" fill="url(#iris)"/>
+  <ellipse cx="107" cy="142" rx="3" ry="5" fill="#10324e"/>
+  <ellipse cx="133" cy="142" rx="3" ry="5" fill="#10324e"/>
+  <circle cx="105" cy="137" r="2.6" fill="#fff"/>
+  <circle cx="131" cy="137" r="2.6" fill="#fff"/>
+  <circle cx="109" cy="145" r="1.2" fill="#fff"/>
+  <circle cx="135" cy="145" r="1.2" fill="#fff"/>
+  <path d="M97 130 Q107 126 117 130" stroke="#5b3a44" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M123 130 Q133 126 143 130" stroke="#5b3a44" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <!-- blush + mulut -->
+  <ellipse cx="96" cy="152" rx="5" ry="3" fill="#f5a3b8" opacity=".8"/>
+  <ellipse cx="144" cy="152" rx="5" ry="3" fill="#f5a3b8" opacity=".8"/>
+  <ellipse cx="120" cy="155" rx="5" ry="4" fill="#8e3b4d"/>
+  </g>
+
+  <text font-family="'Comic Sans MS','Chalkboard SE','Segoe UI',sans-serif" font-weight="900"
+        font-size="36" letter-spacing="8" fill="url(#lg)">
+    <textPath href="#arcBot" startOffset="50%" text-anchor="middle">YOSH</textPath>
+  </text>
+</svg>

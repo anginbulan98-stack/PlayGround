@@ -1,11 +1,16 @@
 :root{
-  --bg:#06090F; --panel:#0D131D; --panel2:#0A0F18;
+  --bg:#0a0e17; --panel:#0D131D; --panel2:#0f1622;
   --line:rgba(148,178,208,.14); --line-neon:rgba(96,150,255,.32);
-  --text:#F2F5F9; --muted:#9AA9BE; --dim:#637083;
-  --blue:#2E7CF6; --blue-bright:#5B9DFF; --blue-deep:#0B2E6E; --blue-soft:rgba(46,124,246,.12);
+  /* Kontras dinaikkan (A2): teks kecil tetap nyaman dibaca di HP */
+  --text:#F2F5F9; --muted:#C0CCDE; --dim:#93A0B4;
+  --blue:#2f7df6; --blue-bright:#5B9DFF; --blue-deep:#0B2E6E; --blue-soft:rgba(47,125,246,.12);
   --ok:#34C07A; --warn:#D9A21B; --bad:#E5485D;
   --r:20px;
+  /* Tinggi aktual diukur JS → agar fixed bar tidak menutup konten & tanpa lompatan layout */
+  --tbh:60px; --cbh:58px;
   color-scheme:dark;
+  /* Satu-satunya aksen: biru. Jangan tambah warna neon lain. */
+  --accent:#2f7df6;
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
@@ -15,6 +20,9 @@ body{
   font-family:Inter,"Sora",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
+  /* Kompensasi header+catbar yang fixed: nilai konstan supaya tidak ada
+     lompatan layout saat bar disembunyikan */
+  padding-top:calc(var(--tbh) + var(--cbh));
 }
 .bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 .bg-grid{position:absolute;inset:0;opacity:.32;
@@ -27,13 +35,17 @@ body{
 .g2{width:560px;height:560px;right:-220px;top:16%;background:radial-gradient(circle,rgba(46,124,246,.13),transparent 65%);opacity:.6}
 .g3{width:760px;height:280px;left:18%;bottom:-160px;background:radial-gradient(circle,rgba(120,170,255,.10),transparent 65%);opacity:.5}
 
-.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;
-  padding:12px 20px;background:rgba(6,9,15,.88);backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line)}
+/* Header + tab filter: fixed (bukan sticky) + auto-hide via translateY.
+   Tinggi aktual (--tbh/--cbh) diukur JS agar pas di semua lebar layar. */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:14px;
+  padding:calc(12px + env(safe-area-inset-top, 0px)) 20px 12px;background:rgba(10,14,23,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  transition:transform .25s ease}
+body.ah-hide .topbar{transform:translateY(-110%)}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);margin-right:auto}
-.brand-mark{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;
-  background:var(--blue);border:1px solid rgba(255,255,255,.18);box-shadow:none}
-.brand-mark svg{width:20px;height:20px;fill:#fff;filter:none}
+.brand-mark{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;
+  background:rgba(255,255,255,.06);border:1px solid var(--line);box-shadow:none;overflow:hidden;flex:none}
+.brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
 .brand-text{font-weight:800;letter-spacing:-.01em;line-height:1;font-size:16px}
 .brand-text span{color:var(--blue-bright);text-shadow:none}
 .brand-text small{display:block;font-size:9px;color:var(--dim);font-weight:700;letter-spacing:.1em;margin-top:3px}
@@ -43,6 +55,8 @@ body{
 @media(max-width:720px){.nav{display:none}}
 
 main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
+/* Anchor tidak tertutup header fixed */
+.panel,.hero,.specs,.compare{scroll-margin-top:calc(var(--tbh) + var(--cbh) + 12px)}
 .hero{padding:52px 4px 10px;text-align:left;max-width:780px}
 .eyebrow{color:var(--blue-bright);font-size:11px;font-weight:800;letter-spacing:.2em;opacity:1}
 .hero h1{font-size:clamp(32px,6vw,54px);line-height:1.06;letter-spacing:-.03em;margin:12px 0 12px;font-weight:800}
@@ -141,9 +155,14 @@ main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
   transition:.2s;z-index:99}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 
-/* KATEGORI: Semua / Anime / Manhwa / Upload TikTok Quality */
-.catbar{position:sticky;top:61px;z-index:40;display:flex;gap:8px;overflow-x:auto;
-  padding:12px 2px;margin:8px 0 2px;scrollbar-width:none}
+/* KATEGORI: Semua / Anime / Manhwa / Upload TikTok Quality (fixed + auto-hide) */
+.catbar{position:fixed;top:var(--tbh);left:50%;width:min(1020px,100%);z-index:40;
+  display:flex;gap:8px;overflow-x:auto;transform:translateX(-50%);
+  padding:12px 20px;margin:0;scrollbar-width:none;
+  background:rgba(10,14,23,.88);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+  transition:transform .25s ease}
+body.ah-hide .catbar{transform:translate(-50%,calc(-100% - var(--tbh) - 4px))}
 .catbar::-webkit-scrollbar{display:none}
 .cat{flex:none;padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
   background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
@@ -154,7 +173,7 @@ main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .pv-inner{max-width:1020px;margin:0 auto;padding:0 20px 60px}
 .pv-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;
-  padding:12px 0;background:rgba(6,9,15,.92);backdrop-filter:blur(12px);
+  padding:12px 0;background:rgba(10,14,23,.92);backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line)}
 .pv-top button{background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;
   border-radius:9px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer;flex:none}
@@ -166,6 +185,11 @@ main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
 
 /* READER MANHWA */
 .rd-nav{display:flex;gap:8px;align-items:center;margin:10px 0}
+/* Kepala reader (Keluar + Prev/pilih/Next) menempel, bisa auto-hide saat baca */
+#readModal .rd-top{position:sticky;top:0;z-index:4;background:var(--panel2);padding:6px 0 8px;
+  transition:transform .25s ease,opacity .25s ease}
+#readModal .rd-top .rd-nav{position:static;background:none;padding:0}
+#readModal.rd-hide .rd-top{transform:translateY(-115%);opacity:0;pointer-events:none}
 .rd-nav .pfiles{flex:1}
 .rd-nav .btn{flex:none}
 #rdStatus{min-height:18px}
@@ -196,7 +220,10 @@ main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
   border-radius:10px;padding:11px 12px;font-size:13px;outline:0;min-width:0}
 .ani-search input:focus{border-color:var(--blue-bright)}
 .ani-search .btn{flex:none}
-.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+.show-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px;
+  /* Jaga tinggi saat daftar di-render ulang (filter/Muat lagi/preview) supaya
+     halaman tidak kolaps lalu melompat saat gambar masuk */
+  min-height:180px;align-content:start}
 .show-card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;
   overflow:hidden;display:flex;flex-direction:column}
 .show-cover{position:relative;aspect-ratio:3/4;background:linear-gradient(135deg,#1c2f55,#2E7CF6);
@@ -244,5 +271,201 @@ main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
   padding:9px 4px;font-size:12px;font-weight:800;cursor:pointer}
 .ep-btn:hover{border-color:var(--blue-bright);background:rgba(46,124,246,.12)}
 .ep-btn:disabled{opacity:.5}
+/* Grup + urutan episode: Segera hadir (gelap, nonaktif) vs terbaru (tepi biru) */
+.ep-tools{display:grid;gap:10px;margin-top:12px}
+.ep-tools label{display:grid;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
+.ep-tools select{background:#0B1220;color:#fff;border:1px solid rgba(148,178,208,.25);
+  border-radius:10px;padding:10px;font-size:12.5px}
+.ep-tools .src-tabs{margin:0}
+.ep-btn{position:relative}
+.ep-btn.soon{background:rgba(255,255,255,.02);color:var(--dim);border-style:dashed;cursor:not-allowed}
+.ep-btn.is-new{border-color:var(--blue-bright);box-shadow:0 0 0 1px var(--blue-bright)}
+.ep-btn.is-new i{position:absolute;top:3px;right:4px;font-style:normal;font-size:7px;color:var(--blue-bright)}
+.ep-legend{color:var(--dim)}
+.ep-legend .lg-new{color:var(--blue-bright)}
+.ep-legend .lg-soon{color:var(--dim)}
 #pFrame{width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;border:1px solid var(--line)}
 #pFrame[hidden]{display:none}
+
+/* ============================================================
+   GUKOE AMHDQ — paket perbaikan (komentar per blok)
+   Konsep & tema tidak diubah: gelap + aksen biru #2f7bff.
+   ============================================================ */
+
+/* --- 1. Kartu manhwa/anime: tombol Baca selalu rata bawah ---
+   .show-info jadi flex column setinggi kartu; judul max 2 baris;
+   tombol didorong ke bawah via margin-top:auto. */
+.show-card{display:flex;flex-direction:column}
+.show-cover{aspect-ratio:3/4} /* cover seragam tegak */
+.show-cover img{object-fit:cover} /* penuh tanpa distorsi */
+.show-info{flex:1;display:flex;flex-direction:column;gap:7px}
+.show-info strong{
+  font-size:12.5px;line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical; /* judul max 2 baris */
+  overflow:hidden;min-height:2.6em;
+}
+.show-meta{color:var(--dim);font-size:11.5px;line-height:1.5} /* status • genre • update */
+.show-btns{margin-top:auto} /* kunci tombol di bawah */
+.show-btns .btn{padding:7px 6px;font-size:11px} /* tombol Baca lebih kecil */
+.bm-btn{background:transparent;border:1px solid var(--line);color:#fff;border-radius:9px;
+  padding:7px 9px;font-size:12px;cursor:pointer;flex:none}
+.bm-btn.on{background:rgba(46,124,246,.18);border-color:var(--blue-bright)}
+
+/* --- 3 pintu masuk di halaman utama --- */
+.doors{display:grid;grid-template-columns:1fr;gap:10px;margin:14px 0 4px}
+@media(min-width:640px){.doors{grid-template-columns:repeat(3,1fr)}}
+.door{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:16px;color:var(--text);cursor:pointer}
+.door:hover{border-color:var(--blue-bright)}
+.door-ico{font-size:24px}
+.door strong{font-size:14px}
+.door small{color:var(--muted);font-size:12px;line-height:1.5}
+
+/* --- Toolbar baca: saran cari, filter, pager, lanjutkan --- */
+.mw-toolbar{display:grid;gap:10px;margin-top:12px}
+.mw-searchwrap{position:relative}
+.mw-searchwrap input{width:100%;background:#0B1220;color:#fff;
+  border:1px solid rgba(148,178,208,.25);border-radius:10px;
+  padding:11px 12px;font-size:13px;outline:0;min-width:0}
+.mw-searchwrap input:focus{border-color:var(--blue-bright)}
+.suggest{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:30;
+  background:#0D1420;border:1px solid var(--line-neon);border-radius:12px;
+  overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.5);max-height:320px;overflow-y:auto}
+.suggest button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:transparent;border:0;color:var(--text);padding:8px 10px;cursor:pointer;font-size:12.5px}
+.suggest button:hover,.suggest button.sel{background:rgba(46,124,246,.14)}
+.suggest img{width:32px;height:42px;object-fit:cover;border-radius:6px;flex:none}
+.mw-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){.mw-filters{grid-template-columns:1fr 1fr}}
+.mw-filters label{display:grid;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
+.mw-filters select{background:#0B1220;color:#fff;border:1px solid rgba(148,178,208,.25);
+  border-radius:10px;padding:10px;font-size:12.5px}
+.checkline{grid-column:1/-1;display:flex!important;flex-direction:row!important;
+  align-items:center;gap:8px;font-size:12.5px!important}
+.checkline input{width:17px;height:17px;accent-color:var(--accent)}
+.lanjut{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(46,124,246,.10);border:1px solid rgba(96,150,255,.35);
+  border-radius:12px;padding:11px 13px;margin-top:12px}
+.lanjut small{display:block;color:var(--blue-bright);font-size:10px;font-weight:800;letter-spacing:.08em}
+.lanjut strong{display:block;font-size:13px;margin-top:2px}
+.pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:14px}
+.pager button{background:rgba(255,255,255,.05);border:1px solid var(--line);color:#fff;
+  border-radius:9px;min-width:36px;padding:8px 10px;font-size:12px;font-weight:800;cursor:pointer}
+.pager button.on{background:var(--blue);border-color:var(--blue)}
+.pager button:disabled{opacity:.4;cursor:default}
+
+/* --- Skeleton loading (daftar kartu) --- */
+.skel{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.skel-cover{aspect-ratio:3/4;background:linear-gradient(100deg,#141b29 40%,#1d2637 50%,#141b29 60%);
+  background-size:200% 100%;animation:skel 1.2s infinite}
+.skel-line{height:12px;margin:10px;border-radius:6px;
+  background:linear-gradient(100deg,#141b29 40%,#1d2637 50%,#141b29 60%);
+  background-size:200% 100%;animation:skel 1.2s infinite}
+@keyframes skel{to{background-position:-200% 0}}
+
+/* --- Slider banding sebelum/sesudah --- */
+.cmp{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+  aspect-ratio:16/9;background:#05080E;touch-action:pan-y}
+.cmp-layer{position:absolute;inset:0}
+.cmp-scene{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:6px;text-align:center;padding:16px}
+.cmp-scene.sharp{background:radial-gradient(circle at 50% 30%,#12305e,#05080E 75%)}
+.cmp-scene.blurry{background:#0a0d14}
+.cmp-scene.blurry strong,.cmp-scene.blurry small{filter:blur(2.5px);opacity:.75}
+.cmp-face{font-size:44px}
+.cmp-scene strong{font-size:15px}
+.cmp-scene small{font-size:11.5px;color:var(--muted)}
+.cmp-before{clip-path:inset(0 calc(100% - var(--pos,50%)) 0 0)} /* lebar kiri ikut slider */
+.cmp-before .cmp-scene{background:#0a0d14}
+.cmp-tag{position:absolute;bottom:10px;font-size:9.5px;font-weight:900;letter-spacing:.06em;
+  background:rgba(0,0,0,.6);padding:5px 9px;border-radius:7px}
+.cmp-tag.left{left:10px;color:#ffb3be}
+.cmp-tag.right{right:10px;color:#9DC2FF}
+.cmp-handle{position:absolute;top:0;bottom:0;left:var(--pos,50%);width:2px;
+  background:#fff;box-shadow:0 0 12px rgba(47,123,255,.8)}
+.cmp-handle span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:#fff;color:#000;font-size:11px;font-weight:900;border-radius:999px;padding:6px 10px}
+.cmp-range{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+
+/* --- Kartu preset + form mini --- */
+.preset-grid{display:grid;gap:10px;margin-top:12px}
+@media(min-width:640px){.preset-grid{grid-template-columns:repeat(3,1fr)}}
+.preset-card{background:rgba(255,255,255,.03);border:1px solid var(--line);
+  border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.preset-card h3{margin:0;font-size:14px}
+.preset-card .btn{margin-top:auto}
+.mini-form{display:grid;gap:10px;margin-top:12px}
+.mini-form label{display:grid;gap:5px;font-size:12px;font-weight:700;color:var(--muted)}
+.mini-form input,.mini-form select{background:#0B1220;color:#fff;
+  border:1px solid rgba(148,178,208,.25);border-radius:10px;padding:10px 12px;font-size:13px}
+
+/* --- Aksesibilitas: focus ring keyboard --- */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,
+summary:focus-visible,[tabindex]:focus-visible{
+  outline:2px solid var(--blue-bright);outline-offset:2px;border-radius:8px;
+}
+/* Hormati prefers-reduced-motion: matikan animasi & scroll halus */
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .skel-cover,.skel-line{animation:none!important}
+}
+/* Mobile-first: panel lebih ramping di layar kecil */
+@media (max-width:520px){
+  .panel{padding:18px 14px}
+  .panel h2{font-size:20px}
+  main{padding:0 12px 60px}
+}
+
+/* === Paket A+B: beranda ringkas, badge, lanjutkan, muat lagi, reader/player === */
+.lanjut-home{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(47,125,246,.10);border:1px solid rgba(96,150,255,.35);
+  border-radius:14px;padding:12px 14px;margin:12px 0}
+.lh-info small{color:var(--blue-bright);font-size:10px;font-weight:800;letter-spacing:.08em}
+.lh-info strong{display:block;font-size:14px;margin-top:2px}
+.lh-actions{display:flex;align-items:center;gap:6px;flex:none}
+.lh-x{background:transparent;border:1px solid var(--line);color:var(--muted);
+  border-radius:8px;width:30px;height:30px;cursor:pointer}
+.doors-mini{display:flex;gap:8px;overflow-x:auto;margin:10px 0 4px;scrollbar-width:none;padding:2px}
+.doors-mini::-webkit-scrollbar{display:none}
+.door-mini{flex:none;display:inline-flex;align-items:center;gap:6px;
+  background:var(--panel);border:1px solid var(--line);border-radius:999px;
+  padding:9px 14px;color:var(--text);cursor:pointer;font-size:12.5px}
+.door-mini strong{font-size:12.5px}
+.door-mini:hover{border-color:var(--blue-bright)}
+.prev-title{display:flex;align-items:center;justify-content:space-between;
+  font-size:14px;margin:16px 0 2px}
+.linkbtn{background:none;border:0;color:var(--blue-bright);font-size:12px;
+  font-weight:700;cursor:pointer;text-decoration:underline}
+.req-hint{margin:8px 0 0}
+.empty-req{margin:12px 0;padding:12px;border:1px dashed var(--line-neon);
+  border-radius:12px;text-align:center}
+.badge-new{position:absolute;top:6px;right:6px;background:#fff;color:#0a1220;font-size:9px;
+  font-weight:900;padding:3px 7px;border-radius:7px;letter-spacing:.04em}
+.badge-new.today{background:var(--blue);color:#fff}
+.mw-checkrow{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.mw-checkrow .checkline{grid-column:auto}
+.bm-status{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.bm-status button{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--line);
+  color:var(--text);border-radius:8px;padding:7px 4px;font-size:11px;font-weight:700;cursor:pointer;min-width:80px}
+.bm-status button.on{background:rgba(47,125,246,.2);border-color:var(--blue-bright)}
+.rd-tools{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin:10px 0 4px}
+.rd-tools label{display:grid;gap:5px;font-size:11px;font-weight:700;color:var(--muted)}
+.rd-tools select{background:#0B1220;color:#fff;border:1px solid rgba(148,178,208,.25);
+  border-radius:10px;padding:9px 10px;font-size:12.5px}
+.rd-pages.rd-w-med img{max-width:640px;margin:0 auto}
+.rd-pages.rd-w-narrow img{max-width:420px;margin:0 auto}
+.rd-pages.rd-w-full img{max-width:100%}
+.float-next{position:fixed;right:16px;bottom:20px;z-index:120;
+  background:var(--blue);color:#fff;border:0;border-radius:999px;
+  padding:13px 18px;font-size:13px;font-weight:800;cursor:pointer;
+  box-shadow:0 8px 24px rgba(47,125,246,.45)}
+.prog{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:12px}
+.prog-fill{height:100%;width:0%;background:var(--blue);border-radius:999px;transition:width .2s}
+#pzPrev,#pzOut{width:100%;max-height:340px;border-radius:12px;margin-top:10px;background:#000;border:1px solid var(--line)}
+.footer a{color:var(--blue-bright)}
+/* Navigasi episode di player (B3: Prev/Next) */
+.ep-nav{display:flex;gap:8px;margin:10px 0 4px}
+.ep-nav .btn{flex:1}
+.ep-nav .btn:disabled{opacity:.4;cursor:default}

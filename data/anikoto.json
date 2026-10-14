@@ -4,8 +4,14 @@
   "id": 6224,
   "slug": "solo-leveling-ilh08",
   "apiTitle": "Solo Leveling",
-  "episodes": 12,
-  "match": true
+  "episodes": 25,
+  "match": true,
+  "parts": [
+   {
+    "id": 7457,
+    "offset": 12
+   }
+  ]
  },
  {
   "show": "Frieren",
@@ -60,8 +66,14 @@
   "id": 7095,
   "slug": "spy-x-family-6zlbz",
   "apiTitle": "Spy x Family",
-  "episodes": 12,
-  "match": true
+  "episodes": 25,
+  "match": true,
+  "parts": [
+   {
+    "id": 7165,
+    "offset": 12
+   }
+  ]
  },
  {
   "show": "Oshi no Ko",
@@ -76,8 +88,14 @@
   "id": 4,
   "slug": "dandadan-lzcmw",
   "apiTitle": "Dandadan",
-  "episodes": 12,
-  "match": true
+  "episodes": 24,
+  "match": true,
+  "parts": [
+   {
+    "id": 7920,
+    "offset": 12
+   }
+  ]
  },
  {
   "show": "Re:Zero",
@@ -116,24 +134,42 @@
   "id": 6089,
   "slug": "kaiju-no-8-ewvpr",
   "apiTitle": "Kaiju No. 8",
-  "episodes": 12,
-  "match": true
+  "episodes": 23,
+  "match": true,
+  "parts": [
+   {
+    "id": 7983,
+    "offset": 12
+   }
+  ]
  },
  {
   "show": "Sakamoto Days",
   "id": 7498,
   "slug": "sakamoto-days-sfdxz",
   "apiTitle": "Sakamoto Days",
-  "episodes": 11,
-  "match": true
+  "episodes": 22,
+  "match": true,
+  "parts": [
+   {
+    "id": 7976,
+    "offset": 11
+   }
+  ]
  },
  {
   "show": "Wind Breaker",
   "id": 6098,
   "slug": "wind-breaker-xly8i",
   "apiTitle": "Wind Breaker",
-  "episodes": 13,
-  "match": true
+  "episodes": 25,
+  "match": true,
+  "parts": [
+   {
+    "id": 7568,
+    "offset": 13
+   }
+  ]
  },
  {
   "show": "Tokyo Revengers",

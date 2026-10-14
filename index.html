@@ -4,7 +4,19 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Guoke AMHDQ — Nonton Anime & Baca Manhwa Langsung</title>
-<meta name="description" content="Panduan + tool gratis biar upload TikTok tetap HD: setting 1080p/2K, 60/120FPS, bitrate tinggi, preset CapCut/Premiere & cek video sebelum upload." />
+<meta name="description" content="Guoke AMHDQ: nonton anime, baca manhwa, dan preset upload TikTok HD (1080p/2K, 60fps) — semua langsung di situs." />
+<!-- SEO: ganti href canonical dengan domain asli saat deploy -->
+<link rel="canonical" href="https://guoke-amhdq.example.com/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Guoke AMHDQ" />
+<meta property="og:title" content="Guoke AMHDQ — Nonton Anime & Baca Manhwa Langsung" />
+<meta property="og:description" content="Nonton anime, baca manhwa chapter lengkap, dan preset TikTok HD — semua di satu situs." />
+<meta name="twitter:card" content="summary" />
+<!-- PWA: biar bisa dipasang ke layar HP (Add to Home Screen) -->
+<meta name="theme-color" content="#0a0e17" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icons/icon-180.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -18,16 +30,16 @@
 <header class="topbar">
   <a class="brand" href="#top">
     <span class="brand-mark" aria-hidden="true">
-      <svg viewBox="0 0 48 48"><path d="M24 3 27.5 20.5 45 24 27.5 27.5 24 45 20.5 27.5 3 24 20.5 20.5Z"/></svg>
+      <img src="logo.svg" alt="" width="40" height="40" />
     </span>
     <span class="brand-text">Guoke <span>AMHDQ</span><small>ANIME • MANHWA • HD</small></span>
   </a>
-  <nav class="nav">
-    <a href="#manhwaPanel">Manhwa</a>
-    <a href="#cek">Cek Video</a>
-    <a href="#kalkulator">Preset 2K</a>
-    <a href="#panduan">Panduan</a>
-    <a href="#faq">FAQ</a>
+  <!-- Navigasi atas: 4 grup + Buat Preset -->
+  <nav class="nav" aria-label="Navigasi utama">
+    <a href="#manhwaPanel" data-navcat="manhwa">Baca</a>
+    <a href="#animePanel" data-navcat="anime">Tonton</a>
+    <a href="#alatTiktok" data-navcat="tiktok">Alat TikTok</a>
+    <a href="#bantuan" data-open="bantuan">Bantuan</a>
   </nav>
   <a class="btn btn-small" href="#kalkulator">Buat Preset</a>
 </header>
@@ -35,27 +47,101 @@
 <main id="top">
   <!-- KATEGORI: Semua / Anime / Manhwa / Upload TikTok Quality -->
   <div class="catbar" role="tablist" aria-label="Kategori">
-    <button class="cat active" data-cat="semua" role="tab" aria-selected="true">Semua A/M</button>
+    <button class="cat active" data-cat="semua" role="tab" aria-selected="true">Semua</button>
     <button class="cat" data-cat="anime" role="tab">Anime</button>
     <button class="cat" data-cat="manhwa" role="tab">Manhwa</button>
     <button class="cat cat-tiktok" data-cat="tiktok" role="tab">Upload TikTok Quality</button>
   </div>
+
+  <!-- LANJUTKAN (B1): kartu di atas beranda, diisi dari localStorage -->
+  <div id="lanjutHome" class="lanjut-home" hidden>
+    <div class="lh-info">
+      <small id="lhKicker">LANJUTKAN</small>
+      <strong id="lhJudul"></strong>
+      <span id="lhSub" class="muted small"></span>
+    </div>
+    <div class="lh-actions">
+      <button id="lhBtn" class="btn btn-small" type="button">Lanjut →</button>
+      <button id="lhX" class="lh-x" type="button" aria-label="Tutup">✕</button>
+    </div>
+  </div>
+
+  <!-- Pintu masuk ringkas: satu baris tombol (A6) agar konten langsung terlihat -->
+  <section id="pintu" class="doors doors-mini" aria-label="Pintu masuk">
+    <button class="door-mini" data-goto="manhwa" type="button">📖 <strong>Baca</strong></button>
+    <button class="door-mini" data-goto="anime" type="button">▶ <strong>Tonton</strong></button>
+    <button class="door-mini" data-goto="tiktok" type="button">🛠 <strong>TikTok HD</strong></button>
+    <button class="door-mini" id="acakBtnTop" type="button" title="Rekomendasi acak">🎲 <strong>Acak</strong></button>
+    <button class="door-mini" data-open="riwayat" type="button">🕘 <strong>Riwayat</strong></button>
+    <button class="door-mini" data-open="tentang" type="button">ℹ <strong>Tentang</strong></button>
+  </section>
+
+  <!-- PREVIEW SEMUA (A2): pilihan tiap kategori + tombol Lihat semua -->
+  <section id="semuaPreview" class="panel">
+    <p class="eyebrow">◆ PILIHAN UNTUKMU</p>
+    <h2>Mulai dari sini</h2>
+    <h3 class="prev-title">🔥 Anime pilihan <button class="linkbtn" data-goto="anime" type="button">Lihat semua →</button></h3>
+    <div id="prevAnime" class="show-grid"></div>
+    <h3 class="prev-title">📖 Manhwa pilihan <button class="linkbtn" data-goto="manhwa" type="button">Lihat semua →</button></h3>
+    <div id="prevMw" class="show-grid"></div>
+    <h3 class="prev-title">🛠 Alat TikTok HD <button class="linkbtn" data-goto="tiktok" type="button">Buka alat →</button></h3>
+    <p class="muted small">Ubah video apa pun jadi MP4 H.264 + AAC 60fps siap upload, lengkap dengan tombol Download.</p>
+  </section>
 
   <!-- MANHWA : baca langsung di sini -->
   <section id="manhwaPanel" class="panel">
     <p class="eyebrow">◆ MANHWA • BACA LANGSUNG</p>
     <h2>Baca Manhwa di sini</h2>
     <p class="muted">Chapter lengkap + gambar, dibaca langsung di situs ini (<span id="mwDate">–</span>).</p>
-    <div class="ani-search">
-      <input id="mwSearch" type="search" placeholder="Cari judul manhwa…" autocomplete="off" />
+    <!-- Lanjutkan membaca (localStorage, tanpa login) -->
+    <div id="lanjutWrap" class="lanjut" hidden>
+      <div>
+        <small>LANJUTKAN MEMBACA</small>
+        <strong id="lanjutJudul"></strong>
+      </div>
+      <button id="lanjutBtn" class="btn btn-small" type="button">Lanjutkan →</button>
+    </div>
+    <!-- Toolbar baca: cari + saran, genre, urutan, bookmark -->
+    <div class="mw-toolbar">
+      <div class="mw-searchwrap">
+        <input id="mwSearch" type="search" placeholder="Cari judul manhwa…" autocomplete="off"
+               role="combobox" aria-expanded="false" aria-controls="mwSuggest" aria-label="Cari judul manhwa" />
+        <div id="mwSuggest" class="suggest" role="listbox" hidden></div>
+      </div>
+      <p class="muted small req-hint">Tidak ketemu? <button class="linkbtn" data-reqopen="manhwa" type="button">Request judul</button></p>
+      <div class="mw-filters">
+        <label>Genre
+          <select id="mwGenre"><option value="">Semua genre</option></select>
+        </label>
+        <label>Urutkan
+          <select id="mwSort">
+            <option value="terbaru">Terbaru update</option>
+            <option value="populer">Populer</option>
+            <option value="az">A–Z</option>
+          </select>
+        </label>
+        <label>Status bookmark
+          <select id="mwBmStatus">
+            <option value="">Semua status</option>
+            <option value="ongoing">Sedang dibaca</option>
+            <option value="wishlist">Mau dibaca</option>
+            <option value="done">Selesai</option>
+          </select>
+        </label>
+        <div class="mw-checkrow">
+          <label class="checkline"><input id="mwBookmarked" type="checkbox" /> 📌 Bookmark saya</label>
+          <button id="mwAcak" class="btn btn-small btn-ghost" type="button">🎲 Acak</button>
+        </div>
+      </div>
     </div>
     <p id="mwCount" class="muted small"></p>
-    <div id="mwGrid" class="show-grid"></div>
-    <div id="mdxWrap" hidden>
-      <h3 style="margin:14px 0 2px;font-size:15px">🌐 Hasil arsip live</h3>
-      <p class="muted small">Judul lain di luar katalog — baca langsung di sini.</p>
-      <div id="mdxGrid" class="show-grid"></div>
+    <div id="mwGrid" class="show-grid" aria-live="polite"></div>
+    <div id="mwEmpty" class="empty-req" hidden>
+      <p class="muted">Tidak ada hasil untuk “<strong id="mwEmptyQ"></strong>”.</p>
+      <button id="mwEmptyReq" class="btn btn-small" type="button">Request judul ini</button>
     </div>
+    <!-- Muat lagi gantikan paginasi halaman (A7) -->
+    <button id="mwMore" class="btn btn-small btn-ghost" type="button" style="width:100%;margin-top:10px">Muat lagi</button>
   </section>
 
   <!-- HALAMAN DETAIL (episode / chapter) -->
@@ -73,6 +159,7 @@
   <!-- READER -->
   <div id="readModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Baca manhwa">
     <div class="pbox">
+      <div class="rd-top">
       <div class="phead"><strong id="rdTitle">Baca</strong><button id="rdClose" type="button" aria-label="Tutup">✕</button></div>
       <div class="rd-nav">
         <button id="rdPrev" class="btn btn-small btn-ghost" type="button">← Prev</button>
@@ -80,13 +167,25 @@
         <button id="rdNext" class="btn btn-small btn-ghost" type="button">Next →</button>
         <button class="btn btn-small" data-full type="button" title="Baca layar penuh">⛶ Penuh</button>
       </div>
+      </div>
+      <div class="rd-tools">
+        <label>Lebar gambar
+          <select id="rdWidth">
+            <option value="full">Penuh</option>
+            <option value="med" selected>Sedang</option>
+            <option value="narrow">Sempit</option>
+          </select>
+        </label>
+        <button id="rdReport" class="btn btn-small btn-ghost" type="button">⚠ Lapor chapter rusak</button>
+      </div>
       <p id="rdStatus" class="muted small"></p>
-      <div id="rdPages" class="rd-pages"></div>
+      <div id="rdPages" class="rd-pages rd-w-med"></div>
       <div class="rd-nav rd-bottom">
         <button id="rdPrev2" class="btn btn-small btn-ghost" type="button">← Prev</button>
         <button id="rdNext2" class="btn btn-small btn-ghost" type="button">Next →</button>
       </div>
     </div>
+    <button id="rdFloatNext" class="float-next" type="button">Chapter berikutnya →</button>
   </div>
 
   <!-- ANIME : nonton langsung di sini -->
@@ -96,14 +195,27 @@
     <p class="muted">Pilih judul, pilih episode, langsung putar di sini (<span id="aniDate">–</span>).</p>
     <div class="ani-search">
       <input id="aniSearch" type="search" placeholder="Cari judul anime…" autocomplete="off" />
+      <button id="aniAcak" class="btn btn-small btn-ghost" type="button">🎲</button>
+    </div>
+    <p class="muted small req-hint">Tidak ketemu? <button class="linkbtn" data-reqopen="anime" type="button">Request judul</button></p>
+    <div class="src-tabs" role="group" aria-label="Filter status anime">
+      <button class="btn btn-small" data-anif="semua" type="button">Semua</button>
+      <button class="btn btn-small btn-ghost" data-anif="tayang" type="button">Sedang Tayang</button>
+      <button class="btn btn-small btn-ghost" data-anif="tamat" type="button">Tamat</button>
+      <button class="btn btn-small btn-ghost" data-anif="film" type="button">Film</button>
     </div>
     <p id="aniCount" class="muted small"></p>
+    <div id="aniEmpty" class="empty-req" hidden>
+      <p class="muted">Tidak ada hasil untuk “<strong id="aniEmptyQ"></strong>”.</p>
+      <button id="aniEmptyReq" class="btn btn-small" type="button">Request judul ini</button>
+    </div>
     <div id="freshWrap" hidden>
       <h3 style="margin:14px 0 2px;font-size:15px">🔥 Baru Rilis — otomatis</h3>
       <p class="muted small">Judul terbaru yang langsung ditambahkan otomatis. Klik untuk menonton.</p>
       <div id="freshGrid" class="show-grid"></div>
     </div>
     <div id="showGrid" class="show-grid"></div>
+    <button id="aniMore" class="btn btn-small btn-ghost" type="button" style="width:100%;margin-top:10px">Muat lagi</button>
     <div id="jxWrap">
       <h3 style="margin:16px 0 2px;font-size:15px">🌐 Jelajahi semua anime</h3>
       <p class="muted small">Katalog live ribuan judul — cari apa pun, klik untuk menonton langsung di sini.</p>
@@ -125,12 +237,17 @@
       <div class="phead"><strong id="pTitle">Nonton</strong><button id="pClose" type="button" aria-label="Tutup">✕</button></div>
       <iframe id="pFrame" title="Streaming anime" hidden allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>
       <p id="pStatus" class="muted small"></p>
+      <p id="pResume" class="muted small" hidden></p>
+      <div class="ep-nav">
+        <button id="pPrev" class="btn btn-small btn-ghost" type="button">← Prev</button>
+        <button id="pNext" class="btn btn-small btn-ghost" type="button">Next →</button>
+      </div>
       <div id="pServers" class="btn-row" hidden></div>
     </div>
   </div>
 
-  <!-- HERO -->
-  <section class="hero">
+  <!-- HERO = jangkar grup "Alat TikTok" -->
+  <section class="hero" id="alatTiktok">
     <p class="eyebrow">◆ TIKTOK HD • 2K • 120FPS</p>
     <h1>Upload TikTok <span class="neon">tetap HD</span>,<br />nggak burik kena kompres.</h1>
     <p class="lede">Tool + preset gratis buat kreator: setting export <strong>1080×1920 / 1440×2560 (2K)</strong>, <strong>60–120 FPS</strong>, bitrate tinggi, format yang disukai TikTok. Hasil lebih tajam, teks nggak pecah.</p>
@@ -187,6 +304,60 @@
       <div id="verdict" class="verdict"></div>
       <ul id="fixList" class="fixlist"></ul>
       <video id="preview" controls muted playsinline preload="metadata"></video>
+    </div>
+  </section>
+
+  <!-- PROSES VIDEO (C): ffmpeg.wasm di browser, privat + tombol Download -->
+  <section id="proses" class="panel">
+    <p class="eyebrow">◆ ALAT UTAMA — PROSES & DOWNLOAD</p>
+    <h2>Proses video jadi TikTok HD</h2>
+    <p class="muted">File <strong>tidak diunggah ke server</strong> — diproses lokal di HP-mu via ffmpeg.wasm. Output selalu <strong>MP4 H.264 + AAC, 60fps</strong> + tombol <strong>Download</strong>.</p>
+    <div id="pzDrop" class="dropzone" tabindex="0" role="button" aria-label="Pilih atau drop video untuk diproses">
+      <input id="pzFile" type="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,video/avi,video/*" hidden />
+      <div class="dz-icon">⬆</div>
+      <p><strong>Tarik & letakkan video di sini</strong><br /><span>atau klik untuk pilih file • MP4/MOV/MKV/WebM/AVI, 480p–8K • maks 500 MB / 3 menit</span></p>
+    </div>
+    <p id="pzInfo" class="muted small"></p>
+    <p id="pzWarn" class="verdict warn" hidden></p>
+    <video id="pzPrev" controls muted playsinline preload="metadata" hidden></video>
+    <div class="calc-controls" style="margin-top:12px">
+      <label>Mode output
+        <select id="pzMode">
+          <option value="auto" selected>Otomatis — rasio asli, sisi pendek 1080</option>
+          <option value="vfit">TikTok vertikal 1080×1920 — Pas (bar hitam)</option>
+          <option value="vfill">TikTok vertikal 1080×1920 — Isi penuh (crop tengah)</option>
+          <option value="vblur">TikTok vertikal 1080×1920 — Latar blur</option>
+          <option value="sq">Persegi 1080×1080</option>
+          <option value="land">Landscape 1920×1080</option>
+          <option value="auto2k">2K — sisi pendek 1440</option>
+        </select>
+      </label>
+      <label>FPS output
+        <select id="pzFps">
+          <option value="60" selected>60 fps (default)</option>
+          <option value="30">30 fps (lebih cepat)</option>
+        </select>
+      </label>
+      <label class="checkline"><input id="pzInterp" type="checkbox" /> Kualitas maksimal — interpolasi gerak (lama)</label>
+    </div>
+    <div class="btn-row">
+      <button id="pzGo" class="btn btn-primary" type="button">Proses video</button>
+      <button id="pzCancel" class="btn btn-small btn-ghost" type="button" hidden>Batal</button>
+    </div>
+    <div id="pzProgWrap" hidden>
+      <div class="prog"><div id="pzProg" class="prog-fill"></div></div>
+      <p id="pzProgTxt" class="muted small">Menyiapkan…</p>
+    </div>
+    <div id="pzDone" class="result" hidden>
+      <p id="pzMeta" class="verdict ok"></p>
+      <video id="pzOut" controls playsinline preload="metadata"></video>
+      <div class="btn-row">
+        <a id="pzDl" class="btn btn-primary" download="guoke-tiktok-hd.mp4">⬇ Download (guoke-tiktok-hd.mp4)</a>
+      </div>
+    </div>
+    <div class="honest">
+      <strong>Jujur:</strong> video kecil yang diperbesar <em>tidak jadi lebih tajam</em>, tapi resolusi + bitrate tinggi membuat kompres TikTok lebih bersih.
+      30→60fps biasa <em>menduplikasi frame</em>; centang “Kualitas maksimal” untuk interpolasi gerak (minterpolate, jauh lebih lama).
     </div>
   </section>
 
@@ -274,6 +445,16 @@
         </ol>
       </details>
       <details class="guide">
+        <summary><strong>DaVinci Resolve (gratis, paling detail)</strong><span>→</span></summary>
+        <ol>
+          <li>Project Settings → Master Settings: timeline <strong>1080×1920</strong> atau <strong>1440×2560</strong>, 60fps.</li>
+          <li>Deliver → Custom Export → Format <strong>MP4</strong>, Codec <strong>H.264</strong>.</li>
+          <li>Resolution ikut timeline, Frame rate <strong>60</strong>, Quality → Restrict to <strong>32000 Kb/s</strong> (2K60) atau <strong>20000 Kb/s</strong> (1080p60).</li>
+          <li>Centang <strong>Force sizing to highest quality</strong> + <strong>Force debayer to highest quality</strong>.</li>
+          <li>Audio → Codec AAC, Bit rate <strong>320kbps</strong>. Render, upload file hasilnya.</li>
+        </ol>
+      </details>
+      <details class="guide">
         <summary><strong>Setting 120FPS yang benar</strong><span>→</span></summary>
         <ol>
           <li>Rekam <strong>120fps</strong> hanya untuk adegan slow-motion. Shutter 1/240, cahaya terang.</li>
@@ -285,27 +466,71 @@
     </div>
   </section>
 
-  <!-- BANDING -->
+  <!-- PRESET SIAP PAKAI: satu klik salin -->
+  <section id="presetSiap" class="panel">
+    <p class="eyebrow">◆ PRESET SIAP PAKAI</p>
+    <h2>Salin, tempel, export</h2>
+    <p class="muted">Tiga preset paling aman. Klik <strong>Salin preset</strong>, tempel ke aplikasi editing-mu.</p>
+    <div class="preset-grid">
+      <article class="preset-card">
+        <h3>📱 1080p Aman</h3>
+        <p class="muted small">HP kentang / internet pas-pasan. Paling kompatibel.</p>
+        <pre class="code" id="preset1080p">Resolusi: 1080×1920 (9:16)
+FPS: 30 • Codec: H.264 High
+Bitrate: 12 Mbps (VBR 2-pass)
+Audio: AAC 320kbps 48kHz
+Format: MP4 + faststart</pre>
+        <button class="btn btn-small" data-copypreset="preset1080p" type="button">Salin preset</button>
+      </article>
+      <article class="preset-card">
+        <h3>✨ 2K Tajam</h3>
+        <p class="muted small">Untuk konten showcase / teks kecil. Paling tajam.</p>
+        <pre class="code" id="preset2k">Resolusi: 1440×2560 (9:16)
+FPS: 30 • Codec: H.264 High
+Bitrate: 20 Mbps (VBR 2-pass)
+Audio: AAC 320kbps 48kHz
+Format: MP4 + faststart</pre>
+        <button class="btn btn-small" data-copypreset="preset2k" type="button">Salin preset</button>
+      </article>
+      <article class="preset-card">
+        <h3>⚡ 2K 60fps</h3>
+        <p class="muted small">Dance, transisi, slow-motion. Gerakan mulus.</p>
+        <pre class="code" id="preset2k60">Resolusi: 1440×2560 (9:16)
+FPS: 60 • Codec: H.264 High
+Bitrate: 32 Mbps (VBR 2-pass)
+Audio: AAC 320kbps 48kHz
+Format: MP4 + faststart</pre>
+        <button class="btn btn-small" data-copypreset="preset2k60" type="button">Salin preset</button>
+      </article>
+    </div>
+  </section>
+
+  <!-- BANDING: slider sebelum / sesudah -->
   <section class="panel compare">
     <p class="eyebrow">◆ KENAPA 2K + BITRATE TINGGI MENANG?</p>
-    <h2>Upload biasa vs setting HDPlus</h2>
-    <div class="vs">
-      <div class="vs-card bad">
-        <h3>✕ Upload biasa</h3>
-        <ul>
-          <li>720p • 30fps • 5 Mbps</li>
-          <li>Record layar / download dari WA</li>
-          <li>Teks pecah, muka lembek, banding di langit</li>
-        </ul>
+    <h2>Geser untuk membandingkan</h2>
+    <p class="muted">Simulasi jujur: kiri = upload biasa (720p, 5 Mbps, pecah), kanan = pakai preset (2K, bitrate tinggi, tajam).</p>
+    <!-- Slider perbandingan: dua lapis + input range (keyboard-friendly) -->
+    <div class="cmp" id="cmpSlider">
+      <div class="cmp-layer cmp-after" aria-hidden="true">
+        <div class="cmp-scene sharp">
+          <span class="cmp-face">◉</span>
+          <strong>Teks contoh tetap tajam</strong>
+          <small>2K • 32 Mbps • H.264 High</small>
+        </div>
+        <span class="cmp-tag right">SESUDAH • preset</span>
       </div>
-      <div class="vs-card good">
-        <h3>✓ Setting HDPlus</h3>
-        <ul>
-          <li>1080p–2K • 60fps • 20–45 Mbps</li>
-          <li>Export langsung H.264 High + AAC</li>
-          <li>Detail rambut & teks tajam setelah kompres TikTok</li>
-        </ul>
+      <div class="cmp-layer cmp-before" aria-hidden="true">
+        <div class="cmp-scene blurry">
+          <span class="cmp-face">◉</span>
+          <strong>Teks contoh pecah-pecah</strong>
+          <small>720p • 5 Mbps • record layar</small>
+        </div>
+        <span class="cmp-tag left">SEBELUM • biasa</span>
       </div>
+      <div class="cmp-handle" aria-hidden="true"><span>◂ ▸</span></div>
+      <input class="cmp-range" type="range" min="0" max="100" value="50"
+             aria-label="Geser pembanding sebelum dan sesudah" />
     </div>
     <p class="muted small">Catatan: 2K bukan “resolusi resmi” TikTok — TikTok tetap menurunkan ke ~1080p. Tapi mulai dari 2K = detail awal 1.8× lebih banyak, jadi sisa setelah kompres jauh lebih bagus.</p>
   </section>
@@ -320,13 +545,101 @@
     <details class="guide"><summary><strong>Ukuran file maksimal?</strong><span>→</span></summary><p>Jaga di bawah <strong>~250MB untuk 1080p</strong> dan <strong>~500MB untuk 2K</strong> biar upload tidak gagal. Kalkulator di atas otomatis kasih peringatan.</p></details>
   </section>
 
+  <!-- BANTUAN (A3): modal dua tab — dipindah dari bawah halaman utama -->
+  <div id="bantuModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Bantuan">
+    <div class="pbox">
+      <div class="phead"><strong>Bantuan</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
+      <div class="src-tabs" role="tablist" aria-label="Bantuan">
+        <button class="btn btn-small" data-btab="req" type="button" role="tab">Request judul</button>
+        <button class="btn btn-small btn-ghost" data-btab="lap" type="button" role="tab">Lapor rusak</button>
+      </div>
+      <div id="btabReq">
+        <p class="muted small">Mau anime/manhwa yang belum ada? Tulis di sini — tersimpan di HP-mu, bisa disalin untuk dikirim ke admin.</p>
+        <form id="requestForm" class="mini-form">
+          <label>Judul yang diminta
+            <input id="requestJudul" type="text" placeholder="mis. Frieren Season 2" required />
+          </label>
+          <label>Tipe
+            <select id="requestTipe"><option>Anime</option><option>Manhwa</option></select>
+          </label>
+          <button class="btn btn-small" type="submit">Kirim request</button>
+        </form>
+        <div class="btn-row">
+          <button id="reqCopy" class="btn btn-small btn-ghost" type="button">Salin untuk admin</button>
+        </div>
+        <h3 style="font-size:13px;margin:14px 0 6px">Request dari HP ini</h3>
+        <ul id="requestList" class="fixlist"></ul>
+      </div>
+      <div id="btabLap" hidden>
+        <p class="muted small">Gambar tidak muncul / chapter salah isi? Laporan tersimpan di HP-mu dan bisa disalin ke admin.</p>
+        <form id="laporForm" class="mini-form">
+          <label>Judul manhwa
+            <input id="laporJudul" type="text" placeholder="mis. Solo Leveling" required />
+          </label>
+          <label>Chapter
+            <input id="laporCh" type="text" placeholder="mis. Chapter 12" required />
+          </label>
+          <label>Masalah
+            <select id="laporMasalah">
+              <option>Gambar tidak muncul</option>
+              <option>Gambar terbalik / acak</option>
+              <option>Salah judul / isi chapter</option>
+              <option>Lainnya</option>
+            </select>
+          </label>
+          <button class="btn btn-small" type="submit">Kirim laporan</button>
+        </form>
+        <div class="btn-row">
+          <button id="lapCopy" class="btn btn-small btn-ghost" type="button">Salin untuk admin</button>
+        </div>
+        <p id="laporDone" class="muted small" hidden>Laporan tersimpan. Terima kasih! 🙏</p>
+        <ul id="laporList" class="fixlist"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIWAYAT (B4): 20 judul terakhir -->
+  <div id="riwayatModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Riwayat">
+    <div class="pbox">
+      <div class="phead"><strong>Riwayat — 20 terakhir</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
+      <div id="histGrid" class="show-grid"></div>
+      <div class="btn-row">
+        <button id="histClear" class="btn btn-small btn-ghost" type="button">Hapus riwayat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TENTANG (B9): singkat + kontak admin -->
+  <div id="tentangModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Tentang">
+    <div class="pbox">
+      <div class="phead"><strong>Tentang Guoke AMHDQ</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
+      <p class="muted">Guoke AMHDQ: baca manhwa, tonton anime, dan proses video TikTok HD — semua gratis, langsung di browser, tanpa login. Data pribadimu (bookmark, riwayat, request) hanya tersimpan di perangkatmu.</p>
+      <p class="muted small">Kontak admin: <a id="adminLink" href="mailto:admin@guoke-amhdq.example.com">admin@guoke-amhdq.example.com</a> — sertakan judul + chapter + tangkapan layar saat melapor.</p>
+      <p class="muted small">Sumber bacaan/tontonan berasal dari penyedia pihak ketiga; ketersediaan judul dapat berubah sewaktu-waktu.</p>
+    </div>
+  </div>
+
   <footer class="footer">
     <p><strong>Guoke AMHDQ</strong> — nonton & baca gratis, semua jalan di situs ini.</p>
+    <p class="muted small">
+      <a href="#bantuan" data-open="bantuan">Bantuan</a> • <a href="#riwayat" data-open="riwayat">Riwayat</a> • <a href="#tentang" data-open="tentang">Tentang</a> • <a href="sitemap.xml">Sitemap</a>
+    </p>
     <p class="muted small">Dibuat untuk kreator Indonesia • Setting mengikuti panduan bitrate umum TikTok 2025–2026 • Hasil akhir tetap tergantung koneksi & server TikTok.</p>
   </footer>
 </main>
 
 <div id="toast" class="toast" role="status">Disalin!</div>
+<script src="data-anime.js"></script>
 <script src="app.js"></script>
+<script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
+<script src="proses.js"></script>
+<script>
+/* PWA: daftarkan service worker (abaikan diam-diam kalau gagal, mis. file://) */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
 </body>
 </html>
