@@ -278,5 +278,197 @@
   "apiTitle": "Magical Girl Raising Project",
   "episodes": 12,
   "match": true
+ },
+ {
+  "show": "Dr. Stone",
+  "id": 1432,
+  "slug": "dr-stone-uenxt",
+  "apiTitle": "Dr. Stone",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Black Clover",
+  "id": 2121,
+  "slug": "black-clover-g7tjy",
+  "apiTitle": "Black Clover",
+  "episodes": 170,
+  "match": true
+ },
+ {
+  "show": "Fairy Tail",
+  "id": 489,
+  "slug": "fairy-tail-jknsq",
+  "apiTitle": "Fairy Tail",
+  "episodes": 175,
+  "match": true
+ },
+ {
+  "show": "Boruto",
+  "id": 4587,
+  "slug": "boruto-naruto-the-movie-nebuz",
+  "apiTitle": "Boruto: Naruto Next Generations",
+  "episodes": 293,
+  "match": true
+ },
+ {
+  "show": "Blue Lock",
+  "id": 6820,
+  "slug": "blue-lock-xpuwl",
+  "apiTitle": "Blue Lock",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Slam Dunk",
+  "id": 1584,
+  "slug": "slam-dunk-s1hkg",
+  "apiTitle": "Slam Dunk",
+  "episodes": 101,
+  "match": true
+ },
+ {
+  "show": "Your Lie in April",
+  "id": 1567,
+  "slug": "your-lie-in-april-ebauk",
+  "apiTitle": "Your Lie in April",
+  "episodes": 22,
+  "match": true
+ },
+ {
+  "show": "Toradora",
+  "id": 1281,
+  "slug": "toradora-tiwtx",
+  "apiTitle": "Toradora!",
+  "episodes": 25,
+  "match": true
+ },
+ {
+  "show": "Clannad",
+  "id": 1512,
+  "slug": "clannad-mjhud",
+  "apiTitle": "Clannad",
+  "episodes": 23,
+  "match": true
+ },
+ {
+  "show": "Made in Abyss",
+  "id": 1566,
+  "slug": "made-in-abyss-cukdi",
+  "apiTitle": "Made in Abyss",
+  "episodes": 13,
+  "match": true
+ },
+ {
+  "show": "Psycho-Pass",
+  "id": 1377,
+  "slug": "psycho-pass-2uiua",
+  "apiTitle": "Psycho-Pass",
+  "episodes": 22,
+  "match": true
+ },
+ {
+  "show": "Erased",
+  "id": 1384,
+  "slug": "erased-oihd0",
+  "apiTitle": "ERASED",
+  "episodes": 12,
+  "match": true
+ },
+ {
+  "show": "Anohana",
+  "id": 1628,
+  "slug": "anohana-the-flower-we-saw-that-day-ermnu",
+  "apiTitle": "anohana: The Flower We Saw That Day",
+  "episodes": 11,
+  "match": true
+ },
+ {
+  "show": "Code Geass",
+  "id": 1557,
+  "slug": "code-geass-roze-of-the-recapture-3902l",
+  "apiTitle": "Code Geass: Lelouch of the Rebellion",
+  "episodes": 25,
+  "match": true
+ },
+ {
+  "show": "Evangelion",
+  "id": 1471,
+  "slug": "evangelion-3-0-you-can-not-redo-pugwh",
+  "apiTitle": "Neon Genesis Evangelion",
+  "episodes": 26,
+  "match": true
+ },
+ {
+  "show": "Samurai Champloo",
+  "id": 1644,
+  "slug": "samurai-champloo-fs9o3",
+  "apiTitle": "Samurai Champloo",
+  "episodes": 26,
+  "match": true
+ },
+ {
+  "show": "Inuyasha",
+  "id": 972,
+  "slug": "inuyasha-9hqmq",
+  "apiTitle": "InuYasha",
+  "episodes": 167,
+  "match": true
+ },
+ {
+  "show": "Spirited Away",
+  "id": 1510,
+  "slug": "spirited-away-dlaxe",
+  "apiTitle": "Spirited Away",
+  "episodes": 1,
+  "match": true
+ },
+ {
+  "show": "Howl's Moving Castle",
+  "id": 1549,
+  "slug": "howl-s-moving-castle-ymu6y",
+  "apiTitle": "Howl's Moving Castle",
+  "episodes": 1,
+  "match": true
+ },
+ {
+  "show": "Jujutsu Kaisen Season 2",
+  "id": 6542,
+  "slug": "jujutsu-kaisen-2nd-season-hk2c9",
+  "apiTitle": "Jujutsu Kaisen 2nd Season",
+  "episodes": 23,
+  "match": true
+ },
+ {
+  "show": "Haikyuu!! To the Top",
+  "id": 1340,
+  "slug": "",
+  "apiTitle": "Haikyuu!!: To the Top (Part 1+2)",
+  "episodes": 25,
+  "match": true
+ },
+ {
+  "show": "Kuroko's Basketball",
+  "id": 1350,
+  "slug": "",
+  "apiTitle": "Kuroko's Basketball",
+  "episodes": 25,
+  "match": true
+ },
+ {
+  "show": "Rurouni Kenshin (2023)",
+  "id": 6087,
+  "slug": "",
+  "apiTitle": "Rurouni Kenshin: Meiji Kenkaku Romantan (2023)",
+  "episodes": 24,
+  "match": true
+ },
+ {
+  "show": "Oshi no Ko Season 2",
+  "id": 6328,
+  "slug": "",
+  "apiTitle": "My Star: Season 2",
+  "episodes": 13,
+  "match": true
  }
 ]

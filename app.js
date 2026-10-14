@@ -216,12 +216,45 @@ function findShow(id) { return ANI.shows.find((s) => s.id === id); }
 
 function renderShows(filter) {
   const grid = $('showGrid'), q = (filter || '').toLowerCase().trim();
-  const list = ANI.shows.filter((s) => !q || s.title.toLowerCase().includes(q));
+  const list = ANI.shows.filter((s) => s.id.indexOf('rx_') !== 0 &&
+    (!q || s.title.toLowerCase().includes(q)));
   grid.innerHTML = list.map(showCard).join('') ||
     '<p class="muted">Tidak ketemu. Coba kata lain.</p>';
   $('aniCount').textContent = list.length + ' anime • ' +
     list.reduce((a, s) => a + (akOf(s.id) ? akOf(s.id).episodes : s.episodes), 0) + ' episode • tonton langsung di sini';
   grid.hidden = false;
+}
+/* Rilis baru otomatis: ambil deretan terbaru, judul di luar katalog langsung bisa ditonton */
+function loadFresh() {
+  const pages = [1, 2, 3];
+  const seen = {};
+  const all = [];
+  (async () => {
+    for (const p of pages) {
+      try {
+        const j = await apiGet('/recent-anime?page=' + p + '&per_page=24');
+        (j.data || []).forEach((it) => {
+          if (!it || !it.id || seen[it.id]) return;
+          seen[it.id] = 1;
+          all.push(it);
+        });
+      } catch (e) { break; }
+    }
+    const known = {};
+    ANI.shows.forEach((s) => { const ak = akOf(s.id); if (ak) known[ak.id] = 1; });
+    const fresh = all.filter((it) => !known[it.id]).slice(0, 8);
+    if (!fresh.length) return;
+    $('freshWrap').hidden = false;
+    $('freshGrid').innerHTML = fresh.map((it) =>
+      '<article class="show-card">' +
+      '<div class="show-cover"><i>★</i>' +
+      (it.poster ? '<img src="' + esc(it.poster) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
+      '<span class="show-badge">BARU</span></div>' +
+      '<div class="show-info"><strong>' + esc(it.title || it.alternative || 'Tanpa judul') + '</strong>' +
+      '<small>rilis terbaru • otomatis</small>' +
+      '<div class="show-btns"><button class="btn" data-fresh="' + it.id + '" type="button">▶ Nonton</button></div></div></article>'
+    ).join('');
+  })();
 }
 /* Halaman detail (overlay penuh) — episode/chapter tidak lagi dibuka di bawah */
 function openDetail(title) {
@@ -264,10 +297,28 @@ function openDetailAnime(showId) {
       return;
     }
     paintEps();
+    refreshEps(showId, ak.id, myReq); // cek episode terbaru di latar
   }).catch(() => {
     if (myReq !== epReqSeq || $('detailView').hidden) return;
     $('dvEps').innerHTML = '<p class="muted">Gagal memuat episode (jaringan/API sibuk). <button class="btn btn-small btn-ghost" data-retry="' + showId + '" type="button">Coba lagi</button></p>';
   });
+}
+/* Tambahan otomatis: episode yang rilis setelah data dibakar ikut masuk */
+function refreshEps(showId, akid, myReq) {
+  apiGet('/series/' + akid).then((j) => {
+    if (myReq !== epReqSeq || $('detailView').hidden || !DV || DV.id !== showId) return;
+    const live = (j.data && j.data.episodes) || [];
+    const have = {};
+    DV.eps.forEach((e) => { have[String(e.number)] = 1; });
+    const baru = live.filter((e) => !have[String(e.number)]);
+    if (!baru.length) return;
+    baru.forEach((e) => DV.eps.push({ number: e.number, title: e.title, embed_url: e.embed_url || {} }));
+    DV.eps.sort((a, b) => Number(a.number) - Number(b.number));
+    seriesCache[akid] = { episodes: DV.eps };
+    try { localStorage.setItem('ak_' + akid, JSON.stringify({ t: Date.now(), d: seriesCache[akid] })); } catch (e) {}
+    paintEps();
+    toast(baru.length + ' episode baru ditambahkan otomatis');
+  }).catch(() => { /* diam: data bawaan tetap dipakai */ });
 }
 function paintEps() {
   const box = $('dvEps');
@@ -478,6 +529,7 @@ function initAnime() {
       });
       $('aniDate').textContent = d.updated || '';
       renderShows('');
+      loadFresh(); // rilis baru otomatis di latar
     })
     .catch(() => {
       $('showGrid').innerHTML = '<p class="muted">Data anime tidak termuat. Periksa koneksi lalu refresh.</p>';
@@ -497,6 +549,23 @@ function initAnime() {
   document.addEventListener('click', (e) => {
     const w = e.target.closest('[data-watch]');
     if (w) { openDetailAnime(w.dataset.watch); return; }
+    const fr = e.target.closest('[data-fresh]');
+    if (fr) {
+      const apiid = Number(fr.dataset.fresh);
+      fr.disabled = true;
+      apiSeries(apiid).then((data) => {
+        const names = {};
+        ANI.shows.forEach((s) => { names[s.title] = 1; });
+        const title = (data.anime && data.anime.title) || ('Rilis ' + apiid);
+        const tid = 'rx_' + apiid;
+        if (!findShow(tid)) {
+          ANI.shows.unshift({ id: tid, title, cover: '', akid: apiid, episodes: (data.episodes || []).length });
+          AKMAP[tid] = { id: apiid, episodes: (data.episodes || []).length };
+        }
+        openDetailAnime(tid);
+      }).catch(() => toast('Gagal memuat judul baru')).finally(() => { fr.disabled = false; });
+      return;
+    }
     const rt = e.target.closest('[data-retry]');
     if (rt) { openDetailAnime(rt.dataset.retry); return; }
     const ep = e.target.closest('[data-ep]');
