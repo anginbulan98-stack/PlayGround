@@ -154,7 +154,9 @@ main{position:relative;z-index:1;max-width:1020px;margin:0 auto;padding:0 20px 6
   border:1px solid var(--line);border-radius:12px;padding:12px}
 .manhwa-card strong{display:block;margin-top:10px;font-size:14px}
 .manhwa-card small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
-.m-cover{display:grid;place-items:center;height:110px;border-radius:9px;font-weight:900;font-size:22px;color:#fff}
+.m-cover{display:grid;place-items:center;height:170px;border-radius:9px;font-weight:900;font-size:22px;color:#fff;position:relative;overflow:hidden}
+.m-cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.m-cover i{font-style:normal;position:relative}
 .m1{background:linear-gradient(135deg,#1c2f55,#2E7CF6)}
 .m2{background:linear-gradient(135deg,#232a3a,#5B9DFF)}
 .m3{background:linear-gradient(135deg,#0B2E6E,#2E7CF6)}
