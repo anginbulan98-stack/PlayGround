@@ -71,7 +71,7 @@
       "<option value='1080x1920'>1080×1920 — Full HD (paling aman)</option>" +
       "<option value='1440x2560' selected>1440×2560 — 2K QHD (paling tajam)</option>" +
       "</select></label>" +
-      "<label>FPS timeline<select id='ttq-fps'>" +
+      "<label>FPS timeline<select id='ttq-fpsin'>" +
       "<option value='30'>30 FPS — ngomong / daily</option>" +
       "<option value='60' selected>60 FPS — dance / transisi</option>" +
       "<option value='120'>120 FPS — slow-motion</option>" +
@@ -183,7 +183,7 @@
     }
 
     function calc() {
-      var r = q("ttq-res").value, fps = Number(q("ttq-fps").value);
+      var r = q("ttq-res").value, fps = Number(q("ttq-fpsin").value);
       var dur = Math.min(600, Math.max(1, Number(q("ttq-dur").value) || 30));
       var codec = q("ttq-codec").value;
       var br = TABLE[r][fps];
@@ -208,7 +208,7 @@
         (codec === "h265" ? "-crf 20 " : "-crf 17 ") +
         "-pix_fmt yuv420p -c:a aac -b:a 320k -ar 48000 -movflags +faststart output-tiktok-HD.mp4";
     }
-    ["ttq-res", "ttq-fps", "ttq-dur", "ttq-codec"].forEach(function (id) {
+    ["ttq-res", "ttq-fpsin", "ttq-dur", "ttq-codec"].forEach(function (id) {
       q(id).addEventListener("input", calc);
       q(id).addEventListener("change", calc);
     });
