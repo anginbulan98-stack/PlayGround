@@ -126,7 +126,26 @@ def refresh_anime():
     json.dump(ak, open("data/anikoto.json", "w"), ensure_ascii=False, indent=1)
     json.dump(anime, open("data/anime.json", "w"), ensure_ascii=False)
     sync_anime_js(anime, ak)
+    build_eps_recent()
     return changed
+
+
+def build_eps_recent():
+    """Index recency episode untuk beranda (data/eps_recent.json: akid -> {u, n}).
+    u = tanggal file episode terakhir berubah (= ada episode baru); dipakai
+    app.js mengurutkan Episode Terbaru agar judul yang baru update naik ke atas."""
+    import glob as _g
+    out = {}
+    for fp in _g.glob("data/eps/*.json"):
+        try:
+            d = json.load(open(fp, encoding="utf-8"))
+            if d.get("id") is None:
+                continue
+            out[str(d["id"])] = {"u": d.get("updated", ""), "n": len(d.get("episodes", []))}
+        except Exception:
+            pass
+    json.dump(out, open("data/eps_recent.json", "w"), ensure_ascii=False)
+    print("  eps-recent: %d entri" % len(out))
 
 
 def sync_anime_js(anime, ak):
@@ -153,21 +172,31 @@ def sync_anime_js(anime, ak):
         o = old.get(s["id"], {})
         live_n = s.get("episodes", 0) or 0
         manual_n = o.get("episodes", 0) or 0
-        out.append({
+        _ak = akid.get(s["title"]) or s.get("akid") or o.get("akid")
+        _yr = o.get("year", s.get("year", year_now)) or year_now
+        _st = o.get("status", s.get("status", ""))
+        if not _st:
+            # Judul baru tanpa status manual: tahun depan + tanpa embed = belum tayang.
+            _st = "segera" if (int(_yr) > year_now and not _ak) else "tayang"
+        e = {
             "id": s["id"], "title": s["title"], "cover": s.get("cover", ""),
-            "akid": akid.get(s["title"]) or s.get("akid") or o.get("akid"),
-            "alt": o.get("alt", ""),
+            "akid": _ak,
+            "alt": o.get("alt", "") or s.get("alt", ""),
             "episodes": max(manual_n, live_n),
-            "status": o.get("status", "tayang"), "kind": o.get("kind", "series"),
-            "year": o.get("year", year_now),
-            "genres": o.get("genres", []), "synopsis": o.get("synopsis", ""),
-        })
+            "status": _st, "kind": o.get("kind", s.get("kind", "series")),
+            "year": _yr,
+            "genres": o.get("genres", s.get("genres", [])), "synopsis": o.get("synopsis", s.get("synopsis", "")),
+        }
+        _ril = o.get("rilis", s.get("rilis", ""))
+        if _ril:
+            e["rilis"] = _ril
+        out.append(e)
     head = ("/* Guoke AMHDQ — KATALOG ANIME (satu-satunya file yang perlu diedit\n"
             "   untuk menambah/mengubah judul).\n"
             "   - episodes = TOTAL episode sebenarnya. Kalau file embed di data/eps/\n"
             "     belum selengkap itu, sisanya otomatis berlabel \"Segera hadir\".\n"
-            "   - status: \"tayang\" | \"tamat\" • kind: \"series\" | \"film\"\n"
-            "   - akid: id API anikoto (embed). Kosongkan (null) bila belum ada.\n"
+            "   - status: \"tayang\" | \"tamat\" | \"segera\" (akan rilis) • kind: \"series\" | \"film\"\n"
+            "   - akid: id API anikoto (embed). Kosongkan (null) bila belum ada / belum rilis.\n"
             "   Dibuat otomatis oleh tools/gen_anime_js.py; refresh harian via\n"
             "   tools/refresh_all.py (sync_anime_js) mempertahankan kolom manual. */\n"
             "window.GQ_ANIME = ")

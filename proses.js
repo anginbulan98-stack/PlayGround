@@ -20,6 +20,8 @@
   // toast() di app.js didefinisikan sebagai const di scope global script (var-like via const → bukan
   // di window). Panggil langsung bila ada:
   const appToast = (m) => { try { toast(m); } catch (e) {} };
+  // Kamus bahasa dari app.js (T); fallback identitas bila app.js belum termuat.
+  const _T = (typeof T === 'function') ? T : (k) => k;
 
   const drop = $('pzDrop'), fileEl = $('pzFile');
   if (!drop || !fileEl) return; // panel belum ada → diam
@@ -31,7 +33,7 @@
     if (!box || $('pzHdr')) return;
     const lb = document.createElement('label');
     lb.className = 'checkline';
-    lb.innerHTML = '<input id="pzHdr" type="checkbox" /> Video HDR / hasil pucat — konversi ke SDR (tonemap)';
+    lb.innerHTML = '<input id="pzHdr" type="checkbox" />' + _T('hdr_label');
     box.appendChild(lb);
   })();
 
@@ -109,19 +111,19 @@
   function paintMeta(f) {
     const info = $('pzInfo'), warn = $('pzWarn'), go = $('pzGo');
     const w = meta.w, h = meta.h, d = meta.dur || 0;
-    const fpsTxt = meta.fps ? meta.fps + ' fps' : '±30 fps (estimasi — browser tak mengekspos fps asli)';
+    const fpsTxt = meta.fps ? meta.fps + ' fps' : _T('fps_est');
     info.textContent = meta.unplayable
-      ? 'Asli: tak bisa diputar browser (format ' + (baseName(f.name).split('.').pop() || '?') +
-        ') — tetap bisa diproses, ffmpeg membaca langsung.'
-      : 'Asli: ' + w + '×' + h + ', ' + fpsTxt +
-        (d ? ', durasi ' + d.toFixed(1) + ' dtk' : '') + ', ' + fmtMB(f.size) + '.';
+      ? _T('pz_orig') + _T('pz_unplayable1') + (baseName(f.name).split('.').pop() || '?') +
+        _T('pz_unplayable2')
+      : _T('pz_orig') + w + '×' + h + ', ' + fpsTxt +
+        (d ? _T('pz_dur') + d.toFixed(1) + _T('pz_sec') : '') + ', ' + fmtMB(f.size) + '.';
     const over = [];
-    if (f.size > 500 * 1048576) over.push('File ' + fmtMB(f.size) + ' melebihi 500 MB — proses bisa gagal (memori HP) atau hasil > batas upload TikTok.');
-    if (d > 180) over.push('Durasi ' + d.toFixed(0) + ' dtk melebihi 3 menit — TikTok mengompres lebih agresif; pertimbangkan bagi jadi beberapa part.');
+    if (f.size > 500 * 1048576) over.push(_T('pz_over1') + fmtMB(f.size) + _T('pz_over2'));
+    if (d > 180) over.push(_T('pz_over3') + d.toFixed(0) + _T('pz_over4'));
     if (over.length) { warn.hidden = false; warn.textContent = '⚠ ' + over.join(' '); }
     else warn.hidden = true;
     go.disabled = false;
-    say('Siap diproses. Pilih mode output lalu tekan “Proses video”.');
+    say(_T('pz_ready'));
   }
 
   /* Filter -vf per mode (S = sisi pendek target: 1080 / 1440). Pola sesuai spesifikasi. */
@@ -158,17 +160,47 @@
     return vf + ',' + fpsF + ',format=yuv420p';
   }
 
-  function ffArgs(inName, filter, S, preset, xparams) {
+  function ffArgs(inName, filter, S, preset, xparams, useWm) {
     // Umpan bitrate tertinggi yang masih aman diupload (best-effort lawan
     // kompres TikTok; 2K dapat jatah lebih besar). 100% anti-kompres tidak
     // mungkin — TikTok selalu re-encode ke ~3–8 Mbps.
     const maxr = S >= 1440 ? '35M' : '25M';
     const buf = S >= 1440 ? '70M' : '50M';
-    const a = ['-i', inName, '-vf', filter,
-      '-c:v', 'libx264', '-preset', preset || 'slow', '-crf', '16'];
-    if (xparams) a.push('-x264-params', xparams); // darurat: matikan lookahead (hemat RAM)
-    return a.concat(['-maxrate', maxr, '-bufsize', buf, '-profile:v', 'high',
-      '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'out.mp4']);
+    const base = ['-c:v', 'libx264', '-preset', preset || 'slow', '-crf', '16'];
+    if (xparams) base.push('-x264-params', xparams); // darurat: matikan lookahead (hemat RAM)
+    const tail = ['-maxrate', maxr, '-bufsize', buf, '-profile:v', 'high',
+      '-c:a', 'aac', '-b:a', '192k', '-movflags', '+faststart', 'out.mp4'];
+    if (useWm) {
+      // Watermark ON: overlay PNG dari canvas (tanpa butuh font di ffmpeg).
+      const core = String(filter).replace(/,format=yuv420p$/, '');
+      let fc;
+      if (core.indexOf('[0:v]') === 0) {
+        fc = core + ',format=yuv420p[base];[base][1:v]overlay=W-w-24:H-h-24:format=auto,format=yuv420p';
+      } else {
+        fc = '[0:v]' + core + ',format=yuv420p[base];[base][1:v]overlay=W-w-24:H-h-24:format=auto,format=yuv420p';
+      }
+      return ['-i', inName, '-i', 'wm.png', '-filter_complex', fc].concat(base, tail);
+    }
+    const a = ['-i', inName, '-vf', filter].concat(base);
+    return a.concat(tail);
+  }
+
+  // Watermark PNG 440x90 transparan bertuliskan "GUOKE HD" — dibuat via canvas
+  // browser sehingga ffmpeg tinggal overlay, tanpa font freetype.
+  async function makeWatermarkBytes(fetchFile) {
+    const c = document.createElement('canvas');
+    c.width = 440; c.height = 90;
+    const x = c.getContext('2d');
+    x.clearRect(0, 0, 440, 90);
+    x.font = '900 44px system-ui,sans-serif';
+    x.textBaseline = 'middle';
+    x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 8;
+    x.fillStyle = 'rgba(255,255,255,.92)';
+    x.fillText('GUOKE HD', 18, 48);
+    const blob = await new Promise((res) => c.toBlob(res, 'image/png'));
+    const buf = new Uint8Array(await blob.arrayBuffer());
+    // fetchFile hanya untuk file input; untuk bytes langsung kembalikan Uint8Array
+    return buf;
   }
 
   /* Klasifikasi error memori: instance wasm yang abort/OOM hukumnya MATI dan
@@ -185,40 +217,99 @@
     return loadFF();
   };
 
+  // Daftar core wasm + lib JS cadangan (unpkg ↔ jsdelivr). Kalau CDN pertama
+  // diblokir provider/browser, otomatis coba berikutnya — bukan langsung gagal.
+  const CORE_URLS = [
+    'https://unpkg.com/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js',
+    'https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js',
+    'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js',
+  ];
+  const LIB_URLS = [
+    'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js',
+    'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js',
+  ];
+  function loadScriptOnce(src) {
+    return new Promise((resolve, reject) => {
+      let done = false;
+      const s = document.createElement('script');
+      s.src = src;
+      s.onload = () => { if (!done) { done = true; resolve(); } };
+      s.onerror = () => { if (!done) { done = true; try { s.remove(); } catch (e) {} reject(new Error('cdn ' + src)); } };
+      document.head.appendChild(s);
+      setTimeout(() => { if (!done) { done = true; try { s.remove(); } catch (e) {} reject(new Error('timeout ' + src)); } }, 20000);
+    });
+  }
+  async function ensureLib() {
+    if (window.FFmpeg && window.FFmpeg.createFFmpeg) return window.FFmpeg;
+    let lastErr = null;
+    for (const u of LIB_URLS) {
+      try { await loadScriptOnce(u); } catch (e) { lastErr = e; continue; }
+      if (window.FFmpeg && window.FFmpeg.createFFmpeg) return window.FFmpeg;
+    }
+    throw lastErr || new Error(_T('ff_fail'));
+  }
+
+  // Timer progres: biar kelihatan jalan (tidak dikira macet) + tampil di kartu Guoke.
+  let t0 = 0;
+  const fmtEl = (ms) => {
+    const s = Math.floor(ms / 1000);
+    return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  };
+  function bindProgress(inst) {
+    inst.setProgress(({ ratio }) => {
+      if (cancelled) return;
+      const p = Math.max(0, Math.min(1, ratio || 0));
+      const pct = Math.round(p * 100);
+      const el = t0 ? ' • ' + fmtEl(Date.now() - t0) : '';
+      $('pzProg').style.width = (p * 100).toFixed(1) + '%';
+      say(_T('pz_processing') + pct + '%' + el);
+      // Cerminkan progres ke kartu Guoke Uploader+
+      try {
+        const rf = document.getElementById('reinProgFill');
+        if (rf) rf.style.width = (p * 100).toFixed(1) + '%';
+        const rt = document.getElementById('reinStatusTitle');
+        if (rt) rt.textContent = 'Memproses ' + pct + '%';
+        const rd = document.getElementById('reinStatusDesc');
+        if (rd) rd.textContent = 'Mohon tunggu, video sedang dioptimasi…' + el;
+      } catch (e) {}
+    });
+  }
+
   function loadFF() {
     if (ff) return Promise.resolve(ff);
     if (ffLoading) return ffLoading;
     ffLoading = (async () => {
-      if (!window.FFmpeg || !window.FFmpeg.createFFmpeg) {
-        throw new Error('Pustaka ffmpeg gagal dimuat (CDN unpkg diblokir/offline). Sambungkan internet lalu coba lagi.');
-      }
-      const { createFFmpeg, fetchFile } = window.FFmpeg;
+      const lib = await ensureLib();
+      const { createFFmpeg, fetchFile } = lib;
       // Build SINGLE-THREAD (core-st): tidak butuh SharedArrayBuffer, jadi
       // jalan di hosting statis/GitHub Pages tanpa header COOP/COEP.
       // (Build multithread lama melempar "SharedArrayBuffer is not defined".)
-      const inst = createFFmpeg({
-        corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.1/dist/ffmpeg-core.js',
-        log: false,
-      });
-      inst.setProgress(({ ratio }) => {
-        if (cancelled) return;
-        const p = Math.max(0, Math.min(1, ratio || 0));
-        $('pzProg').style.width = (p * 100).toFixed(1) + '%';
-        say('Memproses… ' + Math.round(p * 100) + '%');
-      });
-      say('Memuat mesin ffmpeg (±30 MB, sekali saja)…');
-      await inst.load();
-      inst._fetchFile = fetchFile;
-      ff = inst;
-      return ff;
+      let lastErr = null;
+      for (const corePath of CORE_URLS) {
+        if (cancelled) throw { cancelled: true };
+        try {
+          const inst = createFFmpeg({ corePath, log: false });
+          bindProgress(inst);
+          say(_T('ff_loading'));
+          await inst.load();
+          inst._fetchFile = fetchFile;
+          ff = inst;
+          return ff;
+        } catch (e) {
+          if (e && (e.cancelled || e === cancelled)) throw e;
+          lastErr = e;
+        }
+      }
+      throw lastErr || new Error(_T('ff_fail'));
     })().catch((e) => { ffLoading = null; throw e; });
     return ffLoading;
   }
 
   $('pzGo').addEventListener('click', async () => {
-    if (!file) { appToast('Pilih video dulu'); return; }
+    if (!file || !file.size) { appToast(_T('file_fail')); return; }
     if (!$('pzGo') || $('pzGo').disabled) return;
     cancelled = false;
+    t0 = Date.now();
     $('pzCancel').hidden = false;
     $('pzGo').disabled = true;
     $('pzProgWrap').hidden = false;
@@ -227,13 +318,18 @@
     try {
       const mode = ($('pzMode') && $('pzMode').value) || 'auto';
       const fpsWant = ($('pzFps') && $('pzFps').value) || '60';
-      const interpWant = !!($('pzInterp') && $('pzInterp').checked);
       const hdr = !!($('pzHdr') && $('pzHdr').checked);
       const S = (mode === 'auto2k') ? 1440 : 1080;
       const w = meta && meta.w ? meta.w : 0, h = meta && meta.h ? meta.h : 0;
       const isHP = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent || '');
+      // PENTING: memori wasm terbatas (±256–512MB) — RAM 12GB tidak menambahnya.
+      // minterpolate di HP hampir pasti meledak, jadi dimatikan paksa (bukan
+      // sekadar peringatan). Output tetap 60fps mulus via duplikasi frame.
+      let interpWant = !!($('pzInterp') && $('pzInterp').checked);
       if (isHP && interpWant) {
-        toast('HP terdeteksi: interpolasi rakus memori — bila setting penuh gagal, otomatis dicoba setting ringan.');
+        interpWant = false;
+        if ($('pzInterp')) $('pzInterp').checked = false;
+        toast(_T('hp_interp_off'));
       }
       const baseFull = buildFilter(mode, w, h, fpsWant, interpWant, S);
       // Varian filter: HDR→SDR dulu bila diminta, lalu versi polos. "Bila tersedia":
@@ -251,8 +347,14 @@
       // Tangga 3 tahap: penuh → ringan → darurat. Lanjut ke tahap berikut
       // untuk SEMUA error kecuali file rusak (input error). Instance wasm
       // yang OOM/abort wajib dibuat ulang tiap tahap.
+      // HP mulai dari veryfast (bukan slow): jauh lebih hemat memori wasm +
+      // 3–5× lebih cepat, kualitas tetap tinggi (CRF 16). Desktop mulai slow.
       const LV = ['', '[Ringan] ', '[Darurat] '];
-      const tries = [
+      const tries = isHP ? [
+        { preset: 'veryfast', vfList: variantsFull, fps: fpsWant, xp: '', S: S },
+        { preset: 'ultrafast', vfList: [baseLight], fps: '30', xp: '', S: S },
+        { preset: 'ultrafast', vfList: [baseUltra], fps: '30', xp: 'rc-lookahead=0:sync-lookahead=0', S: S3 },
+      ] : [
         { preset: 'slow', vfList: variantsFull, fps: fpsWant, xp: '', S: S },
         { preset: 'veryfast', vfList: [baseLight], fps: '30', xp: '', S: S },
         { preset: 'ultrafast', vfList: [baseUltra], fps: '30', xp: 'rc-lookahead=0:sync-lookahead=0', S: S3 },
@@ -260,32 +362,42 @@
       const inName = 'in_' + Date.now() + '_' + baseName(file.name).replace(/[^a-zA-Z0-9.]/g, '_');
       let inst = await loadFF();
       if (cancelled) throw { cancelled: true };
+      // Toggle Watermark dari kartu Guoke (window.__gqWatermark; dukung nama lama)
+      const useWm = !!(window.__gqWatermark || window.__reinWatermark);
+      let wmBytes = null;
+      if (useWm) {
+        try { wmBytes = await makeWatermarkBytes(); } catch (e) { wmBytes = null; }
+      }
       let lastErr = null, ok = false, fpsOut = fpsWant, outS = S;
       for (let ti = 0; ti < tries.length && !ok; ti++) {
         const tr = tries[ti];
         if (ti > 0) {
           if (cancelled) throw { cancelled: true };
           say(tr.preset === 'ultrafast'
-            ? 'Masih berat — mencoba tahap darurat (super-hemat memori, tetap HD)…'
-            : 'Setting penuh kehabisan memori — mencoba otomatis dengan setting ringan…');
+            ? _T('try_ultra')
+            : _T('try_light'));
           $('pzProg').style.width = '0%';
           inst = await freshFF();
           if (cancelled) throw { cancelled: true };
         }
         try { inst.FS('unlink', inName); } catch (e) {}
         try { inst.FS('unlink', 'out.mp4'); } catch (e) {}
-        say(ti > 0 ? 'Menyalin file (' + tr.preset + ')…' : 'Menyalin file ke memori…');
+        try { if (useWm) inst.FS('unlink', 'wm.png'); } catch (e) {}
+        say(ti > 0 ? _T('copying1') + tr.preset + _T('copying2') : _T('copying0'));
         inst.FS('writeFile', inName, await inst._fetchFile(file));
+        if (useWm && wmBytes) {
+          try { inst.FS('writeFile', 'wm.png', wmBytes); } catch (e) {}
+        }
         for (const vf of tr.vfList) {
           if (cancelled) throw { cancelled: true };
           try {
             const isBase = vf === tr.vfList[tr.vfList.length - 1];
-            say(LV[ti] + (!isBase ? 'Mencoba konversi HDR→SDR…' : 'Memproses… 0%'));
-            await inst.run(...ffArgs(inName, vf, tr.S, tr.preset, tr.xp));
+            say(LV[ti] + (!isBase ? _T('try_hdr') : _T('processing0')));
+            await inst.run(...ffArgs(inName, vf, tr.S, tr.preset, tr.xp, useWm && wmBytes));
             ok = true;
             fpsOut = tr.fps;
             outS = tr.S;
-            say('Selesai' + (ti > 0 ? ' (' + tr.preset + (tr.S !== S ? ', 1080p' : '') + ').' : '.'));
+            say(_T('done_w') + (ti > 0 ? ' (' + tr.preset + (tr.S !== S ? ', 1080p' : '') + ').' : '.'));
             break;
           } catch (e) {
             if (cancelled) throw { cancelled: true };
@@ -308,13 +420,13 @@
       const out = $('pzOut');
       out.src = outUrl;
       out.onloadedmetadata = () => {
-        $('pzMeta').textContent = 'Hasil: ' + out.videoWidth + '×' + out.videoHeight +
-          ', ' + fpsOut + ' fps, ukuran file ' + fmtMB(blob.size) + '.';
+        $('pzMeta').textContent = _T('pz_result') + out.videoWidth + '×' + out.videoHeight +
+          ', ' + fpsOut + ' fps, ' + _T('pz_filesize') + fmtMB(blob.size) + '.';
       };
-      $('pzMeta').textContent = 'Hasil: ' + fpsOut + ' fps, ukuran file ' + fmtMB(blob.size) + '.';
+      $('pzMeta').textContent = _T('pz_result') + fpsOut + ' fps, ' + _T('pz_filesize') + fmtMB(blob.size) + '.';
       const dl = $('pzDl');
       dl.href = outUrl;
-      const fname = 'guoke-tiktok-hd-' + outS + 'p-' + fpsOut + 'fps.mp4';
+      const fname = 'guoke-uploader-hd-' + outS + 'p-' + fpsOut + 'fps.mp4';
       dl.setAttribute('download', fname);
       dl.textContent = '⬇ Download (' + fname + ')';
       // Bagikan langsung ke aplikasi TikTok (Android/HP modern): buka
@@ -334,25 +446,36 @@
         } catch (e) { sh.hidden = true; }
       }
       $('pzDone').hidden = false;
-      say('Selesai — putar pratinjau lalu tekan Download.');
-      appToast('Video HD siap didownload ⬇');
+      say(_T('done_dl'));
+      appToast(_T('hd_ready'));
       try { inst.FS('unlink', inName); } catch (e) {}
       try { inst.FS('unlink', 'out.mp4'); } catch (e) {}
       $('pzDone').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (e) {
-      if (e && e.cancelled) { say('Dibatalkan.'); }
+      if (e && e.cancelled) { say(_T('cancelled')); }
       else {
         const msg = String((e && e.message) || e || '');
+        let shown;
         if (/memory|alloc|abort|OOM|out of memory|enlarge memory/i.test(msg)) {
-          say('');
-          toast('RAM HP tidak cukup (3 tahap otomatis sudah dicoba). Jalan keluar: potong video jadi <10 dtk, atau tanpa proses — salin Preset di bawah untuk export via CapCut (tanpa makan RAM).');
+          shown = _T('ram_fail');
+        } else if (/^(cdn|timeout) |Failed to fetch|NetworkError|network|ERR_/i.test(msg)) {
+          shown = _T('ff_fail');
         } else if (/filter|vf|tonemap|zscale|Invalid argument|EINVAL/i.test(msg)) {
-          say('');
-          toast('Filter video ditolak mesin — coba mode “Otomatis”, matikan opsi HDR/interpolasi, lalu ulangi.');
+          shown = _T('filter_fail');
         } else {
-          say('');
-          toast(msg.length < 200 ? msg : 'File tidak bisa dibaca/diproses. Coba MP4 H.264 dulu.');
+          shown = msg.length < 200 ? (msg || _T('file_fail')) : _T('file_fail');
         }
+        // Tampilkan penyebabnya di layar (jangan kosong) + toast + kartu Guoke
+        say(shown);
+        toast(shown.length < 160 ? shown : _T('file_fail'));
+        try {
+          const rt = document.getElementById('reinStatusTitle');
+          if (rt) rt.textContent = 'Gagal ✕';
+          const rd = document.getElementById('reinStatusDesc');
+          if (rd) rd.textContent = shown;
+          const pw = document.getElementById('reinProgWrap');
+          if (pw) pw.hidden = true;
+        } catch (_) {}
       }
     } finally {
       $('pzCancel').hidden = true;
@@ -364,6 +487,6 @@
     cancelled = true;
     try { if (ff) ff.exit(); } catch (e) {}
     ff = null; ffLoading = null;
-    say('Membatalkan…');
+    say(_T('cancelling'));
   });
 })();

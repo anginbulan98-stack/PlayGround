@@ -73,7 +73,10 @@ def parse_detail(aid, d):
         except ValueError:
             year = int(TODAY[:4])
         status_raw = str(anime.get("status") or "")
-        status = "tayang" if ("Continu" in status_raw or "Airing" in status_raw or "Upcoming" in status_raw) else "tamat"
+        if "Upcoming" in status_raw or "Not Yet" in status_raw:
+            status = "segera"
+        else:
+            status = "tayang" if ("Continu" in status_raw or "Airing" in status_raw) else "tamat"
         ttype = str(terms.get("type", ""))
         if total == 1:
             kind = "film" if "mov" in ttype.lower() else "series"

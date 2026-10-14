@@ -113,7 +113,7 @@ def main():
         year = (m.get("startDate") or {}).get("year") or int(TODAY[:4])
         genres = (m.get("genres") or [])[:3]
         desc = ihtml.unescape(re.sub(r"<[^>]+>", "", str(m.get("description") or ""))).strip()[:300]
-        status = "tayang" if str(m.get("status")) in ("RELEASING", "NOT_YET_RELEASED") else "tamat"
+        status = "segera" if str(m.get("status")) == "NOT_YET_RELEASED" else ("tayang" if str(m.get("status")) == "RELEASING" else "tamat")
         kind = "film" if str(m.get("format")) in ("MOVIE",) else "series"
         akid = akmap.get(norm(title))
         # cocokkan juga romaji bila english tak cocok
@@ -163,7 +163,7 @@ def main():
         if not s.get("synopsis"):
             s["synopsis"] = ihtml.unescape(re.sub(r"<[^>]+>", "", str(g.get("description") or "")))[:300]
         if not s.get("status"):
-            s["status"] = "tayang" if str(g.get("status")) in ("RELEASING", "NOT_YET_RELEASED") else "tamat"
+            s["status"] = "segera" if str(g.get("status")) == "NOT_YET_RELEASED" else ("tayang" if str(g.get("status")) == "RELEASING" else "tamat")
         if not s.get("kind"):
             s["kind"] = "film" if str(g.get("format")) in ("MOVIE",) else "series"
         n_patch += 1

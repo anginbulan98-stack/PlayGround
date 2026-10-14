@@ -74,7 +74,10 @@ def fetch_series(aid):
         except ValueError:
             year = int(TODAY[:4])
         status_raw = str(anime.get("status") or "")
-        status = "tayang" if ("Continu" in status_raw or "Airing" in status_raw or "Upcoming" in status_raw) else "tamat"
+        if "Upcoming" in status_raw or "Not Yet" in status_raw:
+            status = "segera"
+        else:
+            status = "tayang" if ("Continu" in status_raw or "Airing" in status_raw) else "tamat"
         kind = "film" if (total <= 1 and str(anime.get("duration") or "").strip() == "") else ("film" if total == 1 and "movie" in str((anime.get("terms_by_type") or {}).get("type", "")).lower() else "series")
         # film: total==1 + type Movie; sederhanakan: total==1 -> film bila kata Movie ada, else series 1ep
         ttypes = str((anime.get("terms_by_type") or {}).get("type", ""))
