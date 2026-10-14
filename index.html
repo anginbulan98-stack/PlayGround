@@ -51,6 +51,11 @@
     </div>
     <p id="mwCount" class="muted small"></p>
     <div id="mwGrid" class="show-grid"></div>
+    <div id="mdxWrap" hidden>
+      <h3 style="margin:14px 0 2px;font-size:15px">🌐 Hasil arsip live</h3>
+      <p class="muted small">Judul lain di luar katalog — baca langsung di sini.</p>
+      <div id="mdxGrid" class="show-grid"></div>
+    </div>
   </section>
 
   <!-- HALAMAN DETAIL (episode / chapter) -->
@@ -99,6 +104,19 @@
       <div id="freshGrid" class="show-grid"></div>
     </div>
     <div id="showGrid" class="show-grid"></div>
+    <div id="jxWrap">
+      <h3 style="margin:16px 0 2px;font-size:15px">🌐 Jelajahi semua anime</h3>
+      <p class="muted small">Katalog live ribuan judul — cari apa pun, klik untuk menonton langsung di sini.</p>
+      <div class="src-tabs">
+        <button class="btn btn-small" data-jxmode="top" type="button">Populer</button>
+        <button class="btn btn-small btn-ghost" data-jxmode="airing" type="button">Sedang Tayang</button>
+      </div>
+      <div class="ani-search">
+        <input id="jxSearch" type="search" placeholder="Cari semua anime… (mis. One Piece)" autocomplete="off" />
+      </div>
+      <div id="jxGrid" class="show-grid"></div>
+      <button id="jxMore" class="btn btn-small btn-ghost" type="button" style="width:100%;margin-top:10px">Muat lagi</button>
+    </div>
   </section>
 
   <!-- PLAYER -->

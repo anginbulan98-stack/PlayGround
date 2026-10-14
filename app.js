@@ -123,6 +123,7 @@ function setCat(cat) {
   const m = $('manhwaPanel'), a = $('animePanel');
   if (m) m.hidden = !showManhwa;
   if (a) a.hidden = !showAnime;
+  if (showManhwa) ensureMw(); // data 4MB+ hanya diunduh saat dibutuhkan
 }
 document.querySelectorAll('.catbar .cat').forEach((b) =>
   b.addEventListener('click', () => {
@@ -610,17 +611,25 @@ function initAnime() {
   });
 }
 function initManhwa() {
+  $('mwSearch').addEventListener('input', (e) => {
+    renderMw(e.target.value);
+    liveMdxSearch(e.target.value);
+  });
+}
+function ensureMw() {
+  if (MW.loaded || MW.loading) return;
+  MW.loading = true;
   fetch('data/manhwa.json')
     .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
     .then((d) => {
-      MW = d;
+      MW = Object.assign(d, { loaded: true, loading: false });
       $('mwDate').textContent = d.updated || '';
-      renderMw('');
+      renderMw($('mwSearch').value);
     })
     .catch(() => {
+      MW.loading = false;
       $('mwGrid').innerHTML = '<p class="muted">Data manhwa tidak termuat. Periksa koneksi lalu refresh.</p>';
     });
-  $('mwSearch').addEventListener('input', (e) => renderMw(e.target.value));
 }
 initAnime();
 initManhwa();
