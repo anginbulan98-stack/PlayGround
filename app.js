@@ -663,18 +663,6 @@ function buildFullEps(showId, total, items) {
   DV.total = N;
   DV.play = play;
   DV.eps = eps;
-  DV.gsize = N > 300 ? 100 : 50;
-  if (DV.range * DV.gsize >= N) DV.range = 0;
-  paintEpRange();
-}
-function paintEpRange() {
-  const sel = $('dvEpRange');
-  if (!sel || !DV.total) return;
-  const g = DV.gsize, n = Math.ceil(DV.total / g);
-  sel.innerHTML = Array.from({ length: n }, (_, i) => {
-    const a = i * g + 1, b = Math.min((i + 1) * g, DV.total);
-    return '<option value="' + i + '"' + (i === DV.range ? ' selected' : '') + '>EP ' + a + '–' + b + '</option>';
-  }).join('');
 }
 function openDetailAnime(showId, nav) {
   const s = findShow(showId);
@@ -694,14 +682,12 @@ function openDetailAnime(showId, nav) {
     esc(metaBits.join(' • ')) + ' • tonton langsung di sini</p>' +
     (s.synopsis ? '<p class="muted small">' + esc(s.synopsis) + '</p>' : '') + '</div></div>' +
     '<div class="ep-tools">' +
-    '<label>Grup episode <select id="dvEpRange" aria-label="Grup episode"></select></label>' +
     '<div class="src-tabs" role="group" aria-label="Urutan episode">' +
     '<button class="btn btn-small" data-epsort="asc" type="button">Terlama dulu</button>' +
     '<button class="btn btn-small btn-ghost" data-epsort="desc" type="button">Terbaru dulu</button>' +
     '</div></div>' +
     '<div class="ani-search"><input id="dvEpSearch" type="search" placeholder="Cari episode… (mis. 12)" autocomplete="off"></div>' +
     '<div id="dvEps"><p class="muted">Memuat daftar episode…</p></div>';
-  paintEpRange();
   // URL unik per anime (push bila bukaan baru; pindah judul = replace; route = diam)
   if (nav !== false) pushView('#/tonton/' + showId, { cat: CURCAT, view: 'ani', id: showId }, aniFresh);
   if (!ak || !ak.id) {
@@ -758,8 +744,7 @@ function paintEps() {
   if (q) {
     list = DV.eps.filter((ep) => String(ep.number).includes(q));
   } else {
-    const a = DV.range * DV.gsize + 1, b = Math.min((DV.range + 1) * DV.gsize, DV.total);
-    list = DV.eps.filter((ep) => ep.number >= a && ep.number <= b);
+    list = DV.eps.slice();
   }
   list = list.slice().sort((x, y) => DV.sort === 'desc' ? y.number - x.number : x.number - y.number);
   box.innerHTML = '<div class="ep-grid">' + list.map((ep) => {
@@ -770,8 +755,7 @@ function paintEps() {
     return '<button class="ep-btn' + (isNew ? ' is-new' : '') + '" data-ep="' + DV.id + ':' + ep.number + '" type="button" title="' + esc((ep.title || ('Episode ' + ep.number)) + (isNew ? ' — BARU' : '')) + '">' + ep.number + (isNew ? '<i>●</i>' : '') + '</button>';
   }).join('') + '</div><p class="muted small">' +
     (q ? list.length + ' hasil untuk “' + esc(q) + '”.'
-      : 'EP ' + (DV.range * DV.gsize + 1) + '–' + Math.min((DV.range + 1) * DV.gsize, DV.total) +
-        ' dari ' + DV.total + ' episode') +
+      : DV.total + ' episode') +
     ' — klik nomor untuk menonton. <span class="ep-legend"><b class="lg-new">tepi biru</b>=terbaru, <b class="lg-soon">gelap</b>=segera hadir.</span></p>';
 }
 
@@ -1217,11 +1201,6 @@ function initAnime() {
     if (e.target && e.target.id === 'dvEpSearch' && DV.type === 'anime') {
       DV.filter = e.target.value;
       paintEps();
-    }
-    if (e.target && e.target.id === 'dvEpRange' && DV.type === 'anime') {
-      DV.range = Number(e.target.value) || 0;
-      paintEps();
-      $('dvEps').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
     if (e.target && e.target.id === 'dvChSearch' && DVM.id) {
       DVM.filter = e.target.value;
@@ -1831,13 +1810,6 @@ async function jxMoreLive() {
       rdW.sync(willHide);
     }, { passive: true });
   }
-  // Pengaman: <select> grup episode juga merespons event change (selain input)
-  document.addEventListener('change', (e) => {
-    if (e.target && e.target.id === 'dvEpRange' && DV.type === 'anime') {
-      DV.range = Number(e.target.value) || 0;
-      paintEps();
-    }
-  });
 })();
 
 /* --- Navigasi kategori + tombol Back per kategori (tanpa reload, tanpa lempar ke atas) ---
