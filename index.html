@@ -66,15 +66,42 @@
     </div>
   </section>
 
-  <!-- ANIME -->
+  <!-- ANIME : nonton langsung di sini -->
   <section id="animePanel" class="panel" hidden>
-    <p class="eyebrow">◆ ANIME</p>
-    <h2>Koleksi Anime</h2>
-    <p class="muted">Kategori Anime (mengikuti struktur Guoke: <span class="code-inline">Semua / Anime / Manhwa</span>). Lihat koleksi lengkap di website Guoke.</p>
+    <p class="eyebrow">◆ ANIME • NONTON LANGSUNG</p>
+    <h2>Nonton Anime di sini</h2>
+    <p class="muted">Data rilis dari nyaa.si (diperbarui <span id="nyaaDate">–</span>). Klik <strong>Nonton</strong> untuk streaming langsung di browser, atau buka magnet di aplikasi torrent-mu.</p>
+    <div class="ani-search">
+      <input id="aniSearch" type="search" placeholder="Cari judul anime / rilis…" autocomplete="off" />
+      <button id="aniLive" class="btn btn-small btn-ghost" type="button">Cari live di nyaa.si</button>
+    </div>
+    <p id="aniCount" class="muted small"></p>
+    <div id="showGrid" class="show-grid"></div>
+    <div id="relWrap" hidden>
+      <button id="relBack" class="btn btn-small btn-ghost" type="button">← Semua Anime</button>
+      <h3 id="relTitle"></h3>
+      <div id="relList" class="rel-list"></div>
+    </div>
     <div class="cta-row">
       <a class="btn btn-ghost" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">Lihat di Guoke</a>
     </div>
+    <p class="muted small">Catatan jujur: streaming browser butuh peer WebRTC — untuk torrent biasa sering tidak tersedia, kalau begitu pakai tombol Magnet. Format MKV/HEVC tidak bisa diputar browser; pilih rilis MP4 bila ada.</p>
   </section>
+
+  <!-- PLAYER -->
+  <div id="playerModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Nonton anime">
+    <div class="pbox">
+      <div class="phead"><strong id="pTitle">Nonton</strong><button id="pClose" type="button" aria-label="Tutup">✕</button></div>
+      <video id="pVideo" controls playsinline preload="metadata"></video>
+      <p id="pStatus" class="muted small"></p>
+      <select id="pFiles" class="pfiles" hidden></select>
+      <div class="btn-row">
+        <button id="pMagnet" class="btn btn-small" type="button">Buka Magnet</button>
+        <button id="pCopy" class="btn btn-small btn-ghost" type="button">Salin Magnet</button>
+        <a id="pGuoke" class="btn btn-small btn-ghost" href="https://anginbulan98-stack-guoke2-0-b69e7dbe3d9d.omgithub.com/" target="_blank" rel="noopener">Lihat di Guoke</a>
+      </div>
+    </div>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
