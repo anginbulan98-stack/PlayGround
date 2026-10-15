@@ -84,7 +84,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .cmp-hero{text-align:center;margin-bottom:20px}
 .cmp-stage{display:flex;justify-content:center}
 .phone-frame{width:min(100%,340px);padding:10px;background:#141419;border:1px solid var(--border-hi);border-radius:30px}
-.cmp{position:relative;height:min(70vh,540px);aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#0A0A0D;cursor:ew-resize;--pos:50%;user-select:none;touch-action:none}
+.cmp{position:relative;height:min(70vh,540px);aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:#0A0A0D;cursor:ew-resize;--pos:50%;user-select:none;touch-action:none}
 .cmp-layer{position:absolute;inset:0}
 .cmp-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;background:#0A0A0D}
 .cmp-before{filter:blur(2px) saturate(.55) brightness(.85)}
@@ -255,11 +255,11 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 </div></section>
 <section class="section"><div class="cmp-hero"><h2>Lihat perbedaannya</h2><p>Klip yang sama, sebelum dan sesudah. Geser untuk membandingkan.</p></div>
 <div class="cmp-stage"><div class="phone-frame"><div class="cmp" id="cmp" style="--pos:50%">
-<div class="cmp-layer"><video class="cmp-vid" src="assets/compare-anime.webm" muted loop playsinline preload="none" aria-label="After"></video><div class="scene-cap">Tajam · Detail utuh · Warna hidup</div></div>
-<div class="cmp-layer cmp-a"><video class="cmp-vid cmp-before" src="assets/compare-anime.webm" muted loop playsinline preload="none" aria-label="Before"></video><div class="scene-cap">Buram · Pecah · Kompres TikTok</div></div>
+<div class="cmp-layer"><video class="cmp-vid" src="assets/compare-edit.mp4" muted loop playsinline preload="none" aria-label="After"></video><div class="scene-cap">Tajam · Detail utuh · Warna hidup</div></div>
+<div class="cmp-layer cmp-a"><video class="cmp-vid cmp-before" src="assets/compare-edit.mp4" muted loop playsinline preload="none" aria-label="Before"></video><div class="scene-cap">Buram · Pecah · Kompres TikTok</div></div>
 <span class="cmp-tag a">Before · 540p 30fps</span><span class="cmp-tag b">After · 4K 120fps</span>
 <div class="cmp-line"></div><div class="cmp-hand" id="cmp-hand">⇔</div>
-</div></div><p class="cmp-credit">Klip: TVアニメ『ラーメン赤猫』ティザーPV ©アンギャマン／集英社・ラーメン赤猫製作委員会 · CC BY 3.0 via Wikimedia Commons</p></div></section>
+</div></div><p class="cmp-credit">Klip: anime edit Akaza/Demon Slayer 1:1 oleh <b>@marli.ae</b> via TikTok · 4K 120fps</p></div></section>
 </main>
 <section class="faq container"><div class="section-kicker">Bantuan</div><div class="section-title">Pertanyaan Umum</div><div id="faq-list"></div>
 <p class="faq-support">Ada kendala? Laporkan ke kami di Discord. <a href="#/tiers" style="color:var(--green)">Gabung di sini</a></p></section>
@@ -809,6 +809,19 @@ let apWorker=null,apWorkerURL=null,apReadyState='idle',apReadyWaiters=[],apPendi
 /* Badan worker didefinisikan sebagai fungsi agar lolos syntax-check & gampang dibaca.
    WAJIB mandiri: tidak boleh memakai variabel di luar fungsi ini. */
 function apWorkerFn(){
+ // AKAR MASALAH (#1): ffmpeg.min.js@0.11.6 (bundle webpack UMD) menyentuh
+ // `document.baseURI` saat di-load (public-path runtime). Di dalam Worker
+ // tidak ada `document` -> selalu ReferenceError, SEMUA sumber (lokal + CDN)
+ // gagal di tahap shim dan disalahlaporkan sebagai "[network]".
+ // Stub minimal ini membuat importScripts(shim) berhasil; jalur worker
+ // FFmpeg (getCreateFFmpegCore) memang tidak butuh DOM asli.
+ try{
+  if(typeof self.document==='undefined'){
+   self.document={baseURI:(self.location&&self.location.href)||'',currentScript:null,
+    getElementsByTagName:function(){return[];},
+    createElement:function(){throw new Error('no DOM di worker');}};
+  }
+ }catch(e){}
  let inst=null;
  self.onmessage=function(e){
   const m=e.data||{};
@@ -862,14 +875,14 @@ function apWorkerFn(){
     try{
      for(const s of m.sources){
       self.postMessage({type:'log',message:'Sumber: '+s.label});
-      if(!self.FFmpeg){
-       let umdOk=false;
-       for(const u of s.umd){
-        try{self.postMessage({type:'log',message:'Memuat shim '+u});importScripts(u);umdOk=!!self.FFmpeg;if(umdOk)break;}
-        catch(err){self.postMessage({type:'log',message:'GAGAL shim: '+u+' — '+String((err&&err.message)||err)});lastErr={kind:'network',detail:'shim gagal: '+u};}
+       if(!self.FFmpeg){
+        let umdOk=false;
+        for(const u of s.umd){
+         try{self.postMessage({type:'log',message:'Memuat shim '+u});importScripts(u);umdOk=!!self.FFmpeg;if(umdOk){self.postMessage({type:'log',message:'Shim OK: '+u});break;}}
+         catch(err){const em=String((err&&err.stack)||(err&&err.message)||err).slice(0,220);self.postMessage({type:'log',message:'GAGAL shim: '+u+' — '+em});lastErr={kind:'shim',detail:em+' — '+u};}
+        }
+        if(!umdOk){self.postMessage({type:'log',message:'Shim gagal dari '+s.label+', lanjut sumber berikut…'});continue;}
        }
-       if(!umdOk){self.postMessage({type:'log',message:'Shim gagal dari '+s.label+', lanjut sumber berikut…'});continue;}
-      }
       let heldBlobs=[];
       const dropBlobs=function(){for(const u of heldBlobs){try{URL.revokeObjectURL(u);}catch(e){}}heldBlobs=[];};
       const toBlobURL=function(bytes,type){const u=URL.createObjectURL(new Blob([bytes],{type:type}));heldBlobs.push(u);return u;};
@@ -1068,24 +1081,33 @@ async function finishDownload(blob,suffix){
    Dipakai bila FFmpeg tak bisa diunduh (file://, CDN diblokir operator/DNS).
    VideoEncoder H.264 + AudioEncoder AAC bawaan browser, lalu di-mux ke MP4
    (faststart) oleh muxer di bawah. Tanpa fetch sama sekali. */
+async function nativeTrialVideo(codec){
+ // trial sungguhan: configure + encode 1 frame + flush, wajib ada chunk keluar
+ return new Promise((done)=>{
+  let finished=false;
+  const fin=(v)=>{if(!finished){finished=true;done(v);}};
+  try{
+   const c=document.createElement('canvas');c.width=64;c.height=64;
+   const g=c.getContext('2d');g.fillStyle='#f00';g.fillRect(0,0,64,64);
+   let got=false;
+   const enc=new VideoEncoder({output:()=>{got=true;try{enc.close();}catch(e){}fin(true);},error:()=>{try{enc.close();}catch(e){}fin(false);}});
+   enc.configure({codec:codec,width:64,height:64,bitrate:100000,framerate:10,latencyMode:'realtime'});
+   const f=new VideoFrame(c,{timestamp:0});
+   enc.encode(f,{keyFrame:true});f.close();
+   enc.flush().then(()=>{if(!got){try{enc.close();}catch(e){}fin(false);}}).catch(()=>fin(false));
+   setTimeout(()=>{try{enc.close();}catch(e){}fin(false);},5000);
+  }catch(e){fin(false);}
+ });
+}
 let _nativeProbe;
 async function nativeProbe(){
  if(_nativeProbe!==undefined)return _nativeProbe;
- const res={video:false,audio:false};
+ const res={video:false,audio:false,codecs:[]};
  try{
-  const c=document.createElement('canvas');c.width=64;c.height=64;
-  const g=c.getContext('2d');g.fillStyle='#f00';g.fillRect(0,0,64,64);
-  res.video=await new Promise((done)=>{
-   let finished=false;
-   const fin=(v)=>{if(!finished){finished=true;done(v);}};
-   try{
-    const enc=new VideoEncoder({output:()=>{try{enc.close();}catch(e){}fin(true);},error:()=>{try{enc.close();}catch(e){}fin(false);}});
-    enc.configure({codec:'avc1.42001f',width:64,height:64,bitrate:100000,framerate:10,latencyMode:'realtime'});
-    const f=new VideoFrame(c,{timestamp:0});
-    enc.encode(f,{keyFrame:true});f.close();
-    setTimeout(()=>{try{enc.close();}catch(e){}fin(false);},4000);
-   }catch(e){fin(false);}
-  });
+  for(const cc of ['avc1.640028','avc1.42001f']){
+   try{if(await nativeTrialVideo(cc)){res.codecs.push(cc);}}catch(e){}
+  }
+  res.video=res.codecs.length>0;
  }catch(e){}
  try{
   const AC=window.AudioContext||window.webkitAudioContext;
@@ -1128,13 +1150,14 @@ function mp4Avc1(w,h,avcC){return mp4Box('avc1',new Uint8Array(6),mp4U16(1),new 
 function mp4Esds(asc,maxBr,avgBr){
  const b128=(len)=>{const st=[];let x=len;do{st.unshift(x&127);x>>=7;}while(x>0);for(let i=0;i<st.length-1;i++)st[i]|=128;return new Uint8Array(st);};
  const tag=(t,body)=>mp4Concat([new Uint8Array([t]),b128(body.length),body]);
- const cfg=mp4Concat([new Uint8Array([0x40,0x15,0,0,0]),mp4U32(maxBr),mp4U32(avgBr)]);
- return mp4Full('esds',0,0,mp4Concat([mp4U32(1),tag(4,mp4Concat([cfg,tag(5,asc),tag(6,new Uint8Array([2]))]))]));
+ const cfg=mp4Concat([new Uint8Array([0x40,0x15,0x00,0x06,0x00]),mp4U32(maxBr),mp4U32(avgBr)]);
+ return mp4Full('esds',0,0,mp4Concat([mp4U16(1),mp4U8(0),tag(4,mp4Concat([cfg,tag(5,asc),tag(6,new Uint8Array([2]))]))]));
 }
 function mp4Mp4a(sr,ch,esds){return mp4Box('mp4a',new Uint8Array(6),mp4U16(1),new Uint8Array(8),mp4U16(ch),mp4U16(16),mp4U32(0),mp4U32(sr*65536),esds);}
 function mp4Stsd(entry){return mp4Full('stsd',0,0,mp4U32(1),entry);}
 function mp4Stts(deltas){const runs=[];for(const d of deltas){const l=runs[runs.length-1];if(l&&l[1]===d)l[0]++;else runs.push([1,d]);}return mp4Full('stts',0,0,mp4U32(runs.length),mp4Concat(runs.map(r=>mp4Concat([mp4U32(r[0]),mp4U32(r[1])]))));}
 function mp4Stsc(n){return mp4Full('stsc',0,0,mp4U32(1),mp4U32(1),mp4U32(n),mp4U32(1));}
+function mp4Stss(nonsync){return mp4Full('stss',0,0,mp4U32(nonsync.length),mp4Concat(nonsync.map(mp4U32)));}
 function mp4Stsz(sizes){return mp4Full('stsz',0,0,mp4U32(0),mp4U32(sizes.length),mp4Concat(sizes.map(mp4U32)));}
 function mp4Stco(offs){return mp4Full('stco',0,0,mp4U32(offs.length),mp4Concat(offs.map(mp4U32)));}
 function annexBtoMP4(data,naluLen){
@@ -1163,7 +1186,8 @@ function muxMP4(v,a){
  const maxBr=Math.max(...v.samples.map(s=>s.data.length))*8;
  const build=(vOff,aOff)=>{
   const ventry=mp4Avc1(v.w,v.h,v.avcC);
-  const vstbl=mp4Box('stbl',mp4Stsd(ventry),mp4Stts(vdeltas),mp4Stsc(v.samples.length),mp4Stsz(v.samples.map(s=>s.data.length)),mp4Stco([vOff]));
+  const vns=v.samples.map((s,i)=>(s.sync||i===0)?null:i+1).filter(x=>x!==null);
+  const vstbl=mp4Box('stbl',mp4Stsd(ventry),mp4Stts(vdeltas),mp4Stsc(v.samples.length),mp4Stsz(v.samples.map(s=>s.data.length)),mp4Stco([vOff]),...(vns.length?[mp4Stss(vns)]:[]));
   const vminf=mp4Box('minf',mp4Vmhd(),mp4Dinf(),vstbl);
   const vmdia=mp4Box('mdia',mp4Mdhd(v.ts,vdur),mp4Hdlr('vide'),vminf);
   const vtrak=mp4Box('trak',mp4Tkhd(1,vdur/1000,v.w,v.h),vmdia);
