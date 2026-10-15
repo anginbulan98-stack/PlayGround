@@ -95,6 +95,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .scene-cap{position:absolute;inset:auto 0 26px;text-align:center;font-family:var(--mono);font-size:12px;color:#fff}
 .cmp-line{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;background:#fff;z-index:3}
 .cmp-hand{position:absolute;top:50%;left:var(--pos);transform:translate(-50%,-50%);z-index:4;width:38px;height:38px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-weight:900}
+.cmp-sound{position:absolute;bottom:44px;right:10px;z-index:6;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center}
 .cmp-tag{position:absolute;top:10px;z-index:5;font-family:var(--mono);font-size:10px;border-radius:5px;padding:3px 7px;background:rgba(0,0,0,.6)}
 .cmp-tag.a{left:8px;color:#fff}.cmp-tag.b{right:8px;color:var(--green2)}
 /* FAQ */
@@ -259,7 +260,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 <div class="cmp-layer cmp-a"><video class="cmp-vid cmp-before" src="assets/compare-edit.mp4" muted loop playsinline preload="none" aria-label="Before"></video><div class="scene-cap">Buram · Pecah · Kompres TikTok</div></div>
 <span class="cmp-tag a">Before · 540p 30fps</span><span class="cmp-tag b">After · 4K 120fps</span>
 <div class="cmp-line"></div><div class="cmp-hand" id="cmp-hand">⇔</div>
-</div></div><p class="cmp-credit">Klip: anime edit Akaza/Demon Slayer 1:1 oleh <b>@marli.ae</b> via TikTok · 4K 120fps</p></div></section>
+<button class="cmp-sound" id="cmp-sound" aria-label="Nyalakan/matikan suara">🔇</button>
+</div></div></div><p class="cmp-credit">Klip: anime edit Akaza/Demon Slayer 1:1 oleh <b>@marli.ae</b> via TikTok · 4K 120fps</p></section>
 </main>
 <section class="faq container"><div class="section-kicker">Bantuan</div><div class="section-title">Pertanyaan Umum</div><div id="faq-list"></div>
 <p class="faq-support">Ada kendala? Laporkan ke kami di Discord. <a href="#/tiers" style="color:var(--green)">Gabung di sini</a></p></section>
@@ -525,6 +527,10 @@ document.querySelectorAll('.faq-q').forEach(b=>b.onclick=()=>b.parentElement.cla
  const vids=[...c.querySelectorAll('video')];
  const start=()=>{vids.forEach(v=>{if(v.paused)v.play().catch(()=>{});});};
  if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){start();io.disconnect();}});},{threshold:.15});io.observe(c);}else{start();}
+ // jaga kedua video tetap sinkron (file sama, cegah geser suara/gambar)
+ setInterval(()=>{if(vids.length===2&&!vids[0].paused&&!vids[1].paused){const d=Math.abs(vids[0].currentTime-vids[1].currentTime);if(d>0.35)vids[1].currentTime=vids[0].currentTime;}},1000);
+ const snd=$('cmp-sound');
+ if(snd)snd.onclick=(e)=>{e.stopPropagation();const on=vids[0]&&!vids[0].muted;vids.forEach(v=>{v.muted=on;if(v.paused)v.play().catch(()=>{});});snd.textContent=on?'🔇':'🔊';};
 })();
 
 /* ============ OPTIMIZER (no re-encode: faststart + metadata) ============ */
@@ -867,9 +873,30 @@ function apWorkerFn(){
    })();
   }
   function ewErrStr(e){return '['+e.kind+'] '+e.detail+(e.status?' (HTTP '+e.status+')':'');}
-  if(m.type==='init'){
-   (async function(){
-    const timeoutMs=m.timeout||90000,attempts=m.attempts||3,loadTimeout=m.loadTimeout||120000;
+   if(m.type==='init'){
+    (async function(){
+     // Shim UMD @ffmpeg/ffmpeg butuh document (createElement script + head).
+     // Di worker tidak ada DOM: sediakan stub minimal agar importScripts jalan.
+     try{
+      if(typeof self.document==='undefined'){
+       self.document={
+        baseURI:(self.location&&self.location.href)||'',
+        currentScript:null,
+        createElement:function(tag){
+         if(String(tag).toLowerCase()!=='script')return{};
+         const el={type:'',async:true};
+         let _src='',_onload=null,_onerror=null;
+         Object.defineProperty(el,'src',{get:function(){return _src;},set:function(u){_src=u;try{importScripts(u);setTimeout(function(){if(_onload)_onload();},0);}catch(e){setTimeout(function(){if(_onerror)_onerror(e);},0);}}});
+         Object.defineProperty(el,'onload',{get:function(){return _onload;},set:function(f){_onload=f;}});
+         Object.defineProperty(el,'onerror',{get:function(){return _onerror;},set:function(f){_onerror=f;}});
+         return el;
+        },
+        getElementsByTagName:function(){return[{appendChild:function(){}}];},
+        head:{appendChild:function(){}}
+       };
+      }
+     }catch(e){}
+     const timeoutMs=m.timeout||90000,attempts=m.attempts||3,loadTimeout=m.loadTimeout||120000;
     function prog(p){self.postMessage({type:'engine-progress',loaded:p.loaded,total:p.total,cached:!!p.cached,kind:p.kind});}
     let lastErr={kind:'unknown',detail:'tidak diketahui'};
     try{
@@ -1243,29 +1270,27 @@ async function runAPNative(o){
  const pixels=tw*th;
  const br=Math.round(Math.min(20000000,Math.max(6000000,pixels/2073600*14000000)));
  const mbs=pixels/256*fps0;
- let lvlHex='28',lvlN='4.0';
- if(mbs>245760){lvlHex='2a';lvlN='4.2';}
- if(mbs>522240){lvlHex='33';lvlN='5.1';}
- if(mbs>983040){lvlHex='34';lvlN='5.2';}
- const codecs=['avc1.64'+lvlHex,'avc1.42'+'28'];
- log('Native: '+tw+'×'+th+' @'+fps0+'fps · H.264 High L'+lvlN+' · ~'+(br/1e6).toFixed(1)+' Mbps');
+ let lvlHex='28';
+ if(mbs>245760)lvlHex='2a';
+ if(mbs>522240)lvlHex='33';
+ if(mbs>983040)lvlHex='34';
+ const candList=[...new Set([...(o.nat.codecs||[]),'avc1.64'+lvlHex,'avc1.42'+lvlHex,'avc1.42001f'])];
+ log('Native: '+tw+'×'+th+' @'+fps0+'fps · ~'+(br/1e6).toFixed(1)+' Mbps · kandidat: '+candList.join(', '));
  const url=URL.createObjectURL(curFile);
- const v=document.createElement('video');
- v.muted=true;v.playsInline=true;v.preload='auto';v.src=url;
+ const canvas=document.createElement('canvas');canvas.width=tw;canvas.height=th;
+ const ctx=canvas.getContext('2d',{alpha:false});
+ const cleanup=()=>{try{URL.revokeObjectURL(url);}catch(e){}window.__natCtl=null;};
  window.__natCtl=null;
  let venc=null,aenc=null,rejSampling=null;
- const cleanup=()=>{try{URL.revokeObjectURL(url);}catch(e){}window.__natCtl=null;};
- window.__natCtl={abort:()=>{cancelled=true;try{v.pause();}catch(e){}try{venc&&venc.close();}catch(e){}try{aenc&&aenc.close();}catch(e){}if(rejSampling)rejSampling(new Error('Dibatalkan pengguna.'));}};
+ const mkVideo=()=>{
+  const vv=document.createElement('video');
+  vv.muted=true;vv.playsInline=true;vv.preload='auto';vv.src=url;
+  return vv;
+ };
+ window.__natCtl={abort:()=>{cancelled=true;try{venc&&venc.close();}catch(e){}try{aenc&&aenc.close();}catch(e){}if(rejSampling)rejSampling(new Error('Dibatalkan pengguna.'));}};
+ const closeV=()=>{try{venc&&venc.close();}catch(e){}venc=null;};
+ const closeA=()=>{try{aenc&&aenc.close();}catch(e){}aenc=null;};
  try{
-  await new Promise((res,rej)=>{v.onloadedmetadata=res;v.onerror=()=>rej(new Error('Video tidak bisa dibaca browser.'));setTimeout(()=>rej(new Error('Timeout baca metadata video (20 dtk).')),20000);});
-  if(cancelled)throw new Error('Dibatalkan pengguna.');
-  const canvas=document.createElement('canvas');canvas.width=tw;canvas.height=th;
-  const ctx=canvas.getContext('2d',{alpha:false});
-  const draw=()=>{
-   const sw=v.videoWidth,sh=v.videoHeight;if(!sw||!sh)return;
-   if(fit==='pad'){ctx.fillStyle='#000';ctx.fillRect(0,0,tw,th);const s=Math.min(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(v,(tw-dw)/2,(th-dh)/2,dw,dh);}
-   else{const s=Math.max(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(v,(tw-dw)/2,(th-dh)/2,dw,dh);}
-  };
   let pcm=null;
   if(o.nat.audio){
    setP(6,'Menyiapkan audio…');log('Decode audio…');
@@ -1273,14 +1298,7 @@ async function runAPNative(o){
    catch(e){log('Audio dilewati ('+((e&&e.message)||e)+') — output tanpa suara.');}
    if(cancelled)throw new Error('Dibatalkan pengguna.');
   }else log('Encoder audio tak tersedia — output tanpa suara.');
-  const vchunks=[],achunks=[];let avcC=null,asc=null,nativeErr=null;
-  venc=new VideoEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
-  let cfgOk=false,cfgErr=null;
-  for(const cc of codecs){
-   try{venc.configure({codec:cc,width:tw,height:th,bitrate:br,framerate:fps0,latencyMode:'realtime',hardwareAcceleration:'prefer-hardware'});cfgOk=true;log('Encoder: '+cc);break;}
-   catch(e){cfgErr=e;}
-  }
-  if(!cfgOk)throw new Error('Encoder H.264 menolak ukuran ini ('+((cfgErr&&cfgErr.message)||cfgErr)+').');
+  const achunks=[];let asc=null,nativeErr=null;
   if(pcm){
    aenc=new AudioEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);achunks.push({ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!asc)asc=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
    aenc.configure({codec:'mp4a.40.2',sampleRate:pcm.sampleRate,numberOfChannels:pcm.channels,bitrate:pcm.channels>1?128000:64000});
@@ -1292,53 +1310,81 @@ async function runAPNative(o){
     const ad=new AudioData({format:'f32',sampleRate:pcm.sampleRate,numberOfFrames:n,numberOfChannels:pcm.channels,timestamp:Math.round(i*1e6/pcm.sampleRate),data:tmp.slice(0,n*pcm.channels).buffer});
     aenc.encode(ad);ad.close();
    }
+   await aenc.flush();
    log('Audio ter-encode: '+achunks.length+' frame');
   }
-  setP(10,'Merender video… (native, tanpa unduh)');
-  await v.play().catch(()=>{});
-  const step=1e6/fps0;let next=0,frames=0,vdone=false;const tStart=Date.now();
-  v.onended=()=>{vdone=true;};
-  await new Promise((res,rej)=>{
-   rejSampling=rej;
-   const to=setTimeout(()=>rej(new Error('Timeout render (melebihi durasi + 2 menit).')),((dur||60)*1000+120000));
-   const cb=(now,meta)=>{
-    if(cancelled){clearTimeout(to);rej(new Error('Dibatalkan pengguna.'));return;}
-    if(nativeErr){clearTimeout(to);rej(new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr)));return;}
-    if(vdone||v.ended){clearTimeout(to);res();return;}
-    const tms=((meta&&isFinite(meta.mediaTime)?meta.mediaTime:(v.currentTime||0)))*1e6;
-    if(dur>0){const p=Math.min(0.99,(v.currentTime||0)/dur);setP(10+p*80,'Render native… '+Math.round(p*100)+'% · '+fmtMB(curFile.size));lastProgT=Date.now();}
-    else{lastProgT=Date.now();}
-    if(tms>=next){
-     draw();
-     try{const fr=new VideoFrame(canvas,{timestamp:Math.round(next)});venc.encode(fr,{keyFrame:frames===0||frames%(fps0*2)===0});fr.close();}
-     catch(e){clearTimeout(to);rej(e);return;}
-     frames++;next+=step;
-    }
-    try{v.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
-   };
-   try{v.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
-  });
-  rejSampling=null;
-  if(!vchunks.length)throw new Error('Tidak ada frame ter-encode (video terlalu pendek/rusak?).');
+  const draw=(vv)=>{
+   const sw=vv.videoWidth,sh=vv.videoHeight;if(!sw||!sh)return;
+   if(fit==='pad'){ctx.fillStyle='#000';ctx.fillRect(0,0,tw,th);const s=Math.min(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(vv,(tw-dw)/2,(th-dh)/2,dw,dh);}
+   else{const s=Math.max(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(vv,(tw-dw)/2,(th-dh)/2,dw,dh);}
+  };
+  const attemptVideo=async(cc)=>{
+   const vv=mkVideo();
+   try{
+    await new Promise((res,rej)=>{vv.onloadedmetadata=res;vv.onerror=()=>rej(new Error('Video tidak bisa dibaca browser.'));setTimeout(()=>rej(new Error('Timeout baca metadata video (20 dtk).')),20000);});
+    if(cancelled)throw new Error('Dibatalkan pengguna.');
+    const vchunks=[];let avcC=null;nativeErr=null;
+    venc=new VideoEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
+    venc.configure({codec:cc,width:tw,height:th,bitrate:br,framerate:fps0,latencyMode:'realtime'});
+    log('Encoder: '+cc);
+    setP(10,'Merender video… (native '+cc+', tanpa unduh)');
+    await vv.play().catch(()=>{});
+    const step=1e6/fps0;let next=0,frames=0,vdone=false;
+    vv.onended=()=>{vdone=true;};
+    await new Promise((res,rej)=>{
+     rejSampling=rej;
+     const to=setTimeout(()=>rej(new Error('Timeout render (melebihi durasi + 2 menit).')),((dur||60)*1000+120000));
+     const cb=(now,meta)=>{
+      if(cancelled){clearTimeout(to);rej(new Error('Dibatalkan pengguna.'));return;}
+      if(nativeErr){clearTimeout(to);rej(new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr)));return;}
+      if(vdone||vv.ended){clearTimeout(to);res();return;}
+      const tms=((meta&&isFinite(meta.mediaTime)?meta.mediaTime:(vv.currentTime||0)))*1e6;
+      if(dur>0){const p=Math.min(0.99,(vv.currentTime||0)/dur);setP(10+p*80,'Render native… '+Math.round(p*100)+'% · '+fmtMB(curFile.size));lastProgT=Date.now();}
+      else{lastProgT=Date.now();}
+      if(tms>=next){
+       draw(vv);
+       try{const fr=new VideoFrame(canvas,{timestamp:Math.round(next)});venc.encode(fr,{keyFrame:frames===0||frames%(fps0*2)===0});fr.close();}
+       catch(e){clearTimeout(to);rej(e);return;}
+       frames++;next+=step;
+      }
+      try{vv.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
+     };
+     try{vv.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
+    });
+    rejSampling=null;
+    await venc.flush();
+    if(nativeErr)throw new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr));
+    if(!vchunks.length)throw new Error('Tidak ada frame ter-encode.');
+    if(!avcC)throw new Error('Encoder tidak memberi parameter stream (avcC).');
+    return{vchunks:vchunks,avcC:avcC};
+   }finally{
+    rejSampling=null;closeV();
+    try{vv.pause();}catch(e){}
+    try{vv.removeAttribute('src');vv.load();}catch(e){}
+   }
+  };
+  let attempt=null,lastErr=null;
+  for(const cc of candList){
+   if(cancelled)throw new Error('Dibatalkan pengguna.');
+   try{attempt=await attemptVideo(cc);log('Codec '+cc+' OK · '+attempt.vchunks.length+' frame');break;}
+   catch(e){lastErr=e;log('Codec '+cc+' gagal ('+((e&&e.message)||e)+') — coba berikutnya…');}
+  }
+  if(!attempt)throw lastErr||new Error('Semua codec native gagal.');
   setP(93,'Menyusun MP4…');
-  await venc.flush();if(aenc)await aenc.flush();
-  if(nativeErr)throw new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr));
-  if(!avcC)throw new Error('Encoder tidak memberi parameter stream (avcC).');
-  const descLen=((avcC[4]||0)&3)+1;
-  const vsamples=vchunks.map(c=>{const cv=annexBtoMP4(c.data,descLen);return{data:cv.data,ts:c.ts,sync:c.type==='key'};});
+  try{aenc&&await aenc.flush();}catch(e){}
+  closeA();
+  const descLen=((attempt.avcC[4]||0)&3)+1;
+  const vsamples=attempt.vchunks.map(c=>{const cv=annexBtoMP4(c.data,descLen);return{data:cv.data,ts:c.ts,sync:c.type==='key'};});
   let asamp=null;
-  if(aenc&&achunks.length&&asc){
+  if(pcm&&achunks.length&&asc){
    asamp={sr:pcm.sampleRate,ch:pcm.channels,asc:asc,ts:pcm.sampleRate,samples:achunks.map(c=>({data:c.data,ts:c.ts}))};
-  }else if(aenc&&achunks.length&&!asc){log('Parameter audio (ASC) tak tersedia — audio dibuang, video tetap dipakai.');}
-  try{venc.close();}catch(e){}try{aenc&&aenc.close();}catch(e){}
-  venc=null;aenc=null;
-  const blob=muxMP4({w:tw,h:th,avcC:avcC,ts:1000000,samples:vsamples},asamp);
+  }else if(pcm&&achunks.length&&!asc){log('Parameter audio (ASC) tak tersedia — audio dibuang, video tetap dipakai.');}
+  const blob=muxMP4({w:tw,h:th,avcC:attempt.avcC,ts:1000000,samples:vsamples},asamp);
   log('Mux OK · '+vsamples.length+' video'+(asamp?' + '+asamp.samples.length+' audio':' (tanpa audio)')+' · '+fmtMB(blob.size));
   cleanup();
   await finishDownload(blob,'_ANTIPECAH_HD.mp4');
  }catch(e){
-  try{venc&&venc.close();}catch(_){}try{aenc&&aenc.close();}catch(_){}
-  try{v.pause();}catch(_){}
+  closeV();closeA();
   cleanup();
   throw e;
  }
