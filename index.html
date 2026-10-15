@@ -255,29 +255,12 @@
       <button id="ikonUploadBtn" class="btn btn-small" type="button">➕ Upload</button>
       <input id="ikonFile" type="file" accept="image/*" multiple hidden />
     </div>
-    <div id="ikonSrcChips" class="src-tabs" role="tablist" aria-label="Filter galeri anime">
+    <div id="ikonSrcChips" class="src-tabs" role="tablist" aria-label="Filter galeri couple">
       <button class="btn btn-small active" data-ikonsrc="semua" role="tab" aria-selected="true" type="button">Semua</button>
-      <button class="btn btn-small btn-ghost" data-ikonsrc="single" role="tab" aria-selected="false" type="button">Single</button>
       <button class="btn btn-small btn-ghost" data-ikonsrc="couple" role="tab" aria-selected="false" type="button">💕 Couple</button>
-      <button class="btn btn-small btn-ghost" data-ikonsrc="mine" role="tab" aria-selected="false" type="button">Upload Saya</button>
+      <button class="btn btn-small btn-ghost" data-ikonsrc="couple-anime" role="tab" aria-selected="false" type="button">Couple Anime</button>
+      <button class="btn btn-small btn-ghost" data-ikonsrc="couple-manhwa" role="tab" aria-selected="false" type="button">Couple Manhwa</button>
     </div>
-    <div class="couple-upload">
-      <label class="muted small" for="ikonKind">Upload sebagai
-        <select id="ikonKind">
-          <option value="single">Single</option>
-          <option value="couple" selected>Couple 💕</option>
-        </select>
-      </label>
-      <details class="bulk-import">
-        <summary>Tambah banyak via link (tempel banyak URL gambar, 1 per baris)</summary>
-        <p class="muted small">Pinterest tidak bisa disedot otomatis dari situs (wajib login + anti-bot). Simpan dulu gambarnya, lalu upload sekaligus — atau tempel link gambar langsung di sini.</p>
-        <textarea id="ikonBulkUrls" rows="4" placeholder="https://contoh.com/foto1.jpg&#10;https://contoh.com/foto2.jpg"></textarea>
-        <div class="btn-row">
-          <button id="ikonBulkAdd" class="btn btn-small" type="button">➕ Tambah semua link</button>
-        </div>
-      </details>
-    </div>
-    <p id="ikonUploadHint" class="muted small">Upload tersimpan di perangkat ini. Format JPG/PNG.</p>
     <p id="ikonCount" class="muted small"></p>
     <div id="ikonEmpty" class="empty-req" hidden>
       <p class="empty-title">Belum ada foto</p>
@@ -671,7 +654,7 @@ Format: MP4 + faststart</pre>
         <p class="muted small" data-i18n="req_d">Mau anime/manhwa yang belum ada? Tulis di sini — tersimpan di HP-mu, bisa disalin untuk dikirim ke admin.</p>
         <form id="requestForm" class="mini-form">
           <label><span data-i18n="req_judul">Judul yang diminta</span>
-            <input id="requestJudul" type="text" placeholder="mis. Frieren Season 2" required data-i18n-ph="req_judul_ph" />
+            <input id="requestJudul" type="text" placeholder="mis. Judul anime/manhwa incaranmu" required data-i18n-ph="req_judul_ph" />
           </label>
           <label><span data-i18n="req_tipe">Tipe</span>
             <select id="requestTipe"><option>Anime</option><option>Manhwa</option></select>

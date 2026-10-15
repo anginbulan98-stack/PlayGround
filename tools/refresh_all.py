@@ -477,10 +477,22 @@ def refresh_manhwa():
 
 
 def main():
-    print("== refresh anime ==")
-    c1 = refresh_anime()
-    print("== refresh manhwa ==")
-    c2 = refresh_manhwa()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only-anime", action="store_true",
+                    help="hanya refresh anime (dipakai cron 10-menit agar tak gebuk komiku)")
+    ap.add_argument("--only-manhwa", action="store_true",
+                    help="hanya refresh manhwa (dipakai cron manhwa tersendiri)")
+    args = ap.parse_args()
+    do_anime = not args.only_manhwa
+    do_mw = not args.only_anime
+    c1 = c2 = False
+    if do_anime:
+        print("== refresh anime ==")
+        c1 = refresh_anime()
+    if do_mw:
+        print("== refresh manhwa ==")
+        c2 = refresh_manhwa()
     # Sitemap selalu diregenerasi agar URL chapter baru ikut terdata
     try:
         import subprocess

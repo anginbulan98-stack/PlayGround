@@ -159,7 +159,7 @@ const I18N = {
     fq4_q: 'Ukuran file maksimal?', fq4_a: 'Jaga di bawah <strong>~250MB untuk 1080p</strong> dan <strong>~500MB untuk 2K</strong> biar upload tidak gagal. Kalkulator di atas otomatis kasih peringatan.',
     help: 'Bantuan', tab_req: 'Request judul', tab_lap: 'Lapor rusak',
     req_d: 'Mau anime/manhwa yang belum ada? Tulis di sini — tersimpan di HP-mu, bisa disalin untuk dikirim ke admin.',
-    req_judul: 'Judul yang diminta', req_judul_ph: 'mis. Frieren Season 2', req_tipe: 'Tipe', req_send: 'Kirim request',
+    req_judul: 'Judul yang diminta', req_judul_ph: 'mis. Judul anime/manhwa incaranmu', req_tipe: 'Tipe', req_send: 'Kirim request',
     req_copy: 'Salin untuk admin', req_mine: 'Request dari HP ini',
     lap_d: 'Gambar tidak muncul / chapter salah isi? Laporan tersimpan di HP-mu dan bisa disalin ke admin.',
     lap_judul: 'Judul manhwa', lap_judul_ph: 'mis. Solo Leveling', lap_ch: 'Chapter', lap_ch_ph: 'mis. Chapter 12',
@@ -400,7 +400,7 @@ const I18N = {
     fq4_q: 'Maximum file size?', fq4_a: 'Keep it under <strong>~250MB for 1080p</strong> and <strong>~500MB for 2K</strong> so uploads don’t fail. The calculator above warns you automatically.',
     help: 'Help', tab_req: 'Request title', tab_lap: 'Report issue',
     req_d: 'Want anime/manhwa that isn’t here yet? Write it down — saved on your phone, ready to copy to the admin.',
-    req_judul: 'Requested title', req_judul_ph: 'e.g. Frieren Season 2', req_tipe: 'Type', req_send: 'Send request',
+    req_judul: 'Requested title', req_judul_ph: "e.g. The title you're looking for", req_tipe: 'Type', req_send: 'Send request',
     req_copy: 'Copy for admin', req_mine: 'Requests from this device',
     lap_d: 'Images not showing / wrong chapter content? Reports are saved on your phone and can be copied to the admin.',
     lap_judul: 'Manhwa title', lap_judul_ph: 'e.g. Solo Leveling', lap_ch: 'Chapter', lap_ch_ph: 'e.g. Chapter 12',
@@ -1172,6 +1172,16 @@ function apiSeries(id) {
       return j.data;
     }));
 }
+/* Versi live (tanpa cache 24 jam): dipakai pengecekan episode baru agar
+   episode yang baru rilis di nyaa.si/anikoto langsung terdeteksi + langsung
+   bisa ditonton, bukan ketahan cache lama. */
+function apiSeriesLive(id) {
+  return apiGet('/series/' + id).then((j) => {
+    seriesCache[id] = j.data;
+    try { localStorage.setItem('ak_' + id, JSON.stringify({ t: Date.now(), d: j.data })); } catch (e) {}
+    return j.data;
+  });
+}
 function akOf(showId) { return AKMAP[showId] || null; }
 /* Belum tayang = status segera ATAU (tahun depan + tanpa embed).
    Pengaman agar judul 2027+ tanpa episode playable tak bocor ke Episode Terbaru
@@ -1296,7 +1306,10 @@ function isSegeraMode() {
 }
 /* Atur visibilitas section anime sesuai mode:
    - segera: sembunyikan fresh/latest/jx + tab status dalam, tampilkan hanya grid segera.
-   - normal: kembalikan seperti semula (upcoming tetap tampil sebagai preview). */
+   - filter aktif (terbaru/tayang/tamat/film): sembunyikan section tengah
+     (fresh/latest/upcoming/jelajahi) agar HASIL FILTER langsung tampil di atas,
+     tepat di bawah tab + jumlah — tak perlu scroll jauh.
+   - semua: kembalikan seperti semula. */
 function paintAnimeSections() {
   const soon = isSegeraMode();
   const fw = $('freshWrap'), lw = $('latestWrap'), jx = $('jxWrap'),
@@ -1308,12 +1321,24 @@ function paintAnimeSections() {
     if (jx) jx.hidden = true;
     if (tabs) tabs.hidden = true;
     if (up) up.hidden = true;
+  } else if (typeof ANI_UI !== 'undefined' && ANI_UI && ANI_UI.f && ANI_UI.f !== 'semua') {
+    // Filter aktif → hasil di showGrid harus ada di atas: sembunyikan section tengah.
+    if (fw) fw.hidden = true;
+    if (lw) lw.hidden = true;
+    if (up) up.hidden = true;
+    if (jx) jx.hidden = true;
   } else {
     if (tabs) tabs.hidden = false;
     if (jx) jx.hidden = false;
-    // fresh/latest dikembalikan ke state semula (biarkan loader yang mengisi);
-    // jangan paksa tampil di sini agar tidak muncul kosong.
-    if (up) { /* preview upcoming tetap boleh tampil di tab anime */ }
+    // Kembali ke Semua: tampilkan lagi section yang sudah ada isinya.
+    try {
+      const fg = $('freshGrid');
+      if (fw && fg && fg.children.length) fw.hidden = false;
+      const lg = $('latestGrid');
+      if (lw && lg && lg.children.length) lw.hidden = false;
+      const ug = $('upcomingGrid');
+      if (up && ug && ug.children.length) up.hidden = false;
+    } catch (e) {}
   }
 }
 function aniFiltered() {
@@ -1328,7 +1353,14 @@ function aniFiltered() {
     return aniMatchF(s, ANI_UI.f);
   });
   if (ANI_UI.f === 'terbaru' || ANI_UI.f === 'segera') {
-    list.sort((a, b) => ((b.year || 0) - (a.year || 0)) || ((b.akid || 0) - (a.akid || 0)));
+    // Episode Terbaru: yang baru update episode-nya naik paling atas (recency),
+    // lalu tahun, lalu akid — jadi benar-benar yang terbaru, bukan sekadar tahun.
+    try {
+      list.sort((a, b) => ((typeof epsRecency === 'function' ? epsRecency(b) : 0) - (typeof epsRecency === 'function' ? epsRecency(a) : 0)) ||
+        ((b.year || 0) - (a.year || 0)) || ((b.akid || 0) - (a.akid || 0)));
+    } catch (e) {
+      list.sort((a, b) => ((b.year || 0) - (a.year || 0)) || ((b.akid || 0) - (a.akid || 0)));
+    }
   }
   return list;
 }
@@ -1410,9 +1442,19 @@ var IKON_URLS = [];
 /* Batch karakter (Marin Kitagawa + Alya, data/ikon-marin.json): anime only,
    selalu tampil PALING BAWAH — di bawah semua foto non-pin. */
 var IKON_MARIN = [];
-/* Batch couple anime (pp couple, data/ikon-couple.json): couple:true (tab Couple),
-   tampil PALING BAWAH — di bawah semua foto non-pin. */
+/* Batch couple anime / pp couple anime (data/ikon-couple.json): couple:true,
+   kind:"anime" (tab Couple Anime), tampil PALING BAWAH. */
 var IKON_COUPLE = [];
+/* Batch couple manhwa / pp couple manhwa (data/ikon-couple-manhwa.json):
+   couple:true, kind:"manhwa" (tab Couple Manhwa), tampil PALING BAWAH.
+   Pinterest tidak bisa disedot otomatis (wajib login + anti-bot), jadi batch
+   ini dari Safebooru bernuansa webtoon/romance + cover manhwa romance. */
+var IKON_COUPLE_MW = [];
+/* Pin Pinterest matching-icon manhwa yang imut (data/ikon-couple-manhwa-pin.json):
+   40 foto i.pinimg.com terverifikasi dari pencarian "matching icons manhwa".
+   couple:true, kind:"manhwa", pin:true — SELALU tampil PALING ATAS
+   (barisan atas) di tab Semua / Couple / Couple Manhwa. */
+var IKON_COUPLE_MW_PIN = [];
 /* Foto manhwa (cover katalog data/manhwa.json): grup "Manhwa" di galeri. */
 var IKON_MW = [];
 /* Foto komunitas (upload pengguna lain, via Firebase bila dikonfigurasi). */
@@ -1424,6 +1466,8 @@ var IKON_FB = null;
    Tambah foto baru = taruh file di ikon/ikon-NN.jpg lalu tambah 1 baris di sini. */
 const IKON_BUILTINS = [
   { id: 'pin-marin', name: 'Marin Kitagawa 📌', url: 'https://i.pinimg.com/564x/1a/b2/41/1ab241753725ab690b207feea36a5542.jpg', builtin: true, ts: 0 },
+  { id: 'pin-alya', name: 'Alya Kujou 📌', url: 'https://i.pinimg.com/originals/e8/7f/83/e87f83e57260b53f10083a4117cf6ee8.jpg', builtin: true, ts: 0 },
+  { id: 'pin-alya2', name: 'Alya Icon 📌', url: 'https://i.pinimg.com/originals/04/97/12/0497122c02eeaa97f0e3a2ab21a39382.jpg', builtin: true, ts: 0 },
   { id: 'b1', name: 'Gadis bunga putih', url: 'ikon/ikon-01.jpg', builtin: true, ts: 0 },
   { id: 'b2', name: 'Waguri Kaoruko', url: 'ikon/ikon-02.png', builtin: true, ts: 0 },
 ];
@@ -1612,7 +1656,7 @@ function ikonSave(url, filename) {
   });
 }
 function findIkonPhoto(id) {
-  const all = IKON_BUILTINS.concat(IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MW, IKON_MARIN, IKON_COUPLE);
+  const all = IKON_COUPLE_MW_PIN.concat(IKON_BUILTINS, IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MW, IKON_MARIN, IKON_COUPLE, IKON_COUPLE_MW);
   return all.find((x) => String(x.id) === String(id)) || null;
 }
 function ikonEnsure() {
@@ -1634,8 +1678,20 @@ function ikonEnsure() {
     if (!r.ok) throw new Error('ikon couple ' + r.status);
     return r.json();
   }).then((d) => {
-    IKON_COUPLE = ((d && d.photos) || []).map((p) => ({ id: 'c' + p.id, name: p.name, url: p.url, builtin: true, couple: true }));
+    IKON_COUPLE = ((d && d.photos) || []).map((p) => ({ id: 'c' + p.id, name: p.name || 'Couple Anime', url: p.url, builtin: true, couple: true, kind: 'anime' }));
   }).catch(() => { IKON_COUPLE = []; });
+  const batch3 = fetch('data/ikon-couple-manhwa.json', { cache: 'no-cache' }).then((r) => {
+    if (!r.ok) throw new Error('ikon couple manhwa ' + r.status);
+    return r.json();
+  }).then((d) => {
+    IKON_COUPLE_MW = ((d && d.photos) || []).map((p) => ({ id: 'w' + p.id, name: p.name || 'Couple Manhwa', url: p.url, builtin: true, couple: true, kind: 'manhwa' }));
+  }).catch(() => { IKON_COUPLE_MW = []; });
+  const batch4 = fetch('data/ikon-couple-manhwa-pin.json', { cache: 'no-cache' }).then((r) => {
+    if (!r.ok) throw new Error('ikon couple manhwa pin ' + r.status);
+    return r.json();
+  }).then((d) => {
+    IKON_COUPLE_MW_PIN = ((d && d.photos) || []).map((p) => ({ id: 'p' + p.id, name: (p.name || 'Matching Icon Manhwa') + ' 💕', url: p.url, builtin: true, couple: true, kind: 'manhwa', pin: true }));
+  }).catch(() => { IKON_COUPLE_MW_PIN = []; });
   const local = ikonDb().then(ikonDbAll).then((rows) => {
     rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
     IKON_UI.photos = rows;
@@ -1661,7 +1717,7 @@ function ikonEnsure() {
     });
   } catch (e) { return Promise.resolve(); } })();
   const likes = ikonLikesLoad();
-  IKON_UI.loading = Promise.all([urls, local, mw, batch, batch2, comm, likes]).then(() => {
+  IKON_UI.loading = Promise.all([urls, local, mw, batch, batch2, batch3, batch4, comm, likes]).then(() => {
     IKON_UI.loaded = true;
     return IKON_UI.photos;
   });
@@ -1692,15 +1748,56 @@ function ikonFileToPhoto(file) {
 function ikonList() {
   const q = (IKON_UI.q || '').toLowerCase();
   const ok = (p) => !q || String(p.name || '').toLowerCase().includes(q);
-  const all = IKON_BUILTINS.concat(IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MW, IKON_MARIN, IKON_COUPLE);
-  // Filter galeri anime: Semua / Single / Couple / Upload Saya.
-  // (Nilai lama 'anime'/'manhwa' dipertahankan agar kompatibel.)
-  if (IKON_UI.src === 'couple') return all.filter((p) => p.couple === true).filter(ok);
-  if (IKON_UI.src === 'single') return all.filter((p) => p.couple !== true).filter(ok);
+  // Pin matching-icon manhwa SELALU paling depan → barisan atas.
+  const all = IKON_COUPLE_MW_PIN.concat(IKON_BUILTINS, IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MW, IKON_MARIN, IKON_COUPLE, IKON_COUPLE_MW);
+  // Filter galeri: Semua / Couple / Couple Anime / Couple Manhwa.
+  // (Nilai lama 'single'/'mine'/'anime'/'manhwa' dipertahankan agar kompatibel.)
+  const isCouple = (p) => p.couple === true || /💕|couple|pp couple|pasangan/i.test(String(p.name || ''));
+  const isManhwa = (p) => p.kind === 'manhwa' || /manhwa|manhua|webtoon/i.test(String(p.name || ''));
+  // Campur anime + manhwa selang-seling (mulai dari pin manhwa imut agar
+  // tetap barisan atas): 1 manhwa, 1 anime, 1 manhwa, 1 anime, …
+  const mixAnimeManhwa = (list) => {
+    const mw = list.filter((p) => isManhwa(p));
+    const an = list.filter((p) => !isManhwa(p));
+    const out = [];
+    const n = Math.max(mw.length, an.length);
+    for (let i = 0; i < n; i++) {
+      if (i < mw.length) out.push(mw[i]);
+      if (i < an.length) out.push(an[i]);
+    }
+    return out;
+  };
+  if (IKON_UI.src === 'couple') return mixAnimeManhwa(all.filter(isCouple)).filter(ok);
+  if (IKON_UI.src === 'couple-anime') return all.filter((p) => isCouple(p) && !isManhwa(p)).filter(ok);
+  if (IKON_UI.src === 'couple-manhwa') return all.filter((p) => isCouple(p) && isManhwa(p)).filter(ok);
+  if (IKON_UI.src === 'single') return all.filter((p) => !isCouple(p)).filter(ok);
   if (IKON_UI.src === 'mine') return IKON_UI.photos.filter(ok);
-  if (IKON_UI.src === 'anime') return IKON_BUILTINS.concat(IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MARIN, IKON_COUPLE).filter(ok);
+  if (IKON_UI.src === 'anime') return IKON_COUPLE_MW_PIN.concat(IKON_BUILTINS, IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MARIN, IKON_COUPLE, IKON_COUPLE_MW).filter(ok);
   if (IKON_UI.src === 'manhwa') return IKON_MW.filter(ok);
-  return all.filter(ok);
+  // Semua: baris 1 = Marin, Alya, Waguri (hanya saat tidak mencari),
+  // lalu couple + non-couple DICAMPUR selang-seling agar foto biasa tidak
+  // tenggelam di belakang ribuan foto couple.
+  const mixedCouples = mixAnimeManhwa(all.filter(isCouple));
+  const singles = all.filter((p) => !isCouple(p));
+  const mixCoupleSingle = (cp, sg) => {
+    const out = [];
+    const n = Math.max(cp.length, sg.length);
+    for (let i = 0; i < n; i++) {
+      if (i < cp.length) out.push(cp[i]);
+      if (i < sg.length) out.push(sg[i]);
+    }
+    return out;
+  };
+  if (!q) {
+    const m = all.find((p) => /marin/i.test(String(p.name || '')));
+    const a = all.find((p) => /alya/i.test(String(p.name || '')));
+    const w = IKON_BUILTINS.find((p) => String(p.id) === 'b2');
+    const top = [m, a, w].filter(Boolean);
+    const ids = {};
+    top.forEach((p) => { ids[String(p.id)] = 1; });
+    return top.concat(mixCoupleSingle(mixedCouples, singles).filter((p) => !ids[String(p.id)])).filter(ok);
+  }
+  return mixCoupleSingle(mixedCouples, singles).filter(ok);
 }
 function ikonCard(p) {
   const lc = ikonLikeCount(p);
@@ -1712,7 +1809,7 @@ function ikonCard(p) {
   return '<article class="show-card" data-ikon="' + p.id + '" tabindex="0" aria-label="' + esc(label || 'Ikon anime') + '">' +
     '<div class="show-cover"><i>' + esc(initials(label || 'A')) + '</i>' +
     '<img src="' + p.url + '" alt="' + esc(label || 'Ikon anime') + '" loading="lazy" decoding="async" onerror="this.remove()">' +
-    (p.couple ? '<span class="couple-badge">💕 Couple</span>' : '') + '</div>' +
+    (p.couple ? '<span class="couple-badge">💕 ' + (p.kind === 'manhwa' || /manhwa/i.test(label) ? 'Manhwa' : (p.kind === 'anime' || /couple anime/i.test(label) ? 'Anime' : 'Couple')) + '</span>' : '') + '</div>' +
     (label ? '<div class="show-info"><div class="ikon-tile-name">' + esc(label) + '</div>' + likes + '</div>' : (likes ? '<div class="show-info">' + likes + '</div>' : '')) + '</article>';
 }
 function renderIkon() {
@@ -1790,17 +1887,22 @@ function closeIkon() {
       toast(T('loading'));
       let ok = 0, shared = 0;
       const fresh = [];
-      // Upload sebagai Single/Couple sesuai pilihan (default Couple 💕).
+      // Upload sebagai Couple Anime / Couple Manhwa sesuai pilihan.
       // Hasil upload tersimpan di perangkat ini (IndexedDB) — format JPG/PNG.
       const kindSel = $('ikonKind');
-      const asCouple = !kindSel || kindSel.value === 'couple';
+      const kindVal = !kindSel ? 'couple-anime' : kindSel.value;
+      const kind = kindVal === 'couple-manhwa' ? 'manhwa' : 'anime';
       try {
         const db = await ikonDb();
         for (const f of files) {
           try {
             const ph = await ikonFileToPhoto(f);
-            ph.couple = asCouple;
-            if (asCouple && !/couple|pp|pasangan/i.test(ph.name || '')) ph.name = (ph.name || 'Couple') + ' 💕';
+            ph.couple = true;
+            ph.kind = kind;
+            const tagName = kind === 'manhwa' ? 'Couple Manhwa' : 'Couple Anime';
+            if (!/couple|pp|pasangan|manhwa|anime/i.test(ph.name || '')) ph.name = (ph.name || tagName) + ' 💕';
+            else if (kind === 'manhwa' && !/manhwa/i.test(ph.name || '')) ph.name = (ph.name || '') + ' Manhwa';
+            else if (kind === 'anime' && !/anime/i.test(ph.name || '')) ph.name = (ph.name || '') + ' Anime';
             ph.id = await ikonDbPut(db, ph);
             IKON_UI.photos.unshift(ph);
             fresh.push(ph);
@@ -1842,9 +1944,9 @@ function closeIkon() {
     renderIkon();
   });
   // Tambah banyak via link: tempel banyak URL gambar (1 per baris).
-  // Pinterest tidak bisa disedot otomatis (wajib login + anti-bot + CORS),
-  // jadi alurnya: simpan/buka gambarnya lalu tempel linknya di sini —
-  // semuanya tersimpan di perangkat ini seperti upload biasa.
+  // Pinterest (pp couple anime / pp couple manhwa) tidak bisa disedot otomatis
+  // (wajib login + anti-bot + CORS), jadi alurnya: buka gambarnya → salin
+  // alamat gambar → tempel di sini. Tersimpan di perangkat ini.
   const bulkBtn = $('ikonBulkAdd');
   if (bulkBtn) bulkBtn.addEventListener('click', async () => {
     const ta = $('ikonBulkUrls');
@@ -1852,13 +1954,15 @@ function closeIkon() {
     const urls = raw.filter((u) => /^https?:\/\/.+/i.test(u)).slice(0, 100);
     if (!urls.length) { toast('Tempel dulu link gambarnya (1 per baris)'); return; }
     const kindSel = $('ikonKind');
-    const asCouple = !kindSel || kindSel.value === 'couple';
+    const kindVal = !kindSel ? 'couple-anime' : kindSel.value;
+    const kind = kindVal === 'couple-manhwa' ? 'manhwa' : 'anime';
+    const tagName = kind === 'manhwa' ? 'Couple Manhwa' : 'Couple Anime';
     let ok = 0;
     try {
       const db = await ikonDb();
       for (const [i, u] of urls.entries()) {
         try {
-          const ph = { name: 'Couple link ' + (IKON_UI.photos.length + 1) + (asCouple ? ' 💕' : ''), url: u, couple: asCouple, ts: Date.now() + i };
+          const ph = { name: tagName + ' link ' + (IKON_UI.photos.length + 1) + ' 💕', url: u, couple: true, kind, ts: Date.now() + i };
           ph.id = await ikonDbPut(db, ph);
           IKON_UI.photos.unshift(ph);
           ok++;
@@ -1868,7 +1972,7 @@ function closeIkon() {
     if (ta) ta.value = '';
     IKON_UI.loaded = true;
     // Langsung pindah ke filter yang cocok agar hasilnya kelihatan
-    IKON_UI.src = asCouple ? 'couple' : 'mine';
+    IKON_UI.src = kind === 'manhwa' ? 'couple-manhwa' : 'couple-anime';
     IKON_UI.limit = IKON_UI.per;
     if (chips) chips.querySelectorAll('[data-ikonsrc]').forEach((x) => {
       const on = x.dataset.ikonsrc === IKON_UI.src;
@@ -1927,6 +2031,7 @@ function loadFresh() {
     if (isSegeraMode()) return; // mode Akan Rilis steril: jangan tampilkan sudah-tayang
     keepScroll(() => {
       if (isSegeraMode()) return;
+      try { if (typeof ANI_UI !== 'undefined' && ANI_UI && ANI_UI.f && ANI_UI.f !== 'semua') return; } catch (e) {}
       $('freshWrap').hidden = false;
       $('freshWrap').dataset.sig = sig;
       // TAHAP 1.2: badge EP berisi nomor; sembunyikan bila data tidak ada; BARU < 48 jam
@@ -2015,6 +2120,7 @@ function loadLatest(force) {
     const show = items.slice(0, 12);
     if (!show.length) return;
     if (isSegeraMode()) return; // mode Akan Rilis steril: jangan tampilkan sudah-tayang
+    try { if (typeof ANI_UI !== 'undefined' && ANI_UI && ANI_UI.f && ANI_UI.f !== 'semua') return; } catch (e) {}
     box.hidden = false;
     grid.innerHTML = show.map(freshCardHTML).join('');
     LATEST_T = Date.now();
@@ -2043,7 +2149,7 @@ function loadLatest(force) {
    API (antrean ID). Tiap kandidat DIVERIFIKASI playable via apiSeries (embed
    SUB/DUB ada) sebelum dirilis — tanpa playable = dilewati, tetap 1 detik.
    Isi ulang antrean max 1x/60 detik agar tidak membanjiri API/proxy. */
-const RILIS1S = { q: [], filling: false, lastFill: 0, released: 0, on: true, nyaaSeeds: {} };
+const RILIS1S = { q: [], filling: false, lastFill: 0, released: 0, on: true, nyaaSeeds: {}, updChecked: {} };
 function rilis1sStatus(msg, live) {
   const el = $('rilis1sStatus');
   if (!el) return;
@@ -2088,17 +2194,37 @@ async function rilis1sFill() {
         }
       }
     } catch (e) {}
-    // 3) saring yang belum dirilis → antrean (tetap 1 detik per rilis di tick)
+    // 3) antrean 1 detik: judul BARU + judul LAMA yang perlu dicek episodenya.
+    //    Judul lama ikut antre agar episode baru (nyaa rilis → anikoto ada embed)
+    //    langsung naik ke Episode Terbaru + langsung bisa ditonton.
     const known = {};
+    const akidToShow = {};
     (ANI.shows || []).forEach((s) => {
       const ak = akOf(s.id);
-      if (ak) known[ak.id] = 1;
+      if (ak) { known[ak.id] = 1; if (!akidToShow[ak.id]) akidToShow[ak.id] = s.id; }
       known['t:' + nyaaNorm(s.title)] = 1;
     });
     RILIS1S.q.forEach((it) => { if (it && it.id) known[it.id] = 1; });
-    ids.forEach((it) => { if (!known[it.id]) RILIS1S.q.push(it); });
+    ids.forEach((it) => {
+      if (!known[it.id]) { RILIS1S.q.push(it); return; }
+      // Sudah ada di katalog → cek update episode max 1x per 10 menit per judul
+      // agar episode baru langsung muncul tanpa membanjiri API.
+      const sid = akidToShow[it.id];
+      const last = RILIS1S.updChecked[sid || ('rx' + it.id)] || 0;
+      if (sid && Date.now() - last > 10 * 60 * 1000 && RILIS1S.q.length < 40) {
+        RILIS1S.updChecked[sid] = Date.now();
+        RILIS1S.q.push(it);
+      }
+    });
     RILIS1S.lastFill = Date.now();
   } finally { RILIS1S.filling = false; }
+}
+function rilis1sBumpRecency(akid, n) {
+  try {
+    if (!EPSREC || typeof EPSREC !== 'object') EPSREC = {};
+    const today = new Date().toISOString().slice(0, 10);
+    EPSREC[String(akid)] = { u: today, n: n };
+  } catch (e) {}
 }
 async function rilis1sTick() {
   if (!RILIS1S.on || document.hidden || isSegeraMode()) return;
@@ -2111,19 +2237,50 @@ async function rilis1sTick() {
     }
     const it = RILIS1S.q.shift(); // TEPAT 1 judul per tick 1 detik
     if (!it || !it.id) return;
+    // Peta akid -> show katalog (untuk deteksi episode baru judul lama)
+    let existSid = null;
+    try {
+      for (const s of (ANI.shows || [])) { const ak = akOf(s.id); if (ak && Number(ak.id) === Number(it.id)) { existSid = s.id; break; } }
+    } catch (e) {}
     let data = null;
-    try { data = await apiSeries(it.id); } catch (e) { data = null; }
+    try { data = existSid ? await apiSeriesLive(it.id) : await apiSeries(it.id); } catch (e) { data = null; }
     const eps = (data && data.episodes) || [];
     const playable = eps.filter((e) => e && e.embed_url && (e.embed_url.sub || e.embed_url.dub || Object.keys(e.embed_url).length));
     if (!playable.length) return; // belum bisa ditonton → lewati, detik berikutnya lanjut
+    if (existSid) {
+      // EPISODE BARU untuk judul lama: naikkan angka + recency agar langsung
+      // muncul paling atas di Episode Terbaru, dan langsung bisa ditonton
+      // (detail memakai apiSeriesLive/refreshEps sehingga embed baru ikut).
+      const s = findShow(existSid);
+      const oldN = s ? (Number(s.episodes) || 0) : 0;
+      if (s && playable.length > oldN) {
+        s.episodes = playable.length;
+        try { if (AKMAP[existSid]) AKMAP[existSid].episodes = playable.length; } catch (e) {}
+        try { seriesCache[it.id] = data; } catch (e) {}
+        try { localStorage.setItem('ak_' + it.id, JSON.stringify({ t: Date.now(), d: data })); } catch (e) {}
+        rilis1sBumpRecency(it.id, playable.length);
+        RILIS1S.released++;
+        try { loadLatest(); } catch (e) {}
+        try { paintPreview(); } catch (e) {}
+        try { renderShows(); } catch (e) {}
+        rilis1sStatus('Episode baru ▶ ' + s.title + ' EP ' + playable.length + ' (langsung nonton)', true);
+        try { toast('▶ EPISODE BARU: ' + s.title + ' EP ' + playable.length); } catch (e) {}
+      } else {
+        rilis1sStatus('Auto-rilis 1 detik • antrean ' + RILIS1S.q.length + ' • sudah rilis ' + RILIS1S.released, true);
+      }
+      if (RILIS1S.q.length < 8) rilis1sFill();
+      return;
+    }
     const tid = 'rx_' + it.id;
     if (!findShow(tid)) {
       const title = it.title || it.alternative || ('Rilis ' + it.id);
       ANI.shows.unshift({ id: tid, title, cover: it.poster || '', akid: it.id, episodes: eps.length, status: 'tayang', kind: 'series', year: new Date().getFullYear() });
       AKMAP[tid] = { id: it.id, episodes: eps.length };
+      rilis1sBumpRecency(it.id, playable.length);
       RILIS1S.released++;
       try { loadLatest(); } catch (e) {}
       try { loadFresh(); } catch (e) {}
+      try { paintPreview(); } catch (e) {}
       rilis1sStatus('Auto-rilis 1 detik • BARU ▶ ' + title + ' (' + playable.length + ' ep, langsung nonton)', true);
       try { toast('▶ BARU RILIS: ' + title); } catch (e) {}
     } else {
@@ -2137,6 +2294,14 @@ function armLatestAuto() {
   window._latestAuto = 1;
   rilis1sFill();
   setInterval(rilis1sTick, 1000); // WAJIB 1 detik
+  // Segarkan susunan Episode Terbaru tiap 90 detik agar episode yang baru
+  // rilis langsung naik ke atas tanpa perlu refresh halaman.
+  setInterval(() => {
+    if (document.hidden || isSegeraMode()) return;
+    if (typeof saverActive === 'function' && saverActive()) return;
+    try { loadLatest(); } catch (e) {}
+    try { paintPreview(); } catch (e) {}
+  }, 90000);
   const st = $('rilis1sStatus');
   if (st) st.style.cursor = 'pointer';
   document.addEventListener('click', (e) => {
@@ -4268,6 +4433,8 @@ function initAnime() {
     document.querySelectorAll('[data-anif]').forEach((x) => x.classList.toggle('btn-ghost', x !== b));
     renderShows();
     try { paintAnimeSections(); } catch (e) {}
+    // Hasil filter ada tepat di bawah tab → scroll ke sana agar langsung terlihat.
+    try { const c = $('aniCount'); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
   }));
   const lr = $('latestRefresh');
   if (lr) lr.addEventListener('click', () => { toast(T('loading')); loadLatest(true); });
@@ -4315,7 +4482,12 @@ function initAnime() {
     if (fr) {
       const apiid = Number(fr.dataset.fresh);
       fr.disabled = true;
-      apiSeries(apiid).then((data) => {
+      // Kalau akid ini sudah ada di katalog (judul lama dapat episode baru),
+      // buka entri katalognya langsung agar daftar episode lengkap + terbaru.
+      let existSid = null;
+      try { for (const s of (ANI.shows || [])) { const ak = akOf(s.id); if (ak && Number(ak.id) === apiid) { existSid = s.id; break; } } } catch (e) {}
+      if (existSid) { try { fr.disabled = false; } catch (e) {} openDetailAnime(existSid); return; }
+      apiSeriesLive(apiid).then((data) => {
         const names = {};
         ANI.shows.forEach((s) => { names[s.title] = 1; });
         const title = (data.anime && data.anime.title) || ('Rilis ' + apiid);
