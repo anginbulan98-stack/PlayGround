@@ -577,10 +577,12 @@ function setCat(cat) {
     b.classList.toggle('active', on);
     if (on) b.setAttribute('aria-selected', 'true'); else b.removeAttribute('aria-selected');
   });
-  // Semua = preview pilihan tiap kategori; Anime/Manhwa/Segera = katalog penuh masing-masing
+  // Semua = preview pilihan tiap kategori; Anime/Manhwa = katalog penuh masing-masing;
+  // tiktok = alat TikTok. (Status data "segera"/belum-tayang tetap didukung di dalam
+  // katalog Anime, tapi bukan lagi chip kategori atas.)
   const showTiktok = cat === 'tiktok';
   const showManhwa = cat === 'semua' || cat === 'manhwa';
-  const showAnime = cat === 'semua' || cat === 'anime' || cat === 'segera';
+  const showAnime = cat === 'semua' || cat === 'anime';
   TIKTOK_SELS.forEach((s) => document.querySelectorAll(s).forEach((el) => { el.hidden = !showTiktok; }));
   const m = $('manhwaPanel'), a = $('animePanel');
   if (cat === 'semua') {
@@ -591,28 +593,7 @@ function setCat(cat) {
   } else {
     if (m) m.hidden = !showManhwa;
     if (a) a.hidden = !showAnime;
-    if (typeof ANI_UI !== 'undefined') {
-      if (cat === 'segera') {
-        // Tab Akan Rilis = STERIL, hanya judul segera. Tidak ada campuran sudah-tayang.
-        ANI_UI.f = 'segera';
-        ANI_UI.limit = ANI_UI.per;
-        try { if (typeof renderShows === 'function' && ANI.shows.length) renderShows(); } catch (e) {}
-        try { paintAnimeSections(); } catch (e) {}
-      } else if (cat === 'anime' && ANI_UI.f === 'segera') {
-        // Keluar dari segera → kembalikan filter normal + tampilkan section lagi
-        ANI_UI.f = 'semua';
-        ANI_UI.limit = ANI_UI.per;
-        try {
-          document.querySelectorAll('[data-anif]').forEach((x) => x.classList.toggle('btn-ghost', x.dataset.anif !== 'semua'));
-        } catch (e) {}
-        try { if (typeof renderShows === 'function' && ANI.shows.length) renderShows(); } catch (e) {}
-        try { paintAnimeSections(); } catch (e) {}
-        try { if (typeof loadLatest === 'function') loadLatest(); } catch (e) {}
-        try { if (typeof loadUpcoming === 'function') loadUpcoming(); } catch (e) {}
-      } else {
-        try { paintAnimeSections(); } catch (e) {}
-      }
-    }
+    try { paintAnimeSections(); } catch (e) {}
   }
   CURCAT = cat;
   // Tiga pintu masuk + preview + lanjutkan hanya relevan di tab Semua
@@ -650,18 +631,23 @@ document.querySelectorAll('[data-goto]').forEach((b) =>
   b.addEventListener('click', () => {
     const c = b.dataset.goto;
     goCat(c);
-    const target = { manhwa: 'manhwaPanel', anime: 'animePanel', segera: 'animePanel', tiktok: 'alatTiktok' }[c];
+    const target = { manhwa: 'manhwaPanel', anime: 'animePanel', tiktok: 'alatTiktok' }[c];
     if (target && $(target)) $(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
   })
 );
-// Navigasi atas (4 grup) → tab + panel yang sesuai (tanpa tulis hash anchor)
+// Navigasi atas (4 grup) + CTA header → tab yang sesuai lalu scroll ke target.
+// Bila link punya hash tujuan sendiri (mis. #kalkulator), pakai itu;
+// kalau tidak, pakai panel atas kategorinya.
 document.querySelectorAll('[data-navcat]').forEach((a) =>
   a.addEventListener('click', (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    const map = { manhwa: 'manhwa', anime: 'anime', segera: 'segera', tiktok: 'tiktok', baca: 'manhwa', tonton: 'anime' };
+    const map = { manhwa: 'manhwa', anime: 'anime', tiktok: 'tiktok', baca: 'manhwa', tonton: 'anime' };
     const c = map[a.dataset.navcat] || 'semua';
     goCat(c);
-    const target = { manhwa: 'manhwaPanel', anime: 'animePanel', segera: 'animePanel', tiktok: 'alatTiktok' }[c];
+    const href = a.getAttribute('href') || '';
+    const el = (href.charAt(0) === '#' && href.length > 1) ? $(href.slice(1)) : null;
+    const target = el ? href.slice(1)
+      : { manhwa: 'manhwaPanel', anime: 'animePanel', tiktok: 'alatTiktok' }[c];
     if (target && $(target)) $(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
   })
 );
@@ -1388,14 +1374,15 @@ function route(fromPop) {
       } else goCatFallback();
       return;
     }
-    { const _s = findShow(id); setCat(_s && isSoonU(_s) ? 'segera' : 'anime'); }
+    setCat('anime');
     openDetailAnime(id, false);
     if (ep !== null) openEpFromRoute(id, ep);
     else if (!$('playerModal').hidden) closePlayer();
     return;
   }
-  // 3) Kategori eksplisit
-  const cat = catFromHash(h) || st.cat;
+  // 3) Kategori eksplisit ('segera' lawas dialihkan ke anime)
+  const cat0 = catFromHash(h) || st.cat;
+  const cat = cat0 === 'segera' ? 'anime' : cat0;
   if (cat && CATS.indexOf(cat) >= 0) {
     closeOverlaysSilent();
     setCat(cat);
@@ -1406,13 +1393,15 @@ function route(fromPop) {
   //    jangan pindah tab, supaya Back tidak merusak tampilan.
   //    Pengecualian: halaman baru dimuat tanpa state → normalisasi ke simpanan.
   if (!st.i && !fromPop && !isViewHash(h)) {
-    const sc = sessGet('gq_cat', 'semua');
+    const sc0 = sessGet('gq_cat', 'semua');
+    const sc = sc0 === 'segera' ? 'anime' : sc0; // alias simpanan lawas
     setCat(CATS.indexOf(sc) >= 0 ? sc : 'semua');
   }
 }
 function goCatFallback() {
   closeOverlaysSilent();
-  const sc = sessGet('gq_cat', 'semua');
+  const sc0 = sessGet('gq_cat', 'semua');
+  const sc = sc0 === 'segera' ? 'anime' : sc0; // alias simpanan lawas
   setCat(CATS.indexOf(sc) >= 0 ? sc : 'semua');
 }
 /* Buka episode dari URL (#/tonton/id/eN): tunggu daftar siap, lalu putar diam-diam. */
@@ -4083,18 +4072,18 @@ async function jxMoreLive() {
    - Kategori terakhir + limit "Muat lagi" dicadangkan di sessionStorage (try/catch).
    - Posisi scroll tiap kategori diingat (memori sesi) dan dipulihkan saat kembali.
    - var (bukan let) agar aman bila route() awal terpanggil sebelum blok ini dieksekusi. */
-var CATS = ['semua', 'anime', 'manhwa', 'segera', 'tiktok'];
+var CATS = ['semua', 'anime', 'manhwa', 'tiktok'];
 var CURCAT = 'semua';
 var navSeq = 0;
 var lastRouteKey = '##init';
-var CATMEM = { semua: {}, anime: {}, manhwa: {}, segera: {}, tiktok: {} };
+var CATMEM = { semua: {}, anime: {}, manhwa: {}, tiktok: {} };
 // Satu-satunya pengatur scroll saat traversasi adalah restoreCatScroll().
 // Matikan restore bawaan browser agar tak balapan/adu geser dengannya.
 try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
 function sessGet(k, fb) { try { const v = sessionStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } }
 function sessSet(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function catFromHash(h) {
-  const m = String(h || '').match(/^#\/(semua|anime|manhwa|segera|tiktok)(?:[\/?]|$)/);
+  const m = String(h || '').match(/^#\/(semua|anime|manhwa|tiktok)(?:[\/?]|$)/);
   return m ? m[1] : '';
 }
 function isViewHash(h) { return /^#\/(baca|tonton)\//.test(String(h || '')); }
@@ -4163,6 +4152,7 @@ function routeKey(h, st) {
 /* Pindah kategori oleh pengguna: simpan memori, tampilkan, tulis URL (push). */
 function goCat(cat, opts) {
   opts = opts || {};
+  if (cat === 'segera') cat = 'anime'; // alias lawas: chip Akan Rilis sudah digabung ke Anime
   if (CATS.indexOf(cat) < 0) cat = 'semua';
   if (cat !== CURCAT) memSaveList();
   setCat(cat);
@@ -4231,7 +4221,8 @@ function keluarReader() {
     if (lim.ani && typeof ANI_UI !== 'undefined' && ANI_UI.limit < lim.ani) ANI_UI.limit = lim.ani;
   }
   const hc = catFromHash(location.hash);
-  const sc = sessGet('gq_cat', 'semua');
+  const sc0 = sessGet('gq_cat', 'semua');
+  const sc = sc0 === 'segera' ? 'anime' : sc0; // alias simpanan lawas
   const start = hc || (CATS.indexOf(sc) >= 0 ? sc : 'semua');
   setCat(start);
   // Normalisasi URL+state tanpa menambah entri (kecuali URL view bagikan)

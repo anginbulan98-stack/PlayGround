@@ -53,6 +53,9 @@ body.ah-hide .topbar{transform:translateY(-110%)}
 .nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:600}
 .nav a:hover{color:#fff}
 @media(max-width:720px){.nav{display:none}}
+/* CTA header: jangan sampai tertekan profil di layar sempit */
+.preset-cta{flex:none;white-space:nowrap}
+@media(max-width:380px){.preset-cta{padding:8px 10px;font-size:11px}}
 
 main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
 /* Anchor tidak tertutup header fixed */
