@@ -86,6 +86,9 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .phone-frame{width:min(100%,340px);padding:10px;background:#141419;border:1px solid var(--border-hi);border-radius:30px}
 .cmp{position:relative;height:min(70vh,540px);aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#0A0A0D;cursor:ew-resize;--pos:50%;user-select:none;touch-action:none}
 .cmp-layer{position:absolute;inset:0}
+.cmp-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;background:#0A0A0D}
+.cmp-before{filter:blur(2px) saturate(.55) brightness(.85)}
+.cmp-credit{text-align:center;font-size:11px;color:var(--t3);margin-top:10px}
 .cmp-a{z-index:2;clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
 .scene-a{background:linear-gradient(160deg,#16283a,#0B0B0F 60%),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 26px);filter:blur(1.5px) saturate(.6);position:absolute;inset:0}
 .scene-b{background:radial-gradient(circle at 30% 25%,rgba(125,211,252,.35),transparent 45%),radial-gradient(circle at 70% 70%,rgba(56,189,248,.25),transparent 45%),linear-gradient(160deg,#16283a,#0a1628);position:absolute;inset:0}
@@ -252,11 +255,11 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 </div></section>
 <section class="section"><div class="cmp-hero"><h2>Lihat perbedaannya</h2><p>Klip yang sama, sebelum dan sesudah. Geser untuk membandingkan.</p></div>
 <div class="cmp-stage"><div class="phone-frame"><div class="cmp" id="cmp" style="--pos:50%">
-<div class="cmp-layer"><div class="scene-b"></div><div class="scene-cap">Tajam · Detail utuh · Warna hidup</div></div>
-<div class="cmp-layer cmp-a"><div class="scene-a"></div><div class="scene-cap">Buram · Pecah · Kompres TikTok</div></div>
+<div class="cmp-layer"><video class="cmp-vid" src="assets/compare-anime.webm" muted loop playsinline preload="none" aria-label="After"></video><div class="scene-cap">Tajam · Detail utuh · Warna hidup</div></div>
+<div class="cmp-layer cmp-a"><video class="cmp-vid cmp-before" src="assets/compare-anime.webm" muted loop playsinline preload="none" aria-label="Before"></video><div class="scene-cap">Buram · Pecah · Kompres TikTok</div></div>
 <span class="cmp-tag a">Before · 540p 30fps</span><span class="cmp-tag b">After · 4K 120fps</span>
 <div class="cmp-line"></div><div class="cmp-hand" id="cmp-hand">⇔</div>
-</div></div></div></section>
+</div></div><p class="cmp-credit">Klip: TVアニメ『ラーメン赤猫』ティザーPV ©アンギャマン／集英社・ラーメン赤猫製作委員会 · CC BY 3.0 via Wikimedia Commons</p></div></section>
 </main>
 <section class="faq container"><div class="section-kicker">Bantuan</div><div class="section-title">Pertanyaan Umum</div><div id="faq-list"></div>
 <p class="faq-support">Ada kendala? Laporkan ke kami di Discord. <a href="#/tiers" style="color:var(--green)">Gabung di sini</a></p></section>
@@ -299,7 +302,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 <div><label>Kualitas</label><select id="apBr" disabled><option selected>CRF 14 · maks 40/60M — Tetap ⭐</option></select></div>
 <div><label>Video miring / kotak?</label><select id="apFit"><option value="cover" selected>Crop penuh 9:16</option><option value="pad">Bar hitam (utuh)</option></select></div>
 </div>
-<div style="font-size:12px;color:var(--t3);margin-top:10px">Otomatis: resolusi & fps asli dipertahankan. Opsi resolusi/frame di atas hanya dipakai bila kamu pilih ukuran eksplisit. Engine FFmpeg (~30MB) diunduh sekali saja ke worker, lalu tersimpan di cache. Proses 100% di perangkatmu.</div>
+<div style="font-size:12px;color:var(--t3);margin-top:10px">Otomatis: resolusi & fps asli dipertahankan. Opsi resolusi/frame di atas hanya dipakai bila kamu pilih ukuran eksplisit. Mesin otomatis: <b>Native</b> (tanpa unduh, lolos blokir) bila browser mendukung, kalau tidak pakai FFmpeg (~30MB, sekali saja). Proses 100% di perangkatmu.</div>
 </div>
 <div id="engDl" style="display:none;margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--bg)">
 <div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--t2)"><span id="engDlLabel">Mengunduh engine…</span><span id="engDlText" style="font-family:var(--mono);white-space:nowrap">0 MB</span></div>
@@ -519,6 +522,9 @@ document.querySelectorAll('.faq-q').forEach(b=>b.onclick=()=>b.parentElement.cla
  c.addEventListener('pointerdown',e=>{drag=true;c.setPointerCapture(e.pointerId);set(e.clientX);});
  c.addEventListener('pointermove',e=>{if(drag)set(e.clientX);});
  c.addEventListener('pointerup',()=>drag=false);c.addEventListener('pointercancel',()=>drag=false);
+ const vids=[...c.querySelectorAll('video')];
+ const start=()=>{vids.forEach(v=>{if(v.paused)v.play().catch(()=>{});});};
+ if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){start();io.disconnect();}});},{threshold:.15});io.observe(c);}else{start();}
 })();
 
 /* ============ OPTIMIZER (no re-encode: faststart + metadata) ============ */
@@ -593,7 +599,7 @@ function startHeartbeat(t0){
   if(Date.now()-lastProgT>180000){lastProgT=Date.now();log('⚠️ 3 menit tanpa progres — file besar di HP memang lama. Biarkan berjalan, atau tekan Batal lalu coba video lebih pendek.');}
  },1000);
 }
-$('cancelBtn').onclick=()=>{cancelled=true;apRunToken++;terminateAPWorker();stopProcessingUI();setP(0,'Dibatalkan.');log('Dibatalkan pengguna — worker.terminate() dipanggil, memori dibebaskan. Worker baru dibuat otomatis saat proses berikutnya.');};
+$('cancelBtn').onclick=()=>{cancelled=true;apRunToken++;try{if(window.__natCtl)window.__natCtl.abort();}catch(e){}terminateAPWorker();stopProcessingUI();setP(0,'Dibatalkan.');log('Dibatalkan pengguna — worker.terminate() dipanggil, memori dibebaskan. Worker baru dibuat otomatis saat proses berikutnya.');};
 
 /* --- MP4 box helpers --- */
 function readBoxes(buf,start,end){
@@ -613,16 +619,19 @@ function readBoxes(buf,start,end){
 function patchChunkOffsets(moovBytes,delta){
  const dv=new DataView(moovBytes.buffer,moovBytes.byteOffset,moovBytes.byteLength);
  const stack=[[0,moovBytes.length]];
- const containers=new Set(['moov','trak','mdia','minf','stbl']);
+ const containers=new Set(['moov','trak','mdia','minf','stbl','edts','dinf']);
  while(stack.length){
   const [s,e]=stack.pop();let o=s;
   while(o+8<=e){
    let size=dv.getUint32(o);
    const t=String.fromCharCode(dv.getUint8(o+4),dv.getUint8(o+5),dv.getUint8(o+6),dv.getUint8(o+7));
+   let hdr=8;
+   if(size===1){if(o+16>e)break;size=Number(dv.getBigUint64(o+8));hdr=16;}
+   else if(size===0){size=e-o;}
    if(size<8)break;if(o+size>e)break;
-   if(t==='stco'){const n=dv.getUint32(o+12);for(let i=0;i<n;i++){const p=o+16+i*4;const nv=dv.getUint32(p)+delta;if(nv>0xFFFFFFFF||nv<0)throw new Error('Offset melebihi batas 32-bit — file terlalu besar untuk mode cepat, pakai Mode Anti-Pecah.');dv.setUint32(p,nv);}}
-   else if(t==='co64'){const n=dv.getUint32(o+12);for(let i=0;i<n;i++){const p=o+16+i*8;const nv=dv.getBigUint64(p)+BigInt(delta);if(nv<0)throw new Error('Offset negatif — file rusak.');dv.setBigUint64(p,nv);}}
-   else if(containers.has(t))stack.push([o+8,o+size]);
+   if(t==='stco'){const n=dv.getUint32(o+hdr+4);for(let i=0;i<n;i++){const p=o+hdr+8+i*4;if(p+4>o+size)break;const nv=dv.getUint32(p)+delta;if(nv>0xFFFFFFFF||nv<0)throw new Error('Offset melebihi batas 32-bit — file terlalu besar untuk mode cepat, pakai Mode Anti-Pecah.');dv.setUint32(p,nv);}}
+   else if(t==='co64'){const n=dv.getUint32(o+hdr+4);for(let i=0;i<n;i++){const p=o+hdr+8+i*8;if(p+8>o+size)break;const nv=dv.getBigUint64(p)+BigInt(delta);if(nv<0)throw new Error('Offset negatif — file rusak.');dv.setBigUint64(p,nv);}}
+   else if(containers.has(t))stack.push([o+hdr,o+size]);
    o+=size;
   }
  }
@@ -648,16 +657,21 @@ async function optimizeMP4(file,onP){
  if(!moov)throw new Error('Box moov tidak ditemukan.');
  const moovBytes=new Uint8Array(ab.slice(moov.start,moov.start+moov.size));
  const uuid=makeUuidBox();
- // faststart: ftyp + moov + uuid + sisa (tanpa ftyp/moov lama)
- const rest=boxes.filter(b=>b.type!=='ftyp'&&b.type!=='moov').map(b=>new Uint8Array(ab.slice(b.start,b.start+b.size)));
+ // faststart: ftyp + moov + uuid + sisa (tanpa ftyp/moov lama, urutan asli dipertahankan)
+ const restBoxes=boxes.filter(b=>b.type!=='ftyp'&&b.type!=='moov');
+ const rest=restBoxes.map(b=>new Uint8Array(ab.slice(b.start,b.start+b.size)));
  const ftypBytes=new Uint8Array(ab.slice(ftyp.start,ftyp.start+ftyp.size));
  const headLen=ftypBytes.length+moovBytes.length+uuid.length;
- // delta offset chunk = posisi baru mdat - posisi lama mdat
+ // delta offset chunk = posisi BARU mdat - posisi LAMA mdat (offset stco/co64 bersifat absolut dari awal file).
+ // Posisi baru = headLen + total box sisa yang aslinya berada SEBELUM mdat pertama (mis. free/wide).
  const oldMdat=get('mdat');
  let delta=0;
- if(oldMdat)delta=headLen-(0); // mdat akan mulai di headLen; offset lama relatif 0 → koreksi = headLen - 0? chunk offset bersifat absolut dari awal file
- // offset absolut baru = headLen + (offsetLama - oldMdat.start - 8?) → sederhananya tambah (headLen - oldMdat.start)
- if(oldMdat)delta=headLen-oldMdat.start;
+ if(oldMdat){
+  let prefix=0;
+  for(const b of restBoxes){if(b.start>=oldMdat.start)break;prefix+=b.size;}
+  const newMdatStart=headLen+prefix;
+  delta=newMdatStart-oldMdat.start;
+ }
  if(delta!==0){onP(48,'Adjusting chunk offsets ('+(delta>0?'+':'')+delta+')…');patchChunkOffsets(moovBytes,delta);await tick();}
  onP(66,'Injecting Guoke Engine metadata…');await tick();
  const total=headLen+rest.reduce((a,b)=>a+b.length,0);
@@ -670,17 +684,60 @@ async function optimizeMP4(file,onP){
  return new Blob([out],{type:'video/mp4'});
 }
 const tick=()=>new Promise(r=>setTimeout(r,60));
-/* pastikan hasil benar-benar bisa diputar sebelum tombol unduh muncul */
+/* pastikan hasil benar-benar bisa diputar (metadata + 1 frame ter-decode) sebelum tombol unduh muncul.
+   Cek metadata saja TIDAK cukup: offset stco rusak tetap lolos metadata tapi gambar hitam. */
 function verifyPlayable(blob,timeoutMs){
  return new Promise((res)=>{
   let done=false;
   const url=URL.createObjectURL(blob);
   const v=document.createElement('video');
-  v.preload='metadata';v.muted=true;v.playsInline=true;
+  v.preload='auto';v.muted=true;v.playsInline=true;v.crossOrigin='anonymous';
   const to=setTimeout(()=>{if(!done){done=true;cleanup();res(false);}},timeoutMs||20000);
-  function cleanup(){clearTimeout(to);try{v.removeAttribute('src');v.load();}catch(e){}try{URL.revokeObjectURL(url);}catch(e){}}
-  v.onloadedmetadata=()=>{if(done)return;done=true;const ok=(v.videoWidth||0)>0&&(v.videoHeight||0)>0;cleanup();res(ok);};
-  v.onerror=()=>{if(done)return;done=true;cleanup();res(false);};
+  function cleanup(){clearTimeout(to);try{v.pause();}catch(e){}try{v.removeAttribute('src');v.load();}catch(e){}try{URL.revokeObjectURL(url);}catch(e){}}
+  function fail(){if(done)return;done=true;cleanup();res(false);}
+  function ok(){if(done)return;done=true;cleanup();res(true);}
+  v.onerror=fail;
+  v.onloadedmetadata=()=>{
+   if(done)return;
+   if(!((v.videoWidth||0)>0&&((v.videoHeight||0)>0))){fail();return;}
+   const d=v.duration;
+   // Coba decode 1 frame di tengah video: seek lalu tunggu 1 frame ter-render.
+   let target=0.5;
+   if(d&&isFinite(d)&&d>0.2)target=Math.min(Math.max(0.2,d*0.25),Math.max(0.2,d-0.2));
+   let seekTO=setTimeout(fail,8000);
+   const onSeeked=()=>{
+    clearTimeout(seekTO);
+    // requestVideoFrameCallback = bukti 1 frame benar-benar ter-decode (bukan cuma metadata).
+    try{
+     if('requestVideoFrameCallback' in v){
+      let fTO=setTimeout(()=>{
+       // Fallback: kalau callback tak kunjung datang tapi readyState cukup, anggap ok
+       // (beberapa browser hemat callback saat paused). Coba play singkat sebagai bukti kedua.
+       tryPlay();
+      },4000);
+      v.requestVideoFrameCallback(()=>{clearTimeout(fTO);ok();});
+     }else{tryPlay();}
+    }catch(e){tryPlay();}
+   };
+   function tryPlay(){
+    const p=v.play?v.play():null;
+    if(p&&p.then){
+     p.then(()=>{
+      const t0=v.currentTime;
+      setTimeout(()=>{
+       // Video rusak (offset salah) biasanya stuck hitam / currentTime tidak jalan / readyState 0-1.
+       if((v.videoWidth||0)>0&&v.readyState>=2&&(v.currentTime>t0||(d&&isFinite(d)&&d<=1)))ok();
+       else fail();
+      },700);
+     }).catch(()=>fail());
+    }else{
+     // Tanpa play: minimal seeked + readyState cukup.
+     if(v.readyState>=1)ok();else fail();
+    }
+   }
+   v.addEventListener('seeked',onSeeked,{once:true});
+   try{v.currentTime=Math.min(target,(d&&isFinite(d))?Math.max(0,d-0.1):target);}catch(e){clearTimeout(seekTO);ok();}
+  };
   v.src=url;
  });
 }
@@ -1007,6 +1064,261 @@ async function finishDownload(blob,suffix){
  stopHeartbeat();releaseWake();
  $('dropZoneWrap').style.display='block';$('processingView').style.display='none';
 }
+/* ============ MESIN NATIVE (WebCodecs, TANPA UNDUH) ============
+   Dipakai bila FFmpeg tak bisa diunduh (file://, CDN diblokir operator/DNS).
+   VideoEncoder H.264 + AudioEncoder AAC bawaan browser, lalu di-mux ke MP4
+   (faststart) oleh muxer di bawah. Tanpa fetch sama sekali. */
+let _nativeProbe;
+async function nativeProbe(){
+ if(_nativeProbe!==undefined)return _nativeProbe;
+ const res={video:false,audio:false};
+ try{
+  const c=document.createElement('canvas');c.width=64;c.height=64;
+  const g=c.getContext('2d');g.fillStyle='#f00';g.fillRect(0,0,64,64);
+  res.video=await new Promise((done)=>{
+   let finished=false;
+   const fin=(v)=>{if(!finished){finished=true;done(v);}};
+   try{
+    const enc=new VideoEncoder({output:()=>{try{enc.close();}catch(e){}fin(true);},error:()=>{try{enc.close();}catch(e){}fin(false);}});
+    enc.configure({codec:'avc1.42001f',width:64,height:64,bitrate:100000,framerate:10,latencyMode:'realtime'});
+    const f=new VideoFrame(c,{timestamp:0});
+    enc.encode(f,{keyFrame:true});f.close();
+    setTimeout(()=>{try{enc.close();}catch(e){}fin(false);},4000);
+   }catch(e){fin(false);}
+  });
+ }catch(e){}
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(AC&&typeof AudioData!=='undefined'){
+   res.audio=await new Promise((done)=>{
+    let finished=false;
+    const fin=(v)=>{if(!finished){finished=true;done(v);}};
+    try{
+     const enc=new AudioEncoder({output:()=>{try{enc.close();}catch(e){}fin(true);},error:()=>{try{enc.close();}catch(e){}fin(false);}});
+     enc.configure({codec:'mp4a.40.2',sampleRate:44100,numberOfChannels:1,bitrate:64000});
+     const ad=new AudioData({format:'f32',sampleRate:44100,numberOfFrames:1024,numberOfChannels:1,timestamp:0,data:new Float32Array(1024).buffer});
+     enc.encode(ad);ad.close();
+     enc.flush().catch(()=>fin(false));
+     setTimeout(()=>{try{enc.close();}catch(e){}fin(false);},4000);
+    }catch(e){fin(false);}
+   });
+  }
+ }catch(e){}
+ _nativeProbe=res;return res;
+}
+/* ---- muxer MP4 minimal (H.264 avcC + AAC esds, faststart, single-chunk) ---- */
+function mp4Concat(parts){let n=0;for(const p of parts)n+=p.length;const o=new Uint8Array(n);let q=0;for(const p of parts){o.set(p,q);q+=p.length;}return o;}
+function mp4U8(v){return new Uint8Array([v&255]);}
+function mp4U16(v){return new Uint8Array([(v>>>8)&255,v&255]);}
+function mp4U32(v){v>>>=0;return new Uint8Array([(v>>>24)&255,(v>>>16)&255,(v>>>8)&255,v&255]);}
+function mp4Str(s){return new TextEncoder().encode(s);}
+function mp4Box(type,...pl){let n=8;for(const p of pl)n+=p.length;const o=new Uint8Array(n);o.set(mp4U32(n),0);o.set(mp4Str(type),4);let q=8;for(const p of pl){o.set(p,q);q+=p.length;}return o;}
+function mp4Full(type,ver,flags,...pl){return mp4Box(type,new Uint8Array([ver,(flags>>>16)&255,(flags>>>8)&255,flags&255]),...pl);}
+function mp4Ftyp(){return mp4Box('ftyp',mp4Str('isom'),mp4U32(0),mp4Str('isom'),mp4Str('iso2'),mp4Str('avc1'),mp4Str('mp41'));}
+function mp4Mvhd(durMs){return mp4Full('mvhd',0,0,mp4U32(0),mp4U32(0),mp4U32(1000),mp4U32(Math.max(1,Math.round(durMs))),mp4U32(0x10000),mp4U16(0x100),mp4U16(0),new Uint8Array(10),mp4Concat([mp4U32(0x10000),mp4U32(0),mp4U32(0),mp4U32(0),mp4U32(0x10000),mp4U32(0),mp4U32(0),mp4U32(0),mp4U32(0x40000000)]),new Uint8Array(24),mp4U32(2));}
+function mp4Tkhd(id,durMs,w,h){return mp4Full('tkhd',0,7,mp4U32(0),mp4U32(0),mp4U32(id),mp4U32(0),mp4U32(Math.max(1,Math.round(durMs))),new Uint8Array(8),mp4U16(0),mp4U16(0),mp4U16(0),mp4U16(0),mp4U32(w*65536),mp4U32(h*65536));}
+function mp4Mdhd(ts,dur){return mp4Full('mdhd',0,0,mp4U32(0),mp4U32(0),mp4U32(ts),mp4U32(Math.max(1,Math.round(dur))),mp4U16(0x55c4),mp4U16(0));}
+function mp4Hdlr(kind){return mp4Full('hdlr',0,0,mp4U32(0),mp4Str(kind==='vide'?'vide':'soun'),new Uint8Array(12),mp4Str(kind==='vide'?'VideoHandle\0':'SoundHandle\0'));}
+function mp4Vmhd(){return mp4Full('vmhd',0,1,mp4U16(0),new Uint8Array(6));}
+function mp4Smhd(){return mp4Full('smhd',0,0,mp4U16(0),mp4U16(0));}
+function mp4Url(){return mp4Full('url ',0,1);}
+function mp4Dref(){return mp4Full('dref',0,0,mp4U32(1),mp4Url());}
+function mp4Dinf(){return mp4Box('dinf',mp4Dref());}
+function mp4Avc1(w,h,avcC){return mp4Box('avc1',new Uint8Array(6),mp4U16(1),new Uint8Array(16),mp4U16(w),mp4U16(h),mp4U32(0x480000),mp4U32(0),mp4U32(1),new Uint8Array(32),mp4U16(0x18),mp4U16(0xffff),mp4Box('avcC',avcC));}
+function mp4Esds(asc,maxBr,avgBr){
+ const b128=(len)=>{const st=[];let x=len;do{st.unshift(x&127);x>>=7;}while(x>0);for(let i=0;i<st.length-1;i++)st[i]|=128;return new Uint8Array(st);};
+ const tag=(t,body)=>mp4Concat([new Uint8Array([t]),b128(body.length),body]);
+ const cfg=mp4Concat([new Uint8Array([0x40,0x15,0,0,0]),mp4U32(maxBr),mp4U32(avgBr)]);
+ return mp4Full('esds',0,0,mp4Concat([mp4U32(1),tag(4,mp4Concat([cfg,tag(5,asc),tag(6,new Uint8Array([2]))]))]));
+}
+function mp4Mp4a(sr,ch,esds){return mp4Box('mp4a',new Uint8Array(6),mp4U16(1),new Uint8Array(8),mp4U16(ch),mp4U16(16),mp4U32(0),mp4U32(sr*65536),esds);}
+function mp4Stsd(entry){return mp4Full('stsd',0,0,mp4U32(1),entry);}
+function mp4Stts(deltas){const runs=[];for(const d of deltas){const l=runs[runs.length-1];if(l&&l[1]===d)l[0]++;else runs.push([1,d]);}return mp4Full('stts',0,0,mp4U32(runs.length),mp4Concat(runs.map(r=>mp4Concat([mp4U32(r[0]),mp4U32(r[1])]))));}
+function mp4Stsc(n){return mp4Full('stsc',0,0,mp4U32(1),mp4U32(1),mp4U32(n),mp4U32(1));}
+function mp4Stsz(sizes){return mp4Full('stsz',0,0,mp4U32(0),mp4U32(sizes.length),mp4Concat(sizes.map(mp4U32)));}
+function mp4Stco(offs){return mp4Full('stco',0,0,mp4U32(offs.length),mp4Concat(offs.map(mp4U32)));}
+function annexBtoMP4(data,naluLen){
+ const isSC=(i)=>i+2<data.length&&data[i]===0&&data[i+1]===0&&(data[i+2]===1||(i+3<data.length&&data[i+2]===0&&data[i+3]===1));
+ const scLen=(i)=>(data[i+2]===1?3:4);
+ if(!(data[0]===0&&data[1]===0))return{data:data,annexb:false}; // sudah length-prefixed
+ const parts=[];let p=0;
+ while(p<data.length){
+  if(!isSC(p)){p++;continue;}
+  const s=p+scLen(p);let e=s;
+  while(e<data.length&&!isSC(e))e++;
+  const nal=data.slice(s,e);if(nal.length){parts.push(mp4U32(nal.length),nal);}
+  p=e;
+ }
+ return{data:mp4Concat(parts),annexb:true};
+}
+function muxMP4(v,a){
+ // v:{w,h,avcC(Uint8Array),samples:[{data:Uint8Array,ts(us),sync}],ts:1e6}
+ // a:null|{sr,ch,asc(Uint8Array),samples:[{data,ts(us)}],ts:sr}
+ if(!v.samples.length)throw new Error('Tidak ada frame video ter-encode.');
+ const vdr=v.samples.map((s,i)=>i+1<v.samples.length?Math.max(1,Math.round(v.samples[i+1].ts-s.ts)):Math.round(1e6/30));
+ const vdeltas=vdr;
+ let adeltas=[];
+ if(a&&a.samples.length){adeltas=a.samples.map((s,i)=>i+1<a.samples.length?Math.max(1,Math.round((a.samples[i+1].ts-s.ts)*a.ts/1e6)):1024);}
+ const vdur=v.samples[v.samples.length-1].ts+(vdeltas[vdeltas.length-1]||33333);
+ const maxBr=Math.max(...v.samples.map(s=>s.data.length))*8;
+ const build=(vOff,aOff)=>{
+  const ventry=mp4Avc1(v.w,v.h,v.avcC);
+  const vstbl=mp4Box('stbl',mp4Stsd(ventry),mp4Stts(vdeltas),mp4Stsc(v.samples.length),mp4Stsz(v.samples.map(s=>s.data.length)),mp4Stco([vOff]));
+  const vminf=mp4Box('minf',mp4Vmhd(),mp4Dinf(),vstbl);
+  const vmdia=mp4Box('mdia',mp4Mdhd(v.ts,vdur),mp4Hdlr('vide'),vminf);
+  const vtrak=mp4Box('trak',mp4Tkhd(1,vdur/1000,v.w,v.h),vmdia);
+  const traks=[vtrak];
+  if(a&&a.samples.length){
+   const esds=mp4Esds(a.asc,128000,128000);
+   const aentry=mp4Mp4a(a.sr,a.ch,esds);
+   const astbl=mp4Box('stbl',mp4Stsd(aentry),mp4Stts(adeltas),mp4Stsc(a.samples.length),mp4Stsz(a.samples.map(s=>s.data.length)),mp4Stco([aOff]));
+   const amin=mp4Box('minf',mp4Smhd(),mp4Dinf(),astbl);
+   const amdia=mp4Box('mdia',mp4Mdhd(a.ts,Math.round(a.samples.length*1024)),mp4Hdlr('soun'),amin);
+   traks.push(mp4Box('trak',mp4Tkhd(2,Math.round(a.samples.length*1024*1000/a.ts),v.w,v.h),amdia));
+  }
+  const mvDurMs=Math.max(vdur/1000,(a&&a.samples.length)?(a.samples.length*1024*1000/a.ts):0);
+  return mp4Box('moov',mp4Mvhd(mvDurMs),...traks);
+ };
+ const ftyp=mp4Ftyp();
+ const vBytes=v.samples.reduce((n,s)=>n+s.data.length,0);
+ const aBytes=(a&&a.samples.length)?a.samples.reduce((n,s)=>n+s.data.length,0):0;
+ const moov0=build(0,0);
+ const mdatStart=ftyp.length+moov0.length+8;
+ const moov=build(mdatStart,mdatStart+vBytes);
+ const mdatData=mp4Concat([...v.samples.map(s=>s.data),...((a&&a.samples.length)?a.samples.map(s=>s.data):[])]);
+ if(mdatData.length!==vBytes+aBytes)throw new Error('Ukuran mdat tak konsisten.');
+ const mdat=mp4Box('mdat',mdatData);
+ return new Blob([mp4Concat([ftyp,moov,mdat])],{type:'video/mp4'});
+}
+/* ---- ambil PCM dari file (decode + resample bila perlu) ---- */
+async function nativePCM(file,targetSr){
+ const AC=window.AudioContext||window.webkitAudioContext;
+ if(!AC)throw new Error('AudioContext tak tersedia.');
+ const ab=await file.arrayBuffer();
+ const ctx=new AC();
+ let buf;
+ try{buf=await ctx.decodeAudioData(ab);}
+ catch(e){try{ctx.close();}catch(_){}throw new Error('Audio tidak bisa di-decode browser.');}
+ try{
+  let data=buf;
+  if(Math.abs(buf.sampleRate-targetSr)>1){
+   const oc=new OfflineAudioContext(Math.min(2,buf.numberOfChannels),Math.max(1,Math.ceil(buf.duration*targetSr)),targetSr);
+   const src=oc.createBufferSource();src.buffer=buf;src.connect(oc.destination);src.start();
+   data=await oc.startRendering();
+  }
+  const ch=Math.min(2,data.numberOfChannels);
+  return{sampleRate:data.sampleRate,channels:ch,frames:data.length,
+   chData:Array.from({length:ch},(_,c)=>data.getChannelData(Math.min(c,data.numberOfChannels-1)))};
+ }finally{try{ctx.close();}catch(e){}}
+}
+async function runAPNative(o){
+ const t=o.t,fps0=Math.max(1,Math.min(120,o.fps||30));
+ const fit=$('apFit').value;
+ const tw=o.spec.tw||1280,th=o.spec.th||720;
+ const dur=(curMeta&&curMeta.d&&isFinite(curMeta.d))?curMeta.d:0;
+ const pixels=tw*th;
+ const br=Math.round(Math.min(20000000,Math.max(6000000,pixels/2073600*14000000)));
+ const mbs=pixels/256*fps0;
+ let lvlHex='28',lvlN='4.0';
+ if(mbs>245760){lvlHex='2a';lvlN='4.2';}
+ if(mbs>522240){lvlHex='33';lvlN='5.1';}
+ if(mbs>983040){lvlHex='34';lvlN='5.2';}
+ const codecs=['avc1.64'+lvlHex,'avc1.42'+'28'];
+ log('Native: '+tw+'×'+th+' @'+fps0+'fps · H.264 High L'+lvlN+' · ~'+(br/1e6).toFixed(1)+' Mbps');
+ const url=URL.createObjectURL(curFile);
+ const v=document.createElement('video');
+ v.muted=true;v.playsInline=true;v.preload='auto';v.src=url;
+ window.__natCtl=null;
+ let venc=null,aenc=null,rejSampling=null;
+ const cleanup=()=>{try{URL.revokeObjectURL(url);}catch(e){}window.__natCtl=null;};
+ window.__natCtl={abort:()=>{cancelled=true;try{v.pause();}catch(e){}try{venc&&venc.close();}catch(e){}try{aenc&&aenc.close();}catch(e){}if(rejSampling)rejSampling(new Error('Dibatalkan pengguna.'));}};
+ try{
+  await new Promise((res,rej)=>{v.onloadedmetadata=res;v.onerror=()=>rej(new Error('Video tidak bisa dibaca browser.'));setTimeout(()=>rej(new Error('Timeout baca metadata video (20 dtk).')),20000);});
+  if(cancelled)throw new Error('Dibatalkan pengguna.');
+  const canvas=document.createElement('canvas');canvas.width=tw;canvas.height=th;
+  const ctx=canvas.getContext('2d',{alpha:false});
+  const draw=()=>{
+   const sw=v.videoWidth,sh=v.videoHeight;if(!sw||!sh)return;
+   if(fit==='pad'){ctx.fillStyle='#000';ctx.fillRect(0,0,tw,th);const s=Math.min(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(v,(tw-dw)/2,(th-dh)/2,dw,dh);}
+   else{const s=Math.max(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(v,(tw-dw)/2,(th-dh)/2,dw,dh);}
+  };
+  let pcm=null;
+  if(o.nat.audio){
+   setP(6,'Menyiapkan audio…');log('Decode audio…');
+   try{pcm=await nativePCM(curFile,48000);log('Audio: '+pcm.sampleRate+' Hz · '+pcm.channels+' ch');}
+   catch(e){log('Audio dilewati ('+((e&&e.message)||e)+') — output tanpa suara.');}
+   if(cancelled)throw new Error('Dibatalkan pengguna.');
+  }else log('Encoder audio tak tersedia — output tanpa suara.');
+  const vchunks=[],achunks=[];let avcC=null,asc=null,nativeErr=null;
+  venc=new VideoEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
+  let cfgOk=false,cfgErr=null;
+  for(const cc of codecs){
+   try{venc.configure({codec:cc,width:tw,height:th,bitrate:br,framerate:fps0,latencyMode:'realtime',hardwareAcceleration:'prefer-hardware'});cfgOk=true;log('Encoder: '+cc);break;}
+   catch(e){cfgErr=e;}
+  }
+  if(!cfgOk)throw new Error('Encoder H.264 menolak ukuran ini ('+((cfgErr&&cfgErr.message)||cfgErr)+').');
+  if(pcm){
+   aenc=new AudioEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);achunks.push({ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!asc)asc=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
+   aenc.configure({codec:'mp4a.40.2',sampleRate:pcm.sampleRate,numberOfChannels:pcm.channels,bitrate:pcm.channels>1?128000:64000});
+   const FR=1024,tmp=new Float32Array(FR*pcm.channels);
+   for(let i=0;i<pcm.frames;i+=FR){
+    if(cancelled)throw new Error('Dibatalkan pengguna.');
+    const n=Math.min(FR,pcm.frames-i);
+    for(let k=0;k<n;k++)for(let c=0;c<pcm.channels;c++)tmp[k*pcm.channels+c]=pcm.chData[c][i+k]||0;
+    const ad=new AudioData({format:'f32',sampleRate:pcm.sampleRate,numberOfFrames:n,numberOfChannels:pcm.channels,timestamp:Math.round(i*1e6/pcm.sampleRate),data:tmp.slice(0,n*pcm.channels).buffer});
+    aenc.encode(ad);ad.close();
+   }
+   log('Audio ter-encode: '+achunks.length+' frame');
+  }
+  setP(10,'Merender video… (native, tanpa unduh)');
+  await v.play().catch(()=>{});
+  const step=1e6/fps0;let next=0,frames=0,vdone=false;const tStart=Date.now();
+  v.onended=()=>{vdone=true;};
+  await new Promise((res,rej)=>{
+   rejSampling=rej;
+   const to=setTimeout(()=>rej(new Error('Timeout render (melebihi durasi + 2 menit).')),((dur||60)*1000+120000));
+   const cb=(now,meta)=>{
+    if(cancelled){clearTimeout(to);rej(new Error('Dibatalkan pengguna.'));return;}
+    if(nativeErr){clearTimeout(to);rej(new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr)));return;}
+    if(vdone||v.ended){clearTimeout(to);res();return;}
+    const tms=((meta&&isFinite(meta.mediaTime)?meta.mediaTime:(v.currentTime||0)))*1e6;
+    if(dur>0){const p=Math.min(0.99,(v.currentTime||0)/dur);setP(10+p*80,'Render native… '+Math.round(p*100)+'% · '+fmtMB(curFile.size));lastProgT=Date.now();}
+    else{lastProgT=Date.now();}
+    if(tms>=next){
+     draw();
+     try{const fr=new VideoFrame(canvas,{timestamp:Math.round(next)});venc.encode(fr,{keyFrame:frames===0||frames%(fps0*2)===0});fr.close();}
+     catch(e){clearTimeout(to);rej(e);return;}
+     frames++;next+=step;
+    }
+    try{v.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
+   };
+   try{v.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
+  });
+  rejSampling=null;
+  if(!vchunks.length)throw new Error('Tidak ada frame ter-encode (video terlalu pendek/rusak?).');
+  setP(93,'Menyusun MP4…');
+  await venc.flush();if(aenc)await aenc.flush();
+  if(nativeErr)throw new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr));
+  if(!avcC)throw new Error('Encoder tidak memberi parameter stream (avcC).');
+  const descLen=((avcC[4]||0)&3)+1;
+  const vsamples=vchunks.map(c=>{const cv=annexBtoMP4(c.data,descLen);return{data:cv.data,ts:c.ts,sync:c.type==='key'};});
+  let asamp=null;
+  if(aenc&&achunks.length&&asc){
+   asamp={sr:pcm.sampleRate,ch:pcm.channels,asc:asc,ts:pcm.sampleRate,samples:achunks.map(c=>({data:c.data,ts:c.ts}))};
+  }else if(aenc&&achunks.length&&!asc){log('Parameter audio (ASC) tak tersedia — audio dibuang, video tetap dipakai.');}
+  try{venc.close();}catch(e){}try{aenc&&aenc.close();}catch(e){}
+  venc=null;aenc=null;
+  const blob=muxMP4({w:tw,h:th,avcC:avcC,ts:1000000,samples:vsamples},asamp);
+  log('Mux OK · '+vsamples.length+' video'+(asamp?' + '+asamp.samples.length+' audio':' (tanpa audio)')+' · '+fmtMB(blob.size));
+  cleanup();
+  await finishDownload(blob,'_ANTIPECAH_HD.mp4');
+ }catch(e){
+  try{venc&&venc.close();}catch(_){}try{aenc&&aenc.close();}catch(_){}
+  try{v.pause();}catch(_){}
+  cleanup();
+  throw e;
+ }
+}
 async function runAP(){
  if(window.__noAP){alert('Mode Anti-Pecah tidak didukung browser ini. Pakai Mode Cepat.');$('modeFast').click();return;}
  const t=myTier();
@@ -1030,6 +1342,22 @@ async function runAP(){
   try{if(navigator.wakeLock)wakeLock=await navigator.wakeLock.request('screen').catch(()=>null);}catch(e){}
  setP(3,'Menyiapkan worker FFmpeg…');log('Mode Anti-Pecah · H.264 CRF 14 · max '+capM+'M · '+preset+(isMobile?' (mode HP)':'')+' · '+fps+'fps (fps & resolusi asli dipertahankan)');
  const token=++apRunToken;
+ const spec0=buildVf(curMeta.w,curMeta.h,$('apRes').value,$('apFit').value,t.key);
+ // Jalur NATIVE dulu (tanpa unduh engine — lolos blokir CDN/operator & file://).
+ // Gagal di titik mana pun -> lanjut FFmpeg seperti biasa, bukan error final.
+ try{
+  const nat=await nativeProbe();
+  if(nat.video&&!cancelled){
+   log('Mesin: Native WebCodecs (tanpa unduh)'+(nat.audio?'':' · encoder audio tak tersedia → output tanpa suara'));
+   await runAPNative({t:t,fps:fps,spec:spec0,nat:nat});
+   if(outBlob&&!cancelled){setP(100,'Anti-Pecah selesai ✓ (native)');log('Terverifikasi bisa diputar ✓');}
+   return;
+  }
+  if(!cancelled)log('Perangkat tak mendukung Native WebCodecs — memakai FFmpeg.');
+ }catch(ne){
+  if(cancelled||token!==apRunToken){stopProcessingUI();return;}
+  log('Native gagal ('+((ne&&ne.message)||ne)+') — memakai FFmpeg.');
+ }
  let watch=null;
  try{await ensureAPWorker();}
  catch(ie){
@@ -1042,9 +1370,9 @@ async function runAP(){
  try{
   if(cancelled||token!==apRunToken)throw new Error('Dibatalkan pengguna.');
   setP(8,'Mengirim file ke worker…');log('Input: '+fmtMB(curFile.size)+' · File dikirim langsung ke worker (tidak dibaca di main thread)');
-  lastProgT=Date.now();
-  const spec=buildVf(curMeta.w,curMeta.h,$('apRes').value,$('apFit').value,t.key);
-  log('Filter: '+spec.vf);
+   lastProgT=Date.now();
+   const spec=spec0;
+   log('Filter: '+spec.vf);
   // Kualitas HD: CRF 14 + maxrate dinamis + warna BT.709 + audio 256k/48kHz.
   // -r memakai fps pilihan user apa adanya. -level dilepas agar 4K tidak gagal.
   // -sn/-dn/-map_metadata buang subtitle, data & metadata ala server.
