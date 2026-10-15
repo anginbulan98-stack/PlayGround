@@ -22,11 +22,11 @@ UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) GuokeScan/2.0"}
 TODAY = time.strftime("%Y-%m-%d")
 STATE_FP = "data/scan_state.json"
 
-def fetch_one(aid, timeout=25):
+def fetch_one(aid, timeout=12, retries=2):
     """Return (kind, data). kind: ok | dead404 | transient."""
     url = "https://anikotoapi.site/series/%d" % aid
     last = ""
-    for att in range(4):
+    for att in range(max(1, retries)):
         try:
             req = urllib.request.Request(url, headers=UA)
             with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -36,10 +36,10 @@ def fetch_one(aid, timeout=25):
             if e.code == 404:
                 return ("dead404", "")
             last = "HTTP%d" % e.code
-            time.sleep(4 + att * 5)
+            time.sleep(2 + att * 3)
         except Exception as e:
             last = str(e)[:80]
-            time.sleep(4 + att * 5)
+            time.sleep(2 + att * 3)
     return ("transient", last)
 
 def norm(t):
@@ -63,6 +63,18 @@ def parse_detail(aid, d):
         except ValueError:
             declared = n
         total = max(n, declared)
+        # JUJUR: angka episode katalog = yang benar-benar bisa diputar
+        # (punya embed SUB/DUB), bukan total deklarasi/rencana tayang.
+        # Kalau tidak, kartu bilang "13 episode" tapi 10 tombol mati.
+        play_nums = []
+        for e in eps:
+            eu = e.get("embed_url") or {}
+            if eu.get("sub") or eu.get("dub") or len(eu.keys()) > 0:
+                try:
+                    play_nums.append(int(e.get("number")))
+                except (TypeError, ValueError):
+                    pass
+        watch_n = max(play_nums) if play_nums else 0
         terms = anime.get("terms_by_type") or {}
         genres = (terms.get("genre")) or []
         if isinstance(genres, str):
@@ -84,7 +96,8 @@ def parse_detail(aid, d):
             kind = "film" if "movie" in ttype.lower() and total <= 2 else "series"
         desc = ihtml.unescape(re.sub(r"<[^>]+>", "", str(anime.get("description") or ""))).strip()[:300]
         return {"aid": aid, "title": title, "cover": anime.get("poster") or "",
-                "episodes": total, "eps_raw": eps, "year": year,
+                "episodes": (watch_n if watch_n > 0 else total),
+                "eps_raw": eps, "year": year,
                 "genres": genres[:3], "synopsis": desc,
                 "status_guess": status, "kind_guess": kind}
     except Exception:
@@ -97,6 +110,14 @@ def main():
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--sleep", type=float, default=0.4)
+    ap.add_argument("--fetch-timeout", type=int, default=12)
+    ap.add_argument("--retries", type=int, default=2)
+    ap.add_argument("--watchable-only", action="store_true",
+                    help="hanya rilis judul dengan >=1 episode playable "
+                         "(embed SUB/DUB ada); sisanya dicatat di "
+                         "state['nowatch'] dan tidak masuk katalog")
+    ap.add_argument("--recheck-nowatch", action="store_true",
+                    help="ikut scan ulang aid yang dulu tanpa playable")
     args = ap.parse_args()
 
     ak = json.load(open("data/anikoto.json"))
@@ -106,15 +127,19 @@ def main():
     have_slugs = {s["id"] for s in anime["shows"]}
     by_title = {s["title"]: s for s in anime["shows"]}
 
-    st = {"dead404": [], "transient_skip": []}
+    st = {"dead404": [], "transient_skip": [], "nowatch": []}
     if os.path.exists(STATE_FP):
         try:
             st = json.load(open(STATE_FP))
         except Exception:
             pass
     dead = set(st.get("dead404", []))
-    # jangan ulangi yang sudah punya file + yang sudah dead
-    todo = [i for i in range(1, args.max_id + 1) if i not in have_ids and i not in dead]
+    nowatch = set(st.get("nowatch", []))
+    trans_saved = set(st.get("transient", []))
+    # jangan ulangi yang sudah punya file + yang sudah dead;
+    # yang dulu tanpa playable dilewati kecuali --recheck-nowatch
+    todo = [i for i in range(1, args.max_id + 1) if i not in have_ids and i not in dead
+            and (args.recheck_nowatch or i not in nowatch)]
     print("katalog=%d have_ak=%d dead=%d todo=%d (1..%d)" % (
         len(anime["shows"]), len(have_ids), len(dead), len(todo), args.max_id), flush=True)
     if args.limit:
@@ -126,14 +151,50 @@ def main():
 
     ok_n = dead_n = trans_n = 0
     since_save = 0
+    # ID yang ditambahkan run ini (untuk save gabung: baca disk dulu agar
+    # tidak menimpa perubahan tool lain yang jalan bersamaan).
+    new_akids = set()
+    new_sids = set()
     def save():
-        json.dump(ak, open("data/anikoto.json", "w"), ensure_ascii=False, indent=1)
-        json.dump(anime, open("data/anime.json", "w"), ensure_ascii=False)
+        try:
+            d_ak = json.load(open("data/anikoto.json"))
+            d_an = json.load(open("data/anime.json"))
+        except Exception:
+            d_ak, d_an = ak, anime
+            json.dump(ak, open("data/anikoto.json", "w"), ensure_ascii=False, indent=1)
+            json.dump(anime, open("data/anime.json", "w"), ensure_ascii=False)
+            json.dump({"updated": TODAY, "max_id": args.max_id,
+                       "dead404": sorted(dead),
+                       "nowatch": sorted(nowatch),
+                       "transient": sorted(trans_saved)}, open(STATE_FP, "w"), ensure_ascii=False)
+            return
+        have_ak = {o["id"] for o in d_ak if o.get("id")}
+        for o in ak:
+            if o.get("id") in new_akids and o["id"] not in have_ak:
+                d_ak.append(o)
+                have_ak.add(o["id"])
+        have_s = {s["id"] for s in d_an["shows"]}
+        for s in anime["shows"]:
+            if s["id"] in new_sids and s["id"] not in have_s:
+                d_an["shows"].append(s)
+                have_s.add(s["id"])
+        # angka episode terbaru versi scan untuk entri yang disentuhnya
+        for o in ak:
+            if o.get("id") in new_akids:
+                for d in d_ak:
+                    if d.get("id") == o["id"]:
+                        d["episodes"] = o.get("episodes", d.get("episodes"))
+                        break
+        d_an["updated"] = TODAY
+        json.dump(d_ak, open("data/anikoto.json", "w"), ensure_ascii=False, indent=1)
+        json.dump(d_an, open("data/anime.json", "w"), ensure_ascii=False)
         json.dump({"updated": TODAY, "max_id": args.max_id,
-                   "dead404": sorted(dead)}, open(STATE_FP, "w"), ensure_ascii=False)
+                   "dead404": sorted(dead),
+                   "nowatch": sorted(nowatch),
+                   "transient": sorted(trans_saved)}, open(STATE_FP, "w"), ensure_ascii=False)
 
     with ThreadPoolExecutor(max_workers=args.workers) as ex:
-        fut = {ex.submit(fetch_one, aid): aid for aid in todo}
+        fut = {ex.submit(fetch_one, aid, args.fetch_timeout, args.retries): aid for aid in todo}
         done = 0
         for f in as_completed(fut):
             aid = fut[f]
@@ -145,16 +206,24 @@ def main():
             if kind == "dead404":
                 dead.add(aid); dead_n += 1
             elif kind == "transient":
-                trans_n += 1
+                trans_n += 1; trans_saved.add(aid)
             else:
                 r = parse_detail(aid, payload)
                 if not r:
                     dead.add(aid); dead_n += 1
+                elif args.watchable_only and not any(
+                        (e.get("embed_url") or {}).get("sub")
+                        or (e.get("embed_url") or {}).get("dub")
+                        or (e.get("embed_url") or {}).keys()
+                        for e in (r.get("eps_raw") or [])):
+                    # ada di API tapi BELUM bisa ditonton -> jangan masuk katalog
+                    nowatch.add(aid); trans_n += 1
                 elif norm(r["title"]) in have_titles_norm:
                     # judul sudah ada (dari AniList) -> tambahkan akid + eps, jangan duplikat
                     have_ids.add(aid)
                     ak.append({"show": r["title"], "id": aid, "slug": "", "apiTitle": r["title"],
                                "episodes": r["episodes"], "match": True, "auto": True, "bulk": TODAY})
+                    new_akids.add(aid)
                     hit = None
                     for s in anime["shows"]:
                         if norm(s["title"]) == norm(r["title"]):
@@ -177,8 +246,10 @@ def main():
                     have_slugs.add(sid); have_titles_norm.add(norm(r["title"])); have_ids.add(aid)
                     ak.append({"show": r["title"], "id": aid, "slug": "", "apiTitle": r["title"],
                                "episodes": r["episodes"], "match": True, "auto": True, "bulk": TODAY})
+                    new_akids.add(aid)
                     anime["shows"].append({"id": sid, "title": r["title"], "cover": r["cover"],
                                            "akid": aid, "episodes": r["episodes"]})
+                    new_sids.add(sid)
                     eps = [{"n": e.get("number"), "t": e.get("title") or ("Episode %s" % e.get("number")),
                             "e": e.get("embed_url") or {}} for e in r["eps_raw"]]
                     eps.sort(key=lambda e: (int(e["n"]) if str(e["n"]).isdigit() else 99999))

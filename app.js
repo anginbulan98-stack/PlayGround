@@ -40,7 +40,15 @@ const I18N = {
     auth_or: 'ATAU', auth_terms1: 'Dengan masuk atau mendaftar, kamu menyetujui', auth_terms2: 'Syarat & Ketentuan',
     auth_terms3: 'dan', auth_terms4: 'Kebijakan Privasi', auth_terms5: 'kami.',
     menu_about2: 'Tentang', profile_name_ph: 'Namamu',
-    cat_semua: 'Semua', cat_anime: 'Anime', cat_manhwa: 'Manhwa', cat_segera: 'Akan Rilis', cat_tiktok: 'Upload TikTok Quality', soon_list_meta: 'segera hadir — belum bisa ditonton',
+    cat_semua: 'Semua', cat_anime: 'Anime', cat_manhwa: 'Manhwa', cat_segera: 'Akan Rilis', cat_tiktok: 'Upload TikTok Quality', cat_ikon: '🎭 Ikon', door_dl: 'Download', soon_list_meta: 'segera hadir — belum bisa ditonton',
+    ikon_eyebrow: '◆ IKON ANIME • GALERI FOTO', ikon_h2: 'Ikon Anime',
+    ikon_d: 'Koleksi foto profil anime — ketuk tombol untuk menampilkan, ketuk foto untuk pratinjau.',
+    ikon_search_ph: 'Cari foto ikon…', ikon_view: '👁 Lihat', ikon_photos: 'foto',
+    ikon_upload: '➕ Upload foto',
+    ikon_empty: 'Belum ada foto. Ketuk Upload untuk menambah ikon anime favoritmu (mis. dari Pinterest) — tersimpan di HP ini.',
+    ikon_delete: '🗑 Hapus', ikon_added: 'foto ditambahkan ✓', ikon_deleted: 'Foto dihapus',
+    ikon_shared: 'foto tampil untuk semua pengguna ✓', ikon_community: '👥 Komunitas',
+    ikon_dl_tab: 'Dibuka di tab baru — tahan gambarnya lalu pilih Simpan/Unduh ✓',
     latest_refresh: '↻ Perbarui', latest_checked: 'Dicek',
     lh_kicker: 'LANJUTKAN', lh_continue: 'Lanjut →', lh_read: 'LANJUTKAN MEMBACA', lh_watch: 'LANJUTKAN MENONTON',
     prev_eyebrow: '◆ PILIHAN UNTUKMU', prev_h2: 'Mulai dari sini', prev_latest: '🆕 Episode Terbaru', prev_ch: '📖 Chapter Terbaru', prev_anime: '🔥 Anime pilihan', prev_mw: '📖 Manhwa pilihan',
@@ -60,11 +68,19 @@ const I18N = {
     bm_added: 'Ditambahkan ke bookmark 📌', bm_removed: 'Bookmark dihapus', page_w: 'halaman',
     img_width: 'Lebar gambar', w_full: 'Penuh', w_med: 'Sedang', w_narrow: 'Sempit',
     report: '⚠ Lapor chapter rusak', float_next: 'Chapter berikutnya →',
+    ep_like_aria: 'Suka episode ini', cmt_h: 'Komentar', cmt_name_ph: 'Nama (opsional)',
+    cmt_ph: 'Tulis komentar…', cmt_send: 'Kirim', cmt_empty: 'Belum ada komentar. Jadilah yang pertama!',
+    cmt_need: 'Tulis komentar dulu', cmt_deleted: 'Komentar dihapus', cmt_anon: 'Anonim',
+    cmt_bad: 'Komentar mengandung kata tidak pantas', cmt_reported: 'Laporan terkirim, terima kasih', cmt_report: 'Laporkan',
+    cmt_local: 'Komentar tersimpan di perangkat ini.',
+    lib_eyebrow: '◆ PUSTAKAMU', lib_title: 'Pustaka', lib_riwayat: 'Riwayat', lib_daftar: 'Daftarku',
+    lib_empty_bm: 'Daftarku masih kosong. Ketuk 🔖 Bookmark di halaman judul untuk menyimpan.',
+    g_today: 'Hari ini', g_yday: 'Kemarin', g_week: 'Minggu ini', g_older: 'Lebih lama',
     ani_eyebrow: '◆ ANIME • NONTON LANGSUNG', ani_h2: 'Nonton Anime di sini',
     ani_desc: 'Pilih judul, pilih episode, langsung putar di sini',
     anif_all: 'Semua', anif_new: 'Episode Terbaru', anif_airing: 'Sedang Tayang', anif_done: 'Tamat', anif_film: 'Film', anif_soon: 'Akan Rilis',
     fresh_h: '🔥 Baru Rilis — otomatis', fresh_d: 'Judul terbaru yang langsung ditambahkan otomatis. Klik untuk menonton.',
-    latest_h: '🆕 Episode Terbaru — 2026', latest_d: 'Rilisan 2026 + update episode terbaru (data nyaa.si sebagai cek ketersediaan, putar langsung di situs). Klik untuk menonton.',
+    latest_h: '🆕 Episode Terbaru — 2026', latest_d: 'Rilisan terbaru + update episode, putar langsung di situs. Ketuk untuk menonton.',
     upcoming_h: '📅 Anime Akan Rilis — belum tayang', upcoming_d: 'Judul yang sudah diumumkan tapi belum ada episodenya. Klik untuk info + jadwal. Tombol Nonton aktif otomatis setelah rilis.',
     soon_badge: 'SEGERA', soon_meta: 'Segera hadir', card_info: 'ℹ Info', soon_note: 'Belum ada episode yang bisa diputar. Judul ini akan otomatis bisa ditonton setelah tanggal rilis.',
     jx_h: '🌐 Jelajahi semua anime', jx_d: 'Katalog live ribuan judul — cari apa pun, klik untuk menonton langsung di sini.',
@@ -78,7 +94,7 @@ const I18N = {
     dz_drop: 'Tarik & letakkan video di sini', dz_or: 'atau klik untuk pilih file • maks dicek ~500MB',
     res: 'Resolusi', dur: 'Durasi', size: 'Ukuran', br: 'Bitrate est.',
     pz_eyebrow: '◆ ALAT UTAMA — PROSES & DOWNLOAD', pz_h2: 'Proses video jadi TikTok HD',
-    pz_d: 'File <strong>tidak diunggah ke server</strong> — diproses lokal di HP-mu via ffmpeg.wasm. Output selalu <strong>MP4 H.264 + AAC, 60fps</strong> + tombol <strong>Download</strong>.',
+    pz_d: 'File <strong>tidak diunggah ke server</strong> — diproses langsung di HP-mu. Output selalu <strong>MP4 siap upload + tombol Download</strong>.',
     pz_formats: 'atau klik untuk pilih file • MP4/MOV/MKV/WebM/AVI, 480p–8K • maks 500 MB / 3 menit',
     m_mode: 'Mode output', mode_auto: 'Otomatis — rasio asli, sisi pendek 1080', mode_vfit: 'TikTok vertikal 1080×1920 — Pas (bar hitam)',
     mode_vfill: 'TikTok vertikal 1080×1920 — Isi penuh (crop tengah)', mode_vblur: 'TikTok vertikal 1080×1920 — Latar blur',
@@ -168,9 +184,9 @@ const I18N = {
     epsort_asc: 'Terlama dulu', epsort_desc: 'Terbaru dulu', dv_search_ep_ph: 'Cari episode… (mis. 12)',
     dv_loading_eps: 'Memuat daftar episode…', dv_no_stream: 'Streaming belum tersedia untuk judul ini.',
     dv_eps_empty: 'Episode kosong.', dv_checking: 'Memeriksa sumber video…',
-    dv_net_err: 'Sumber video belum bisa diperiksa (jaringan/API sibuk). Daftar di bawah tetap bisa dijelajahi. ',
+    dv_net_err: 'Sumber video belum bisa diperiksa (koneksi sibuk). Daftar di bawah tetap bisa dijelajahi. ',
     retry: 'Coba lagi', ep_new_added: 'episode baru ditambahkan otomatis', results_for: 'hasil untuk',
-    ep_hint: 'klik nomor untuk menonton.', ep_legend: '<b class="lg-new">tepi biru</b>=terbaru, <b class="lg-soon">gelap</b>=segera hadir.',
+    ep_hint: 'klik nomor untuk menonton.', ep_legend: '<span class="lg-dot new"></span>Terbaru <span class="lg-dot soon"></span>Segera hadir',
     open_eplist: 'Buka daftar episode dulu', ep_notfound: 'Episode tidak ketemu di daftar',
     ep_last: 'Sudah episode terakhir', ep_first: 'Sudah episode pertama', ep_missing: 'Episode tidak ketemu',
     srv_unavailable: 'Server tidak tersedia untuk episode ini',
@@ -192,23 +208,23 @@ const I18N = {
     bm_detail_on: '📌 Dibookmark', bm_detail_off: '🔖 Bookmark', acak_lain: '🎲 Acak lain',
     bm_ongoing: 'Sedang dibaca', bm_wish: 'Mau dibaca', bm_done: 'Selesai', bm_updated: 'Status bookmark diperbarui',
     ch_search_ph: 'Cari chapter… (mis. 12)', ch_loading: 'Memuat daftar chapter…', ch_notfound: 'Chapter tidak ketemu.',
-    ch_fail: 'Gagal memuat daftar chapter (jaringan sibuk / file belum ikut ter-deploy). ',
+    ch_fail: 'Gagal memuat daftar chapter (koneksi sibuk). ',
     ch_fail_toast: 'Gagal memuat daftar chapter',
-    rd_loading_imgs: 'Memuat gambar ', rd_all_fail: 'Semua gambar gagal tampil (CDN menolak / jaringan sibuk).',
+    rd_loading_imgs: 'Memuat gambar ', rd_all_fail: 'Semua gambar gagal tampil (koneksi sibuk).',
     rd_too_long: 'Masih memuat terlalu lama (jaringan lambat).', rd_img_fail: 'Gagal memuat gambar (jaringan sibuk).',
     rd_reopen: 'Tutup lalu buka lagi, atau tekan tombol di bawah.', rd_resumed: '(dilanjutkan dari posisi terakhir)',
-    rd_retry_imgs: 'Muat ulang gambar', rd_partial: ' gambar gagal tampil — coba muat ulang.',
+    rd_retry_imgs: 'Muat ulang gambar', rd_retry_one: 'Muat ulang gambar ini', rd_alt_srv: 'Coba server lain', rd_report_link: 'Laporkan chapter rusak', rd_partial: ' gambar gagal tampil — coba muat ulang.',
     rd_scroll: 'geser ke bawah untuk membaca.', pages_w: 'halaman',
     mw_fail: 'Data manhwa tidak termuat. Periksa koneksi lalu refresh.',
     ani_fail: 'Data anime tidak termuat. Periksa koneksi lalu refresh.',
     preset_copied_full: 'Preset disalin! Tempel ke aplikasi editing-mu.', preset_ok: 'Preset disalin!', cmd_ok: 'Command disalin!',
     clipboard_na: 'Clipboard tidak tersedia',
-    req_saved: 'Request tersimpan ✓', lap_saved: 'Laporan tersimpan 🙏',
+    req_saved: 'Request tersimpan ✓', lap_saved: 'Terima kasih, laporan terkirim',
     no_req: 'Belum ada request.', no_req_s: 'Belum ada request', no_lap: 'Belum ada laporan.', no_lap_s: 'Belum ada laporan',
     copied_admin: 'Disalin! Kirim ke admin ✓',
     fresh_fail: 'Gagal memuat judul baru', ep_fail: 'Gagal memuat episode',
     fs_denied: 'Layar penuh ditolak browser', fs_na: 'Browser tidak mendukung layar penuh',
-    net_busy: 'Gagal memuat (jaringan/API sibuk)', file_unread: 'File tidak terbaca. Pakai MP4/MOV.',
+    net_busy: 'Gagal memuat (koneksi sibuk)', file_unread: 'File tidak terbaca. Pakai MP4/MOV.',
     low_w: 'rendah',
     tip_land: 'Video landscape — TikTok bakal dipotong/ada border hitam. Export ulang 9:16 (1080×1920 atau 1440×2560).',
     tip_hd: 'Resolusi di bawah Full HD — export ulang minimal 1080×1920 biar teks tidak pecah.',
@@ -229,7 +245,7 @@ const I18N = {
     pz_over1: 'File ', pz_over2: ' melebihi 500 MB — proses bisa gagal (memori HP) atau hasil > batas upload TikTok.',
     pz_over3: 'Durasi ', pz_over4: ' dtk melebihi 3 menit — TikTok mengompres lebih agresif; pertimbangkan bagi jadi beberapa part.',
     pz_ready: 'Siap diproses. Pilih mode output lalu tekan “Proses video”.',
-    ff_fail: 'Pustaka ffmpeg gagal dimuat (CDN unpkg diblokir/offline). Sambungkan internet lalu coba lagi.',
+    ff_fail: 'Mesin pemroses gagal dimuat (offline/diblokir). Sambungkan internet lalu coba lagi.',
     pz_processing: 'Memproses… ', ff_loading: 'Memuat mesin ffmpeg (±30 MB, sekali saja)…', pick_video: 'Pilih video dulu',
     hp_interp: 'HP terdeteksi: interpolasi rakus memori — bila setting penuh gagal, otomatis dicoba setting ringan.',
     hp_interp_off: 'HP terdeteksi: interpolasi gerak dimatikan otomatis (rakus memori wasm, hampir pasti gagal di HP) — output tetap 60fps.',
@@ -265,7 +281,15 @@ const I18N = {
     auth_or: 'OR', auth_terms1: 'By signing in or up, you agree to our', auth_terms2: 'Terms & Conditions',
     auth_terms3: 'and', auth_terms4: 'Privacy Policy', auth_terms5: 'us.',
     menu_about2: 'About', profile_name_ph: 'Your name',
-    cat_semua: 'All', cat_anime: 'Anime', cat_manhwa: 'Manhwa', cat_segera: 'Upcoming', cat_tiktok: 'Upload TikTok Quality', soon_list_meta: 'coming soon — not watchable yet',
+    cat_semua: 'All', cat_anime: 'Anime', cat_manhwa: 'Manhwa', cat_segera: 'Upcoming', cat_tiktok: 'Upload TikTok Quality', cat_ikon: '🎭 Icons', door_dl: 'Download', soon_list_meta: 'coming soon — not watchable yet',
+    ikon_eyebrow: '◆ ANIME ICONS • PHOTO GALLERY', ikon_h2: 'Anime Icons',
+    ikon_d: 'Anime profile photo collection — tap the button to view, tap a photo to preview.',
+    ikon_search_ph: 'Search icon photos…', ikon_view: '👁 View', ikon_photos: 'photos',
+    ikon_upload: '➕ Upload photos',
+    ikon_empty: 'No photos yet. Tap Upload to add your favorite anime icons (e.g. from Pinterest) — stored on this device.',
+    ikon_delete: '🗑 Delete', ikon_added: 'photos added ✓', ikon_deleted: 'Photo deleted',
+    ikon_shared: 'photos now visible to all users ✓', ikon_community: '👥 Community',
+    ikon_dl_tab: 'Opened in a new tab — press and hold the image, then Save/Download ✓',
     latest_refresh: '↻ Refresh', latest_checked: 'Checked',
     lh_kicker: 'CONTINUE', lh_continue: 'Continue →', lh_read: 'CONTINUE READING', lh_watch: 'CONTINUE WATCHING',
     prev_eyebrow: '◆ PICKS FOR YOU', prev_h2: 'Start here', prev_latest: '🆕 Latest Episodes', prev_ch: '📖 Latest Chapters', prev_anime: '🔥 Featured anime', prev_mw: '📖 Featured manhwa',
@@ -285,11 +309,19 @@ const I18N = {
     bm_added: 'Added to bookmarks 📌', bm_removed: 'Bookmark removed', page_w: 'page',
     img_width: 'Image width', w_full: 'Full', w_med: 'Medium', w_narrow: 'Narrow',
     report: '⚠ Report broken chapter', float_next: 'Next chapter →',
+    ep_like_aria: 'Like this episode', cmt_h: 'Comments', cmt_name_ph: 'Name (optional)',
+    cmt_ph: 'Write a comment…', cmt_send: 'Send', cmt_empty: 'No comments yet. Be the first!',
+    cmt_need: 'Write a comment first', cmt_deleted: 'Comment deleted', cmt_anon: 'Anonymous',
+    cmt_bad: 'Comment contains inappropriate words', cmt_reported: 'Report sent, thank you', cmt_report: 'Report',
+    cmt_local: 'Comments are stored on this device.',
+    lib_eyebrow: '◆ YOUR LIBRARY', lib_title: 'Library', lib_riwayat: 'History', lib_daftar: 'My List',
+    lib_empty_bm: 'Your list is empty. Tap 🔖 Bookmark on a title page to save it.',
+    g_today: 'Today', g_yday: 'Yesterday', g_week: 'This week', g_older: 'Older',
     ani_eyebrow: '◆ ANIME • WATCH HERE', ani_h2: 'Watch Anime here',
     ani_desc: 'Pick a title, pick an episode, play right here',
     anif_all: 'All', anif_new: 'Latest Episodes', anif_airing: 'Airing', anif_done: 'Completed', anif_film: 'Film', anif_soon: 'Upcoming',
     fresh_h: '🔥 Fresh releases — auto', fresh_d: 'Newest titles added automatically. Click to watch.',
-    latest_h: '🆕 Latest Episodes — 2026', latest_d: '2026 releases + latest episode updates (nyaa.si as availability check, play right here). Click to watch.',
+    latest_h: '🆕 Latest Episodes — 2026', latest_d: 'New releases + episode updates, play right here. Click to watch.',
     upcoming_h: '📅 Upcoming Anime — not yet aired', upcoming_d: 'Announced titles with no episodes yet. Click for info + schedule. Watch activates automatically after release.',
     soon_badge: 'SOON', soon_meta: 'Coming soon', card_info: 'ℹ Info', soon_note: 'No playable episodes yet. This title will become watchable automatically after its release date.',
     jx_h: '🌐 Browse all anime', jx_d: 'Live catalog of thousands of titles — search anything, click to watch right here.',
@@ -303,7 +335,7 @@ const I18N = {
     dz_drop: 'Drag & drop your video here', dz_or: 'or click to choose a file • checked up to ~500MB',
     res: 'Resolution', dur: 'Duration', size: 'Size', br: 'Est. bitrate',
     pz_eyebrow: '◆ MAIN TOOL — PROCESS & DOWNLOAD', pz_h2: 'Turn videos into TikTok HD',
-    pz_d: 'Files are <strong>never uploaded to a server</strong> — processed locally on your phone via ffmpeg.wasm. Output is always <strong>MP4 H.264 + AAC, 60fps</strong> + a <strong>Download</button>.',
+    pz_d: 'Files are <strong>never uploaded to a server</strong> — processed right on your phone. Output is always <strong>upload-ready MP4 + a Download button</strong>.',
     pz_formats: 'or click to choose a file • MP4/MOV/MKV/WebM/AVI, 480p–8K • max 500 MB / 3 min',
     m_mode: 'Output mode', mode_auto: 'Auto — original ratio, short side 1080', mode_vfit: 'Vertical TikTok 1080×1920 — Fit (black bars)',
     mode_vfill: 'Vertical TikTok 1080×1920 — Full bleed (center crop)', mode_vblur: 'Vertical TikTok 1080×1920 — Blurred background',
@@ -393,9 +425,9 @@ const I18N = {
     epsort_asc: 'Oldest first', epsort_desc: 'Newest first', dv_search_ep_ph: 'Search episodes… (e.g. 12)',
     dv_loading_eps: 'Loading episode list…', dv_no_stream: 'Streaming is not available for this title.',
     dv_eps_empty: 'No episodes.', dv_checking: 'Checking video sources…',
-    dv_net_err: 'Video sources could not be checked (network/API busy). You can still browse the list below. ',
+    dv_net_err: 'Video sources could not be checked (busy connection). You can still browse the list below. ',
     retry: 'Retry', ep_new_added: 'new episodes added automatically', results_for: 'results for',
-    ep_hint: 'click a number to watch.', ep_legend: '<b class="lg-new">blue edge</b>=newest, <b class="lg-soon">dim</b>=coming soon.',
+    ep_hint: 'click a number to watch.', ep_legend: '<span class="lg-dot new"></span>Newest <span class="lg-dot soon"></span>Coming soon',
     open_eplist: 'Open the episode list first', ep_notfound: 'Episode not found in list',
     ep_last: 'Already at the last episode', ep_first: 'Already at the first episode', ep_missing: 'Episode not found',
     srv_unavailable: 'No server available for this episode',
@@ -417,23 +449,23 @@ const I18N = {
     bm_detail_on: '📌 Bookmarked', bm_detail_off: '🔖 Bookmark', acak_lain: '🎲 Another random',
     bm_ongoing: 'Reading', bm_wish: 'Plan to read', bm_done: 'Completed', bm_updated: 'Bookmark status updated',
     ch_search_ph: 'Search chapters… (e.g. 12)', ch_loading: 'Loading chapter list…', ch_notfound: 'Chapter not found.',
-    ch_fail: 'Failed to load chapter list (busy network / file not deployed yet). ',
+    ch_fail: 'Failed to load chapter list (busy connection). ',
     ch_fail_toast: 'Failed to load chapter list',
-    rd_loading_imgs: 'Loading images ', rd_all_fail: 'All images failed to load (CDN refused / busy network).',
+    rd_loading_imgs: 'Loading images ', rd_all_fail: 'All images failed to load (busy connection).',
     rd_too_long: 'Still loading too slowly (slow network).', rd_img_fail: 'Failed to load images (busy network).',
     rd_reopen: 'Close and reopen, or press the button below.', rd_resumed: '(resumed from last position)',
-    rd_retry_imgs: 'Reload images', rd_partial: ' images failed to load — try reloading.',
+    rd_retry_imgs: 'Reload images', rd_retry_one: 'Reload this image', rd_alt_srv: 'Try another server', rd_report_link: 'Report broken chapter', rd_partial: ' images failed to load — try reloading.',
     rd_scroll: 'scroll down to read.', pages_w: 'pages',
     mw_fail: 'Manhwa data failed to load. Check your connection and refresh.',
     ani_fail: 'Anime data failed to load. Check your connection and refresh.',
     preset_copied_full: 'Preset copied! Paste into your editing app.', preset_ok: 'Preset copied!', cmd_ok: 'Command copied!',
     clipboard_na: 'Clipboard unavailable',
-    req_saved: 'Request saved ✓', lap_saved: 'Report saved 🙏',
+    req_saved: 'Request saved ✓', lap_saved: 'Thank you, report sent',
     no_req: 'No requests yet.', no_req_s: 'No requests yet', no_lap: 'No reports yet.', no_lap_s: 'No reports yet',
     copied_admin: 'Copied! Send to admin ✓',
     fresh_fail: 'Failed to load new title', ep_fail: 'Failed to load episode',
     fs_denied: 'Fullscreen denied by browser', fs_na: 'Browser does not support fullscreen',
-    net_busy: 'Load failed (network/API busy)', file_unread: 'File unreadable. Use MP4/MOV.',
+    net_busy: 'Load failed (busy connection)', file_unread: 'File unreadable. Use MP4/MOV.',
     low_w: 'low',
     tip_land: 'Landscape video — TikTok will crop it / add black borders. Re-export at 9:16 (1080×1920 or 1440×2560).',
     tip_hd: 'Resolution below Full HD — re-export at least 1080×1920 so text stays sharp.',
@@ -454,7 +486,7 @@ const I18N = {
     pz_over1: 'File ', pz_over2: ' exceeds 500 MB — processing may fail (phone memory) or the result may exceed TikTok upload limits.',
     pz_over3: 'Duration ', pz_over4: 's exceeds 3 minutes — TikTok compresses more aggressively; consider splitting into parts.',
     pz_ready: 'Ready to process. Pick an output mode then press “Process video”.',
-    ff_fail: 'Failed to load the ffmpeg library (unpkg CDN blocked/offline). Connect to the internet and try again.',
+    ff_fail: 'Failed to load the processing engine (offline/blocked). Connect to the internet and try again.',
     pz_processing: 'Processing… ', ff_loading: 'Loading ffmpeg engine (±30 MB, one time only)…', pick_video: 'Pick a video first',
     hp_interp: 'Phone detected: interpolation eats memory — if full settings fail, lighter settings are tried automatically.',
     hp_interp_off: 'Phone detected: motion interpolation auto-disabled (eats wasm memory, almost always fails on phones) — output stays 60fps.',
@@ -572,6 +604,7 @@ calc();
 /* ---------- 3. KATEGORI (Semua/Anime/Manhwa/Upload TikTok Quality) ---------- */
 const TIKTOK_SELS = ['.hero', '.specs', '#cek', '#proses', '#kalkulator', '#presetSiap', '#panduan', '.compare', '#faq'];
 function setCat(cat) {
+  const _pu0 = $('pustakaPanel'); if (_pu0) _pu0.hidden = true;
   document.querySelectorAll('.catbar .cat').forEach((b) => {
     const on = b.dataset.cat === cat;
     b.classList.toggle('active', on);
@@ -582,15 +615,21 @@ function setCat(cat) {
   const showManhwa = cat === 'semua' || cat === 'manhwa';
   const showAnime = cat === 'semua' || cat === 'anime' || cat === 'segera';
   TIKTOK_SELS.forEach((s) => document.querySelectorAll(s).forEach((el) => { el.hidden = !showTiktok; }));
-  const m = $('manhwaPanel'), a = $('animePanel');
+  const m = $('manhwaPanel'), a = $('animePanel'), ik = $('ikonPanel');
   if (cat === 'semua') {
     // mode preview: panel penuh disembunyikan, preview ringkas ditampilkan
     if (m) m.hidden = true;
     if (a) a.hidden = true;
+    if (ik) ik.hidden = true;
     paintPreview();
   } else {
     if (m) m.hidden = !showManhwa;
     if (a) a.hidden = !showAnime;
+    if (ik) ik.hidden = cat !== 'ikon';
+    if (cat === 'ikon') {
+      // Galeri foto upload: baca IndexedDB HP, tanpa unduh data tambahan
+      try { if (typeof renderIkon === 'function') renderIkon(); } catch (e) {}
+    }
     if (typeof ANI_UI !== 'undefined') {
       if (cat === 'segera') {
         // Tab Akan Rilis = STERIL, hanya judul segera. Tidak ada campuran sudah-tayang.
@@ -645,12 +684,21 @@ document.querySelectorAll('.catbar .cat').forEach((b) =>
 document.querySelectorAll('[data-goto-tiktok]').forEach((b) =>
   b.addEventListener('click', () => goCat('tiktok'))
 );
+// CTA "Buat Preset": pindah ke tab TikTok lalu sorot kalkulator preset
+document.querySelectorAll('[data-goto-preset]').forEach((b) =>
+  b.addEventListener('click', (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    goCat('tiktok');
+    const t = $('kalkulator');
+    if (t) setTimeout(() => t.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  })
+);
 // Tiga pintu masuk di beranda → pindah tab + scroll ke panelnya
 document.querySelectorAll('[data-goto]').forEach((b) =>
   b.addEventListener('click', () => {
     const c = b.dataset.goto;
     goCat(c);
-    const target = { manhwa: 'manhwaPanel', anime: 'animePanel', segera: 'animePanel', tiktok: 'alatTiktok' }[c];
+    const target = { manhwa: 'manhwaPanel', anime: 'animePanel', segera: 'animePanel', tiktok: 'alatTiktok', ikon: 'ikonPanel' }[c];
     if (target && $(target)) $(target).scrollIntoView({ behavior: 'smooth', block: 'start' });
   })
 );
@@ -742,18 +790,19 @@ function pushHist(entry) {
   h.unshift(Object.assign({ at: Date.now() }, entry));
   store.set('gq_hist', h.slice(0, 20));
 }
-/* Badge BARU / Update hari ini (B5): berdasarkan tanggal chapter terbaru */
+/* Badge BARU: hanya untuk rilis dalam 48 jam terakhir (konsisten di semua kartu) */
+function isFresh48(ts) {
+  if (!ts) return false;
+  const d = (Date.now() - ts) / 3600000;
+  return d >= 0 && d <= 48;
+}
 function mwBadge(t) {
   const raw = mwUpdated(t);
   if (!raw) return '';
   const ts = parseTgl(raw);
   if (!ts) return '';
-  const now = Date.now();
-  const days = (now - ts) / 86400000;
-  if (days < 0) return '';
-  if (days < 1) return '<span class="badge-new today">' + esc(T('updated_today')) + '</span>';
-  if (days < 7) return '<span class="badge-new">' + esc(T('new_badge')) + '</span>';
-  return '';
+  if (!isFresh48(ts)) return '';
+  return '<span class="badge-new today">BARU</span>';
 }
 /* Jaga posisi scroll saat render ulang yang tak terhindarkan:
    simpan Y, render, kembalikan seketika (tanpa animasi). */
@@ -764,17 +813,132 @@ function keepScroll(fn) {
   catch (e) { window.scrollTo(0, y); }
   return r;
 }
+/* TAHAP 3.1: progres tonton/baca per judul (jujur: embed pihak ketiga tidak
+   mengizinkan baca menit video, jadi progres = episode/chapter yang dibuka).
+   Disimpan lokal per perangkat. */
+function progGet(key) { try { const o = store.get(key, {}); return (o && typeof o === 'object') ? o : {}; } catch (e) { return {}; } }
+function progAdd(key, id, n) {
+  try {
+    const o = progGet(key);
+    const arr = Array.isArray(o[id]) ? o[id] : [];
+    const s = String(n);
+    if (!arr.includes(s)) arr.push(s);
+    o[id] = arr.slice(-500);
+    store.set(key, o);
+  } catch (e) {}
+}
+function progCount(key, id) { const o = progGet(key); return Array.isArray(o[id]) ? o[id].length : 0; }
+function progBarHTML(done, total) {
+  total = Number(total) || 0; done = Math.min(Number(done) || 0, total);
+  if (!total || !done) return '';
+  return '<span class="watch-prog"><i style="width:' + Math.round(done / total * 100) + '%"></i></span>';
+}
+/* TAHAP 3.3: penanda update untuk judul bookmark (titik biru + label Update).
+   Terlihat bila konten diperbarui dalam 14 hari terakhir dan lebih baru dari
+   terakhir dilihat. Terakhir dilihat dicatat saat halaman detail dibuka. */
+function seenGet() { try { const o = store.get('gq_seen', {}); return (o && typeof o === 'object') ? o : {}; } catch (e) { return {}; } }
+function seenMark(id) { try { const o = seenGet(); o[id] = Date.now(); store.set('gq_seen', o); } catch (e) {} }
+function updMarkHTML(id, ts) {
+  try {
+    if (typeof isBookmarked !== 'function' || !isBookmarked(id) || !ts) return '';
+    const seen = seenGet()[id] || 0;
+    if (ts <= seen) return '';
+    if ((Date.now() - ts) > 14 * 86400000 || (Date.now() - ts) < 0) return '';
+    return '<span class="upd-dot"></span><span class="upd-label">Update</span>';
+  } catch (e) { return ''; }
+}
+/* TAHAP 3.4: rekomendasi "Mirip dengan ini" berdasarkan genre (skor irisan). */
+function similarTitles(kind, id, genres, n) {
+  const has = {};
+  (genres || []).forEach((g) => { has[g] = 1; });
+  const scored = [];
+  const pool = kind === 'anime' ? (ANI.shows || []) : (MW.titles || []);
+  pool.forEach((x) => {
+    if (x.id === id || (kind === 'anime' && isSoonU(x))) return;
+    const gs = x.genres || [];
+    let sc = 0;
+    gs.forEach((g) => { if (has[g]) sc++; });
+    if (sc > 0) scored.push({ x, sc });
+  });
+  scored.sort((a, b) => b.sc - a.sc);
+  return scored.slice(0, n || 6).map((s) => s.x);
+}
+/* TAHAP 4.4: mode hemat data (matikan muat latar: prefetch, daftar live, rilis otomatis). */
+function saverActive() {
+  try {
+    if (store.get('gq_saver', 0) === 1) return true;
+    if (store.get('gq_quality', 'auto') === 'hemat') return true;
+  } catch (e) {}
+  return false;
+}
+/* TAHAP 4.1: Kode Cadangan — pindah bookmark/riwayat/progres antar perangkat.
+   Jujur: situs ini tanpa server, jadi sinkron otomatis tidak mungkin;
+   kode ini menyalin data lewat clipboard. Sandi akun TIDAK ikut (tetap di HP). */
+const BK_KEYS = ['gq_bm', 'gq_bms', 'gq_hist', 'gq_cont', 'gq_contv', 'gq_watched', 'gq_readch', 'gq_seen', 'gq_sq_ani', 'gq_sq_mw', 'gq_name', 'gq_autoplay', 'gq_saver', 'gq_quality', 'gq_account', 'gq_linkrep'];
+function bkExport() {
+  const o = {};
+  BK_KEYS.forEach((k) => { try { const v = localStorage.getItem(k); if (v != null) o[k] = v; } catch (e) {} });
+  try { return 'GQ1.' + btoa(encodeURIComponent(JSON.stringify(o))); } catch (e) { return ''; }
+}
+function bkImport(code) {
+  code = String(code || '').trim();
+  if (!code) return 'empty';
+  if (code.indexOf('GQ1.') !== 0) return 'format';
+  try {
+    const o = JSON.parse(decodeURIComponent(atob(code.slice(4))));
+    if (!o || typeof o !== 'object') return 'format';
+    let n = 0;
+    BK_KEYS.forEach((k) => {
+      if (typeof o[k] === 'string') { try { localStorage.setItem(k, o[k]); n++; } catch (e) {} }
+    });
+    return n ? 'ok' : 'empty';
+  } catch (e) { return 'format'; }
+}
+/* TAHAP 4.2: tombol Install ke layar utama (PWA). */
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  try { e.preventDefault(); } catch (err) {}
+  deferredPrompt = e;
+  ['installBtn', 'installBtn2'].forEach((id) => { const b = document.getElementById(id); if (b) b.hidden = false; });
+});
+function doInstall() {
+  if (deferredPrompt) {
+    try { deferredPrompt.prompt(); } catch (e) {}
+    try {
+      deferredPrompt.userChoice.then(() => { deferredPrompt = null; }).catch(() => { deferredPrompt = null; });
+    } catch (e) { deferredPrompt = null; }
+    ['installBtn', 'installBtn2'].forEach((id) => { const b = document.getElementById(id); if (b) b.hidden = true; });
+  } else {
+    toast('Di iPhone: Bagikan → Tambah ke Layar Utama. Di Android: menu ⋮ → Install aplikasi.');
+  }
+}
 /* Preview Semua (A2): 8 anime + 8 manhwa pilihan.
    Anti-lompat: tiap grid hanya ditulis ulang bila daftar isinya BERUBAH
    (tanda tangan id), dan posisi scroll dijaga. */
 const PREV_SIG = { l: '', c: '' };
-/* Kartu "BARU" untuk feed update: lokal (data-watch) + live (data-fresh) — klik = langsung tonton */
+/* Kartu "BARU" untuk feed update: lokal (data-watch) + live (data-fresh) — klik = langsung tonton.
+   Seluruh kartu bisa diketuk (cover/judul), bukan cuma tombolnya. */
 function freshCardHTML(it) {
   const attr = it.live ? 'data-fresh="' + it.id + '"' : 'data-watch="' + it.id + '"';
-  return '<article class="show-card">' +
+  const cardAttr = it.live ? 'data-fresh="' + it.id + '"' : 'data-show="' + it.id + '"';
+  // Badge kiri = nomor Ep (bila ada), badge kanan BARU hanya bila <48 jam
+  let epBadge = 'EP';
+  try {
+    const nx = Number(it && it.next_air_ep);
+    if (nx > 1) epBadge = 'EP ' + (nx - 1);
+    else if (it && it.episodes) epBadge = 'EP ' + it.episodes;
+  } catch (e) {}
+  let baru = '';
+  try {
+    if (it && it.updated_at) {
+      const ts = Date.parse(String(it.updated_at).replace(' ', 'T'));
+      if (ts && (Date.now() - ts) <= 48 * 3600000 && (Date.now() - ts) >= 0) baru = '<span class="badge-new today">BARU</span>';
+    }
+  } catch (e) {}
+  return '<article class="show-card" ' + cardAttr + '>' +
     '<div class="show-cover"><i>▶</i>' +
-    (it.cover ? '<img src="' + esc(it.cover) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
-    '<span class="show-badge">' + esc(T('new_badge')) + '</span></div>' +
+    (it.cover ? '<img src="' + esc(it.cover) + '" alt="' + esc(it.title || '') + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+    '<span class="show-badge">' + esc(epBadge) + '</span>' + baru + '</div>' +
     '<div class="show-info"><strong>' + esc(it.title) + '</strong>' +
     '<small>' + esc(it.sub || T('fresh_live')) + '</small>' +
     '<div class="show-btns"><button class="btn" ' + attr + ' type="button">' + esc(T('card_watch')) + '</button></div></div></article>';
@@ -828,6 +992,12 @@ function sortLocalLatest(list) {
 function paintPreview() {
   const pl = $('prevLatest');
   if (!pl || !ANI.shows.length) return;
+  // TAHAP 1.7: skeleton selagi kartu beranda disiapkan (maks 6 item per section)
+  try {
+    if (!pl.innerHTML.trim()) pl.innerHTML = Array.from({ length: 6 }, () => '<div class="skel" aria-hidden="true"><div class="skel-cover"></div><div class="skel-line"></div></div>').join('');
+    const pc = $('prevChapters');
+    if (pc && !pc.innerHTML.trim()) pc.innerHTML = Array.from({ length: 6 }, () => '<div class="skel" aria-hidden="true"><div class="skel-cover"></div><div class="skel-line"></div></div>').join('');
+  } catch (e) {}
   const y = window.scrollY || 0;
   const paint = (live) => {
     const local = sortLocalLatest((ANI.shows || []).filter((s) => s.id.indexOf('rx_') !== 0 && !isSoonU(s) && (s.year || 0) >= 2025 && s.kind !== 'film'));
@@ -855,6 +1025,7 @@ function paintPreview() {
   armMwHome(); // Chapter Terbaru: muat katalog manhwa malas di latar, lalu tampilkan
   try { paintChapterPreview(); } catch (e) {}
   (async () => {
+    if (typeof saverActive === 'function' && saverActive()) return; // TAHAP 4.4: katalog lokal saja
     let live = [];
     try { const j = await apiGet('/recent-anime?page=1&per_page=12'); live = j.data || []; }
     catch (e) { /* katalog lokal tetap tampil */ }
@@ -1029,13 +1200,28 @@ function showCard(s) {
     ? T('film_w') + ' • ' + (s.year || '')
     : (isSoon ? st + (s.year ? ' • ' + s.year : '') + (s.rilis ? ' • ' + s.rilis : '') : eps + ' episode • ' + st + (s.year ? ' • ' + s.year : ''));
   const gmeta = (s.genres && s.genres.length) ? ' • ' + s.genres.slice(0, 2).join(', ') : '';
-  const badge = isSoon ? esc(T('soon_badge')) : (s.kind === 'film' ? 'FILM' : eps + ' EP');
+  // TAHAP 1.2: badge EP berisi nomor; sembunyikan bila data tidak ada (kecuali SEGERA/FILM)
+  let badgeHtml = '';
+  if (isSoon) badgeHtml = '<span class="show-badge soon">SEGERA</span>';
+  else if (s.kind === 'film') badgeHtml = '<span class="show-badge">FILM</span>';
+  else if (Number(eps) > 0) badgeHtml = '<span class="show-badge">EP ' + Number(eps) + '</span>';
   const btn = isSoon ? esc(T('card_info')) : esc(T('card_watch'));
+  // BARU hanya bila recency episode < 48 jam
+  let baruHtml = '';
+  let recTs = 0;
+  try {
+    recTs = (typeof epsRecency === 'function') ? epsRecency(s) : 0;
+    if (recTs && (Date.now() - recTs) <= 48 * 3600000 && (Date.now() - recTs) >= 0 && !isSoon) baruHtml = '<span class="badge-new today">BARU</span>';
+  } catch (e) {}
+  // TAHAP 3.1 + 3.3: progress tonton + penanda update bookmark
+  let progHtml = '';
+  try { progHtml = progBarHTML(progCount('gq_watched', s.id), ak ? ak.episodes : s.episodes); } catch (e) {}
+  const updHtml = updMarkHTML(s.id, recTs);
   return '<article class="show-card' + (isSoon ? ' is-soon' : '') + '" data-show="' + s.id + '">' +
     '<div class="show-cover"><i>' + esc(initials(s.title)) + '</i>' +
-    (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" onerror="this.remove()">' : '') +
-    '<span class="show-badge' + (isSoon ? ' soon' : '') + '">' + badge + '</span></div>' +
-    '<div class="show-info"><strong>' + esc(s.title) + '</strong>' +
+    (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+    badgeHtml + baruHtml + progHtml + '</div>' +
+    '<div class="show-info"><strong>' + esc(s.title) + '</strong>' + updHtml +
     (s.alt ? '<small class="show-alt">(' + esc(s.alt) + ')</small>' : '') +
     '<small>' + esc(meta + gmeta) + '</small>' +
         '<div class="show-btns"><button class="btn' + (isSoon ? ' btn-ghost' : '') + '" data-watch="' + s.id + '" type="button">' + btn + '</button></div></div></article>';
@@ -1086,7 +1272,19 @@ function paintEpNav() {
 }
 
 /* State katalog anime: cari + filter status + genre + Muat lagi per 12 */
-const ANI_UI = { q: '', f: 'semua', genre: '', limit: 12, per: 12 };
+const ANI_UI = { q: '', f: 'semua', genre: '', genres: [], year: '', limit: 12, per: 12 };
+/* TAHAP 3.7: cocok genre ganda (salah satu cocok = tampil) + tahun. */
+function genreHit(itemGenres, single, multi) {
+  const mg = Array.isArray(multi) && multi.length ? multi : (single ? [single] : []);
+  if (!mg.length) return true;
+  return mg.some((g) => (itemGenres || []).includes(g));
+}
+function yearHit(y, sel) {
+  if (!sel) return true;
+  y = Number(y) || 0;
+  if (sel === 'old') return y > 0 && y <= 2021;
+  return y === Number(sel);
+}
 /* Mode Akan Rilis = steril: hanya judul segera, tanpa campuran sudah-tayang.
    Aktif bila tab atas = segera ATAU filter status = segera. */
 function isSegeraMode() {
@@ -1122,7 +1320,8 @@ function aniFiltered() {
   const q = ANI_UI.q || '';
   const list = ANI.shows.filter((s) => {
     if (s.id.indexOf('rx_') === 0) return false;
-    if (ANI_UI.genre && !((s.genres || []).includes(ANI_UI.genre))) return false;
+    if (!genreHit(s.genres, ANI_UI.genre, ANI_UI.genres)) return false;
+    if (!yearHit(s.year, ANI_UI.year)) return false;
     if (q && !((s.title + ' ' + (s.alt || '')).toLowerCase().includes(q))) return false;
     // Saat mencari (q non-kosong), judul segera tetap boleh ketemu di filter semua/terbaru
     if (q && isSoonU(s) && (ANI_UI.f === 'semua' || ANI_UI.f === 'terbaru')) return true;
@@ -1199,12 +1398,516 @@ function renderShows(filter) {
   }
   });
 }
+/* ---------- 4b. IKON ANIME: galeri foto upload, tersimpan permanen di HP ----------
+   Foto (mis. ikon anime dari Pinterest yang sudah disimpan) di-upload lewat
+   tombol Upload, dikompres via canvas (maks 768px) lalu disimpan di IndexedDB
+   agar ribuan foto muat dan tetap ada setelah refresh. Tanpa server. */
+const IKON_UI = { q: '', src: 'semua', limit: 24, per: 24, photos: [], loaded: false, loading: null, cur: '' };
+/* Ribuan foto bawaan daring (data/ikon.json, hasil tools/fetch_ikon.py).
+   Dimuat malas saat tab Ikon dibuka; gagal dimuat = galeri tetap jalan
+   dengan foto upload + foto repo. */
+var IKON_URLS = [];
+/* Batch karakter (Marin Kitagawa + Alya, data/ikon-marin.json): anime only,
+   selalu tampil PALING BAWAH — di bawah semua foto non-pin. */
+var IKON_MARIN = [];
+/* Batch couple anime (pp couple, data/ikon-couple.json): couple:true (tab Couple),
+   tampil PALING BAWAH — di bawah semua foto non-pin. */
+var IKON_COUPLE = [];
+/* Foto manhwa (cover katalog data/manhwa.json): grup "Manhwa" di galeri. */
+var IKON_MW = [];
+/* Foto komunitas (upload pengguna lain, via Firebase bila dikonfigurasi). */
+var IKON_FB_PHOTOS = [];
+/* Hitungan like: global dari Firebase, atau lokal per HP bila Firebase mati. */
+var IKON_LIKES = {};
+var IKON_FB = null;
+/* Foto bawaan (file repo di ikon/): selalu tampil paling atas, tak bisa dihapus.
+   Tambah foto baru = taruh file di ikon/ikon-NN.jpg lalu tambah 1 baris di sini. */
+const IKON_BUILTINS = [
+  { id: 'pin-marin', name: 'Marin Kitagawa 📌', url: 'https://i.pinimg.com/564x/1a/b2/41/1ab241753725ab690b207feea36a5542.jpg', builtin: true, ts: 0 },
+  { id: 'b1', name: 'Gadis bunga putih', url: 'ikon/ikon-01.jpg', builtin: true, ts: 0 },
+  { id: 'b2', name: 'Waguri Kaoruko', url: 'ikon/ikon-02.png', builtin: true, ts: 0 },
+];
+function ikonDb() {
+  return new Promise((resolve, reject) => {
+    try {
+      const rq = indexedDB.open('gq_ikon', 1);
+      rq.onupgradeneeded = () => {
+        const db = rq.result;
+        if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos', { keyPath: 'id', autoIncrement: true });
+      };
+      rq.onsuccess = () => resolve(rq.result);
+      rq.onerror = () => reject(rq.error);
+    } catch (e) { reject(e); }
+  });
+}
+function ikonDbAll(db) {
+  return new Promise((resolve, reject) => {
+    try {
+      const tx = db.transaction('photos', 'readonly').objectStore('photos').getAll();
+      tx.onsuccess = () => resolve(tx.result || []);
+      tx.onerror = () => reject(tx.error);
+    } catch (e) { reject(e); }
+  });
+}
+function ikonDbPut(db, item) {
+  return new Promise((resolve, reject) => {
+    try {
+      const tx = db.transaction('photos', 'readwrite').objectStore('photos').add(item);
+      tx.onsuccess = () => resolve(tx.result);
+      tx.onerror = () => reject(tx.error);
+    } catch (e) { reject(e); }
+  });
+}
+function ikonDbDel(db, id) {
+  return new Promise((resolve, reject) => {
+    try {
+      const tx = db.transaction('photos', 'readwrite').objectStore('photos').delete(id);
+      tx.onsuccess = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    } catch (e) { reject(e); }
+  });
+}
+/* ---------- Galeri publik (Firebase, opsional) ----------
+   Tanpa window.GQ_FIREBASE yang valid, semua fungsi di bawah aman tidak
+   aktif (return null/false) dan galeri tetap jalan 100% lokal. Isi config
+   sesuai SETUP_GALERI_PUBLIK.md agar upload & like terlihat semua pengguna. */
+function ikonFb() {
+  try {
+    const cfg = window.GQ_FIREBASE;
+    if (!cfg || !cfg.apiKey) return null;
+    if (typeof firebase === 'undefined' || !firebase.database) return null;
+    if (!IKON_FB) {
+      if (!firebase.apps.length) firebase.initializeApp(cfg);
+      IKON_FB = { db: firebase.database(), storage: (firebase.storage ? firebase.storage() : null) };
+    }
+    return IKON_FB;
+  } catch (e) { return null; }
+}
+/* Kirim 1 foto ke galeri publik: simpan file ke Storage (bila ada),
+   lalu catat URL publiknya di Database agar tampil di semua HP. */
+function ikonFbShare(ph) {
+  const f = ikonFb();
+  if (!f || !f.db) return Promise.resolve(false);
+  return (async () => {
+    try {
+      let url = ph.url;
+      if (f.storage && /^data:/.test(url)) {
+        const ref = f.storage.ref().child('ikon/' + Date.now() + '.jpg');
+        await ref.putString(url, 'data_url');
+        url = await ref.getDownloadURL();
+      }
+      if (!url) return false;
+      await f.db.ref('ikon').push({ name: ph.name || 'Ikon', url, ts: Date.now() });
+      return true;
+    } catch (e) { return false; }
+  })();
+}
+/* --- Like: hitungan global (transaction) + status sudah-like per HP --- */
+function ikonLikedGet() { try { return JSON.parse(localStorage.getItem('gq_ikon_liked') || '[]'); } catch (e) { return []; } }
+function ikonLikedSet(a) { try { localStorage.setItem('gq_ikon_liked', JSON.stringify(a)); } catch (e) {} }
+function ikonLikeMapGet() { try { return JSON.parse(localStorage.getItem('gq_ikon_likemap') || '{}'); } catch (e) { return {}; } }
+function ikonLikeMapSet(o) { try { localStorage.setItem('gq_ikon_likemap', JSON.stringify(o)); } catch (e) {} }
+function ikonLikeCount(p) {
+  const k = String(p.id);
+  if (IKON_LIKES[k] != null) return IKON_LIKES[k];
+  const m = ikonLikeMapGet();
+  return m[k] || 0;
+}
+/* Muat hitungan like global sekali (dipakai kartu); pratinjau memakai live. */
+function ikonLikesLoad() {
+  const f = ikonFb();
+  if (!f) return Promise.resolve();
+  return f.db.ref('ikon_likes').once('value').then((s) => {
+    IKON_LIKES = s.val() || {};
+  }).catch(() => {});
+}
+var ikonLikeBusy = false;
+function ikonToggleLike() {
+  const id = IKON_UI.cur;
+  if (id === '' || id == null || ikonLikeBusy) return;
+  const key = String(id);
+  const liked = ikonLikedGet();
+  const on = liked.indexOf(key) < 0;
+  const paint = (n) => {
+    const b = $('ikonLike');
+    if (b) b.textContent = (on ? '❤️ ' : '🤍 ') + n;
+  };
+  const done = (n) => {
+    ikonLikeBusy = false;
+    if (on) liked.push(key);
+    else { const i = liked.indexOf(key); if (i >= 0) liked.splice(i, 1); }
+    ikonLikedSet(liked);
+    IKON_LIKES[key] = n;
+    if (!ikonFb()) { const m = ikonLikeMapGet(); m[key] = n; ikonLikeMapSet(m); }
+    paint(n);
+    try { renderIkon(); } catch (e) {}
+  };
+  ikonLikeBusy = true;
+  const f = ikonFb();
+  if (f) {
+    f.db.ref('ikon_likes/' + key).transaction((c) => (c || 0) + (on ? 1 : -1), (err, ok, snap) => {
+      if (err || !ok) { ikonLikeBusy = false; toast(T('net_busy')); return; }
+      done(Math.max(0, (snap && snap.val()) || 0));
+    });
+  } else {
+    const m = ikonLikeMapGet();
+    done(Math.max(0, (m[key] || IKON_LIKES[key] || 0) + (on ? 1 : -1)));
+  }
+}
+/* Live count selama pratinjau dibuka: semua pengguna lihat angka yang sama. */
+var ikonLikeRef = null;
+function ikonLikeWatch(key) {
+  ikonLikeUnwatch();
+  const f = ikonFb();
+  if (!f) return;
+  try {
+    ikonLikeRef = f.db.ref('ikon_likes/' + key);
+    ikonLikeRef.on('value', (s) => {
+      const n = Math.max(0, (s && s.val()) || 0);
+      IKON_LIKES[key] = n;
+      const b = $('ikonLike');
+      if (b && String(IKON_UI.cur) === String(key)) {
+        const liked = ikonLikedGet().indexOf(String(key)) >= 0;
+        b.textContent = (liked ? '❤️ ' : '🤍 ') + n;
+      }
+    });
+  } catch (e) { ikonLikeRef = null; }
+}
+function ikonLikeUnwatch() { try { if (ikonLikeRef) ikonLikeRef.off(); } catch (e) {} ikonLikeRef = null; }
+/* ---------- Download foto: langsung ke folder Download bila bisa ----------
+   - data:/blob:/same-origin → atribut download (pasti masuk folder).
+   - URL luar → fetch jadi blob lalu simpan (bisa bila host izinkan CORS).
+   - Gagal (CORS ditolak) → buka tab baru + panduan simpan manual. */
+function ikonSave(url, filename) {
+  const name = filename || 'ikon.jpg';
+  const go = (href, dl) => {
+    const a = document.createElement('a');
+    a.href = href;
+    if (dl) a.setAttribute('download', name);
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { a.remove(); } catch (e) {} }, 500);
+  };
+  let same = false;
+  try { same = new URL(url, location.href).origin === location.origin; } catch (e) {}
+  if (/^(data|blob):/.test(url) || same) {
+    go(url, true);
+    toast(T('dl_started_ok') + name + T('dl_check_folder'));
+    return;
+  }
+  toast(T('dl_search'));
+  fetch(url, { mode: 'cors' }).then((r) => {
+    if (!r.ok) throw new Error('http ' + r.status);
+    return r.blob();
+  }).then((b) => {
+    const ou = URL.createObjectURL(b);
+    go(ou, true);
+    setTimeout(() => { try { URL.revokeObjectURL(ou); } catch (e) {} }, 8000);
+    toast(T('dl_started_ok') + name + T('dl_check_folder'));
+  }).catch(() => {
+    go(url, false);
+    toast(T('ikon_dl_tab'));
+  });
+}
+function findIkonPhoto(id) {
+  const all = IKON_BUILTINS.concat(IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MW, IKON_MARIN, IKON_COUPLE);
+  return all.find((x) => String(x.id) === String(id)) || null;
+}
+function ikonEnsure() {
+  if (IKON_UI.loaded) return Promise.resolve(IKON_UI.photos);
+  if (IKON_UI.loading) return IKON_UI.loading;
+  const urls = fetch('data/ikon.json', { cache: 'no-cache' }).then((r) => {
+    if (!r.ok) throw new Error('ikon json ' + r.status);
+    return r.json();
+  }).then((d) => {
+    IKON_URLS = ((d && d.photos) || []).map((p) => ({ id: 's' + p.id, name: p.name, url: p.url, builtin: true }));
+  }).catch(() => { IKON_URLS = []; });
+  const batch = fetch('data/ikon-marin.json', { cache: 'no-cache' }).then((r) => {
+    if (!r.ok) throw new Error('ikon marin ' + r.status);
+    return r.json();
+  }).then((d) => {
+    IKON_MARIN = ((d && d.photos) || []).map((p) => ({ id: 'k' + p.id, name: p.name, url: p.url, builtin: true }));
+  }).catch(() => { IKON_MARIN = []; });
+  const batch2 = fetch('data/ikon-couple.json', { cache: 'no-cache' }).then((r) => {
+    if (!r.ok) throw new Error('ikon couple ' + r.status);
+    return r.json();
+  }).then((d) => {
+    IKON_COUPLE = ((d && d.photos) || []).map((p) => ({ id: 'c' + p.id, name: p.name, url: p.url, builtin: true, couple: true }));
+  }).catch(() => { IKON_COUPLE = []; });
+  const local = ikonDb().then(ikonDbAll).then((rows) => {
+    rows.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+    IKON_UI.photos = rows;
+  }).catch(() => { IKON_UI.photos = []; });
+  const mw = fetch('data/manhwa.json', { cache: 'no-cache' }).then((r) => {
+    if (!r.ok) throw new Error('manhwa json ' + r.status);
+    return r.json();
+  }).then((d) => {
+    IKON_MW = ((d && d.titles) || []).filter((t) => t && t.cover).map((t) => (
+      { id: 'm' + t.slug, name: t.title, url: t.cover, builtin: true }));
+  }).catch(() => { IKON_MW = []; });
+  const comm = (() => { try {
+    const f = ikonFb();
+    if (!f) return Promise.resolve();
+    return f.db.ref('ikon').limitToLast(1000).once('value').then((s) => {
+      const arr = [];
+      s.forEach((ch) => {
+        const v = ch.val() || {};
+        if (v.url) arr.push({ id: 'f' + ch.key, name: v.name || 'Ikon komunitas', url: v.url, builtin: true, ts: v.ts || 0, comm: true });
+      });
+      arr.sort((a, b) => (b.ts || 0) - (a.ts || 0));
+      IKON_FB_PHOTOS = arr;
+    });
+  } catch (e) { return Promise.resolve(); } })();
+  const likes = ikonLikesLoad();
+  IKON_UI.loading = Promise.all([urls, local, mw, batch, batch2, comm, likes]).then(() => {
+    IKON_UI.loaded = true;
+    return IKON_UI.photos;
+  });
+  return IKON_UI.loading;
+}
+/* Kecilkan foto besar via canvas (maks 768px, JPEG 0.85) */
+function ikonFileToPhoto(file) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const MAX = 768;
+        const sc = Math.min(1, MAX / Math.max(img.width || 1, img.height || 1));
+        const w = Math.max(1, Math.round((img.width || 0) * sc));
+        const h = Math.max(1, Math.round((img.height || 0) * sc));
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        c.getContext('2d').drawImage(img, 0, 0, w, h);
+        try { URL.revokeObjectURL(url); } catch (_) {}
+        resolve({ name: String(file.name || 'ikon').replace(/\.[a-z0-9]+$/i, ''), url: c.toDataURL('image/jpeg', 0.85), w, h, ts: Date.now() });
+      } catch (e) { try { URL.revokeObjectURL(url); } catch (_) {} reject(e); }
+    };
+    img.onerror = () => { try { URL.revokeObjectURL(url); } catch (_) {} reject(new Error('bad img')); };
+    img.src = url;
+  });
+}
+function ikonList() {
+  const q = (IKON_UI.q || '').toLowerCase();
+  const ok = (p) => !q || String(p.name || '').toLowerCase().includes(q);
+  const all = IKON_BUILTINS.concat(IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MW, IKON_MARIN, IKON_COUPLE);
+  // Filter galeri anime: Semua / Single / Couple / Upload Saya.
+  // (Nilai lama 'anime'/'manhwa' dipertahankan agar kompatibel.)
+  if (IKON_UI.src === 'couple') return all.filter((p) => p.couple === true).filter(ok);
+  if (IKON_UI.src === 'single') return all.filter((p) => p.couple !== true).filter(ok);
+  if (IKON_UI.src === 'mine') return IKON_UI.photos.filter(ok);
+  if (IKON_UI.src === 'anime') return IKON_BUILTINS.concat(IKON_UI.photos, IKON_FB_PHOTOS, IKON_URLS, IKON_MARIN, IKON_COUPLE).filter(ok);
+  if (IKON_UI.src === 'manhwa') return IKON_MW.filter(ok);
+  return all.filter(ok);
+}
+function ikonCard(p) {
+  const lc = ikonLikeCount(p);
+  let nm = String((p && p.name) || '').trim();
+  // Hapus judul berupa nomor file (mis. "001", "ikon-01.jpg") → tanpa teks
+  if (/^(ikon|img|image|file|photo|foto)[-_ ]?\d+(\.(jpg|png|webp|jpeg))?$/i.test(nm) || /^\d+(\.(jpg|png|webp|jpeg))?$/i.test(nm) || /^\d+[-_ .]+\d*$/i.test(nm)) nm = '';
+  const label = nm || '';
+  const likes = lc > 0 ? '<div class="ikon-tile-name">❤️ ' + lc + '</div>' : '';
+  return '<article class="show-card" data-ikon="' + p.id + '" tabindex="0" aria-label="' + esc(label || 'Ikon anime') + '">' +
+    '<div class="show-cover"><i>' + esc(initials(label || 'A')) + '</i>' +
+    '<img src="' + p.url + '" alt="' + esc(label || 'Ikon anime') + '" loading="lazy" decoding="async" onerror="this.remove()">' +
+    (p.couple ? '<span class="couple-badge">💕 Couple</span>' : '') + '</div>' +
+    (label ? '<div class="show-info"><div class="ikon-tile-name">' + esc(label) + '</div>' + likes + '</div>' : (likes ? '<div class="show-info">' + likes + '</div>' : '')) + '</article>';
+}
+function renderIkon() {
+  return keepScroll(() => {
+  const grid = $('ikonGrid');
+  if (!grid) return;
+  const done = () => {
+    const list = ikonList();
+    const slice = list.slice(0, IKON_UI.limit);
+    grid.innerHTML = slice.map(ikonCard).join('');
+    const emp = $('ikonEmpty');
+    if (emp) emp.hidden = list.length > 0;
+    const cnt = $('ikonCount');
+    if (cnt) cnt.textContent = T('showing') + ' ' + slice.length + ' ' + T('of') + ' ' + list.length + ' ' + T('ikon_photos');
+    const more = $('ikonMore');
+    if (more) {
+      more.hidden = slice.length >= list.length;
+      more.textContent = T('load_more') + ' (' + slice.length + '/' + list.length + ')';
+    }
+  };
+  if (!IKON_UI.loaded) {
+    grid.innerHTML = '<p class="muted">' + esc(T('loading')) + '</p>';
+    ikonEnsure().then(done, done);
+  } else done();
+  });
+}
+function openIkon(id) {
+  const p = findIkonPhoto(id);
+  if (!p) return;
+  IKON_UI.cur = p.id;
+  $('ikonModalTitle').textContent = p.name || 'Ikon';
+  const img = $('ikonModalImg');
+  img.src = p.url;
+  img.alt = p.name || 'Ikon';
+  const sub = $('ikonModalSub');
+  if (sub) sub.textContent = (p.comm ? T('ikon_community') + ' • ' : '') + (p.name || '');
+  const dl = $('ikonModalDl');
+  if (dl) { dl.href = p.url; }
+  const del = $('ikonDel');
+  if (del) del.hidden = !!p.builtin; // foto bawaan/komunitas tak bisa dihapus
+  const lb = $('ikonLike');
+  if (lb) {
+    const liked = ikonLikedGet().indexOf(String(p.id)) >= 0;
+    lb.textContent = (liked ? '❤️ ' : '🤍 ') + ikonLikeCount(p);
+  }
+  ikonLikeWatch(String(p.id));
+  $('ikonModal').hidden = false;
+  document.body.style.overflow = 'hidden';
+}
+function ikonDeleteCur() {
+  const id = IKON_UI.cur;
+  if (id === '' || id == null) return;
+  if (IKON_BUILTINS.some((x) => String(x.id) === String(id))) return; // bawaan: jangan hapus
+  ikonDb().then((db) => ikonDbDel(db, id), () => {}).then(() => {
+    IKON_UI.photos = IKON_UI.photos.filter((x) => String(x.id) !== String(id));
+    IKON_UI.cur = '';
+    closeIkon();
+    renderIkon();
+    toast(T('ikon_deleted'));
+  });
+}
+function closeIkon() {
+  ikonLikeUnwatch();
+  const md = $('ikonModal');
+  if (md && !md.hidden) { md.hidden = true; document.body.style.overflow = ''; }
+}
+(function initIkon() {
+  const up = $('ikonUploadBtn'), fi = $('ikonFile');
+  if (up && fi) {
+    up.addEventListener('click', () => fi.click());
+    fi.addEventListener('change', async () => {
+      const files = Array.from(fi.files || []).filter((f) => f.type.indexOf('image/') === 0);
+      fi.value = '';
+      if (!files.length) return;
+      toast(T('loading'));
+      let ok = 0, shared = 0;
+      const fresh = [];
+      // Upload sebagai Single/Couple sesuai pilihan (default Couple 💕).
+      // Hasil upload tersimpan di perangkat ini (IndexedDB) — format JPG/PNG.
+      const kindSel = $('ikonKind');
+      const asCouple = !kindSel || kindSel.value === 'couple';
+      try {
+        const db = await ikonDb();
+        for (const f of files) {
+          try {
+            const ph = await ikonFileToPhoto(f);
+            ph.couple = asCouple;
+            if (asCouple && !/couple|pp|pasangan/i.test(ph.name || '')) ph.name = (ph.name || 'Couple') + ' 💕';
+            ph.id = await ikonDbPut(db, ph);
+            IKON_UI.photos.unshift(ph);
+            fresh.push(ph);
+            ok++;
+          } catch (e) {}
+        }
+      } catch (e) {}
+      // Galeri publik: tampilkan ke semua pengguna bila Firebase aktif
+      if (fresh.length && ikonFb()) {
+        for (const ph of fresh) {
+          try { if (await ikonFbShare(ph)) shared++; } catch (e) {}
+        }
+      }
+      IKON_UI.loaded = true;
+      renderIkon();
+      toast(shared > 0 ? shared + ' ' + T('ikon_shared') : ok + ' ' + T('ikon_added'));
+    });
+  }
+  const si = $('ikonSearch');
+  if (si) si.addEventListener('input', () => {
+    IKON_UI.q = si.value.toLowerCase().trim();
+    IKON_UI.limit = IKON_UI.per;
+    renderIkon();
+  });
+  const mo = $('ikonMore');
+  if (mo) mo.addEventListener('click', () => { IKON_UI.limit += IKON_UI.per; renderIkon(); });
+  const chips = $('ikonSrcChips');
+  if (chips) chips.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-ikonsrc]');
+    if (!b) return;
+    IKON_UI.src = b.dataset.ikonsrc || 'semua';
+    IKON_UI.limit = IKON_UI.per;
+    chips.querySelectorAll('[data-ikonsrc]').forEach((x) => {
+      const on = x === b;
+      x.classList.toggle('active', on);
+      x.classList.toggle('btn-ghost', !on);
+      x.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    renderIkon();
+  });
+  // Tambah banyak via link: tempel banyak URL gambar (1 per baris).
+  // Pinterest tidak bisa disedot otomatis (wajib login + anti-bot + CORS),
+  // jadi alurnya: simpan/buka gambarnya lalu tempel linknya di sini —
+  // semuanya tersimpan di perangkat ini seperti upload biasa.
+  const bulkBtn = $('ikonBulkAdd');
+  if (bulkBtn) bulkBtn.addEventListener('click', async () => {
+    const ta = $('ikonBulkUrls');
+    const raw = String((ta && ta.value) || '').split(/\n+/).map((s) => s.trim()).filter(Boolean);
+    const urls = raw.filter((u) => /^https?:\/\/.+/i.test(u)).slice(0, 100);
+    if (!urls.length) { toast('Tempel dulu link gambarnya (1 per baris)'); return; }
+    const kindSel = $('ikonKind');
+    const asCouple = !kindSel || kindSel.value === 'couple';
+    let ok = 0;
+    try {
+      const db = await ikonDb();
+      for (const [i, u] of urls.entries()) {
+        try {
+          const ph = { name: 'Couple link ' + (IKON_UI.photos.length + 1) + (asCouple ? ' 💕' : ''), url: u, couple: asCouple, ts: Date.now() + i };
+          ph.id = await ikonDbPut(db, ph);
+          IKON_UI.photos.unshift(ph);
+          ok++;
+        } catch (e) {}
+      }
+    } catch (e) {}
+    if (ta) ta.value = '';
+    IKON_UI.loaded = true;
+    // Langsung pindah ke filter yang cocok agar hasilnya kelihatan
+    IKON_UI.src = asCouple ? 'couple' : 'mine';
+    IKON_UI.limit = IKON_UI.per;
+    if (chips) chips.querySelectorAll('[data-ikonsrc]').forEach((x) => {
+      const on = x.dataset.ikonsrc === IKON_UI.src;
+      x.classList.toggle('active', on);
+      x.classList.toggle('btn-ghost', !on);
+      x.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    renderIkon();
+    toast(ok + ' foto ditambahkan 💕');
+  });
+  const gr = $('ikonGrid');
+  if (gr) gr.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-ikonview]');
+    if (b) { openIkon(b.dataset.ikonview); return; }
+    const c = e.target.closest('[data-ikon]');
+    if (c) openIkon(c.dataset.ikon);
+  });
+  const cl = $('ikonClose');
+  if (cl) cl.addEventListener('click', closeIkon);
+  const del = $('ikonDel');
+  if (del) del.addEventListener('click', ikonDeleteCur);
+  const like = $('ikonLike');
+  if (like) like.addEventListener('click', ikonToggleLike);
+  const dln = $('ikonModalDl');
+  if (dln) dln.addEventListener('click', (e) => {
+    e.preventDefault();
+    const p = findIkonPhoto(IKON_UI.cur);
+    if (p) ikonSave(p.url, (p.name || 'ikon') + '.jpg');
+  });
+  const md = $('ikonModal');
+  if (md) md.addEventListener('click', (e) => { if (e.target === md) closeIkon(); });
+})();
 /* Rilis baru otomatis: ambil deretan terbaru, judul di luar katalog langsung bisa ditonton */
 function loadFresh() {
   const pages = [1, 2, 3];
   const seen = {};
   const all = [];
   (async () => {
+    if (typeof saverActive === 'function' && saverActive()) return; // TAHAP 4.4: katalog lokal saja
     for (const p of pages) {
       try {
         const j = await apiGet('/recent-anime?page=' + p + '&per_page=24');
@@ -1226,15 +1929,28 @@ function loadFresh() {
       if (isSegeraMode()) return;
       $('freshWrap').hidden = false;
       $('freshWrap').dataset.sig = sig;
-      $('freshGrid').innerHTML = fresh.map((it) =>
-      '<article class="show-card">' +
+      // TAHAP 1.2: badge EP berisi nomor; sembunyikan bila data tidak ada; BARU < 48 jam
+      $('freshGrid').innerHTML = fresh.map((it) => {
+      let epB = '';
+      try {
+        const nx = Number(it && (it.episodes || it.latest_episode));
+        if (nx > 0) epB = '<span class="show-badge">EP ' + nx + '</span>';
+      } catch (e) {}
+      let baruB = '';
+      try {
+        if (it && it.updated_at) {
+          const ts = Date.parse(String(it.updated_at).replace(' ', 'T'));
+          if (ts && (Date.now() - ts) <= 48 * 3600000 && (Date.now() - ts) >= 0) baruB = '<span class="badge-new today">BARU</span>';
+        }
+      } catch (e) {}
+      return '<article class="show-card" data-fresh="' + it.id + '">' +
       '<div class="show-cover"><i>★</i>' +
-      (it.poster ? '<img src="' + esc(it.poster) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
-      '<span class="show-badge">' + esc(T('new_badge')) + '</span></div>' +
+      (it.poster ? '<img src="' + esc(it.poster) + '" alt="' + esc(it.title || it.alternative || '') + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+      epB + baruB + '</div>' +
       '<div class="show-info"><strong>' + esc(it.title || it.alternative || T('jx_untitled')) + '</strong>' +
       '<small>' + esc(T('fresh_live')) + '</small>' +
-      '<div class="show-btns"><button class="btn" data-fresh="' + it.id + '" type="button">' + esc(T('card_watch')) + '</button></div></div></article>'
-    ).join('');
+      '<div class="show-btns"><button class="btn" data-fresh="' + it.id + '" type="button">' + esc(T('card_watch')) + '</button></div></div></article>';
+      }).join('');
     });
   })();
 }
@@ -1252,7 +1968,7 @@ function loadUpcoming() {
   grid.innerHTML = list.slice(0, 12).map((s) =>
     '<article class="show-card is-soon" data-show="' + s.id + '">' +
     '<div class="show-cover"><i>' + esc(initials(s.title)) + '</i>' +
-    (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" onerror="this.remove()">' : '') +
+    (s.cover ? '<img src="' + esc(s.cover) + '" alt="' + esc(s.title) + '" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
     '<span class="show-badge soon">' + esc(T('soon_badge')) + '</span></div>' +
     '<div class="show-info"><strong>' + esc(s.title) + '</strong>' +
     '<small>' + esc(T('soon_meta') + (s.year ? ' • ' + s.year : '') + (s.rilis ? ' • ' + s.rilis : '')) + '</small>' +
@@ -1264,12 +1980,13 @@ function stampLatest() {
   const st = $('latestStamp');
   if (!st) return;
   if (!LATEST_T) { st.textContent = ''; return; }
-  const d = new Date(LATEST_T);
-  st.textContent = '• ' + T('latest_checked') + ' ' +
-    String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  const mins = Math.round((Date.now() - LATEST_T) / 60000);
+  st.textContent = mins < 1 ? '• Diperbarui baru saja' : (mins < 60 ? '• Diperbarui ' + mins + ' mnt lalu' : '• Diperbarui hari ini');
+  const fs = $('freshStamp');
+  if (fs) fs.textContent = 'Diperbarui hari ini';
 }
 /* Episode Terbaru: live 3 halaman recent-anime + katalog lokal. Yang baru diupload
-   otomatis masuk dan langsung bisa ditonton (embed). Auto-refresh tiap 10 menit. */
+   otomatis masuk dan langsung bisa ditonton (embed). Auto-rilis 1 detik via armLatestAuto. */
 function loadLatest(force) {
   const box = $('latestWrap'), grid = $('latestGrid');
   if (!box || !grid) return;
@@ -1278,6 +1995,11 @@ function loadLatest(force) {
     const local = sortLocalLatest((ANI.shows || []).filter((s) => s.id.indexOf('rx_') !== 0 && !isSoonU(s) && (s.year || 0) >= 2025 && s.kind !== 'film')).slice(0, 12);
     const items = [];
     const seen = {};
+    // Item yang sudah tampil di "Baru Rilis" tidak dimunculkan lagi di sini
+    try {
+      const fg = document.querySelectorAll('#freshGrid [data-fresh]');
+      fg.forEach((el) => { seen['rx' + el.getAttribute('data-fresh')] = 1; });
+    } catch (e) {}
     (live || []).forEach((it) => {
       if (!it || !it.id || seen['rx' + it.id]) return;
       seen['rx' + it.id] = 1;
@@ -1300,6 +2022,7 @@ function loadLatest(force) {
   };
   paint([]);
   (async () => {
+    if (typeof saverActive === 'function' && saverActive()) return; // TAHAP 4.4: katalog lokal saja
     const live = [], seen = {};
     for (const p of [1, 2, 3]) {
       try {
@@ -1315,12 +2038,113 @@ function loadLatest(force) {
     if (live.length || (typeof EPSREC !== 'undefined' && EPSREC && Object.keys(EPSREC).length)) paint(live);
   })();
 }
+/* Auto-rilis 1 DETIK: tiap 1000ms tepat 1 judul dirilis + langsung bisa ditonton.
+   Sumber rilis: nyaa.si RSS (cek ketersediaan/seeders via proxy) + recent-anime
+   API (antrean ID). Tiap kandidat DIVERIFIKASI playable via apiSeries (embed
+   SUB/DUB ada) sebelum dirilis — tanpa playable = dilewati, tetap 1 detik.
+   Isi ulang antrean max 1x/60 detik agar tidak membanjiri API/proxy. */
+const RILIS1S = { q: [], filling: false, lastFill: 0, released: 0, on: true, nyaaSeeds: {} };
+function rilis1sStatus(msg, live) {
+  const el = $('rilis1sStatus');
+  if (!el) return;
+  el.innerHTML = (live === false ? '⚪ ' : '🔴 ') + '<span>' + esc(msg) + '</span>';
+}
+function nyaaNorm(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+async function rilis1sFill() {
+  if (RILIS1S.filling || Date.now() - RILIS1S.lastFill < 60000) return;
+  if (typeof saverActive === 'function' && saverActive()) return; // TAHAP 4.4: hemat data
+  RILIS1S.filling = true;
+  try {
+    // 1) recent-anime = antrean ID rilis terbaru (2 halaman cukup, hemat kuota)
+    const ids = [], seen = {};
+    for (const p of [1, 2]) {
+      try {
+        const j = await apiGet('/recent-anime?page=' + p + '&per_page=24', 12000);
+        (j.data || []).forEach((it) => {
+          if (!it || !it.id || seen[it.id]) return;
+          seen[it.id] = 1;
+          ids.push(it);
+        });
+      } catch (e) { break; }
+    }
+    // 2) nyaa.si RSS via proxy = cek ketersediaan + seeders (tanpa magnet/hash)
+    try {
+      const rssUrl = 'https://nyaa.si/?page=rss&c=1_2&f=0';
+      let raw = '';
+      for (const px of API_PROXY) {
+        try {
+          const r = await fetchTimeout(px(rssUrl), 10000);
+          if (!r.ok) continue;
+          raw = await bodyTimeout(r.text(), 10000);
+          if (raw && raw.indexOf('<item>') >= 0) break;
+        } catch (e) {}
+      }
+      if (raw) {
+        const re = /<item>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<nyaa:seeders>(\d+)<\/nyaa:seeders>/g;
+        let m;
+        while ((m = re.exec(raw))) {
+          const t = String(m[1] || '').replace(/^\s*(\[[^\]]+\]\s*)+/, '').replace(/\s*\[.*?\]\s*/g, ' ').trim();
+          RILIS1S.nyaaSeeds[nyaaNorm(t.slice(0, 60))] = Number(m[2]) || 0;
+        }
+      }
+    } catch (e) {}
+    // 3) saring yang belum dirilis → antrean (tetap 1 detik per rilis di tick)
+    const known = {};
+    (ANI.shows || []).forEach((s) => {
+      const ak = akOf(s.id);
+      if (ak) known[ak.id] = 1;
+      known['t:' + nyaaNorm(s.title)] = 1;
+    });
+    RILIS1S.q.forEach((it) => { if (it && it.id) known[it.id] = 1; });
+    ids.forEach((it) => { if (!known[it.id]) RILIS1S.q.push(it); });
+    RILIS1S.lastFill = Date.now();
+  } finally { RILIS1S.filling = false; }
+}
+async function rilis1sTick() {
+  if (!RILIS1S.on || document.hidden || isSegeraMode()) return;
+  if (typeof saverActive === 'function' && saverActive()) return; // TAHAP 4.4: hemat data
+  try {
+    if (!RILIS1S.q.length) {
+      rilis1sStatus('Memeriksa rilis terbaru…', true);
+      rilis1sFill();
+      return;
+    }
+    const it = RILIS1S.q.shift(); // TEPAT 1 judul per tick 1 detik
+    if (!it || !it.id) return;
+    let data = null;
+    try { data = await apiSeries(it.id); } catch (e) { data = null; }
+    const eps = (data && data.episodes) || [];
+    const playable = eps.filter((e) => e && e.embed_url && (e.embed_url.sub || e.embed_url.dub || Object.keys(e.embed_url).length));
+    if (!playable.length) return; // belum bisa ditonton → lewati, detik berikutnya lanjut
+    const tid = 'rx_' + it.id;
+    if (!findShow(tid)) {
+      const title = it.title || it.alternative || ('Rilis ' + it.id);
+      ANI.shows.unshift({ id: tid, title, cover: it.poster || '', akid: it.id, episodes: eps.length, status: 'tayang', kind: 'series', year: new Date().getFullYear() });
+      AKMAP[tid] = { id: it.id, episodes: eps.length };
+      RILIS1S.released++;
+      try { loadLatest(); } catch (e) {}
+      try { loadFresh(); } catch (e) {}
+      rilis1sStatus('Auto-rilis 1 detik • BARU ▶ ' + title + ' (' + playable.length + ' ep, langsung nonton)', true);
+      try { toast('▶ BARU RILIS: ' + title); } catch (e) {}
+    } else {
+      rilis1sStatus('Auto-rilis 1 detik • antrean ' + RILIS1S.q.length + ' • sudah rilis ' + RILIS1S.released, true);
+    }
+    if (RILIS1S.q.length < 8) rilis1sFill(); // isi ulang di latar, tanpa blokir detik
+  } catch (e) {}
+}
 function armLatestAuto() {
   if (window._latestAuto) return;
   window._latestAuto = 1;
-  setInterval(() => {
-    try { if (!document.hidden && !isSegeraMode()) loadLatest(); } catch (e) {}
-  }, 10 * 60 * 1000);
+  rilis1sFill();
+  setInterval(rilis1sTick, 1000); // WAJIB 1 detik
+  const st = $('rilis1sStatus');
+  if (st) st.style.cursor = 'pointer';
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.closest && e.target.closest('#rilis1sStatus')) {
+      RILIS1S.on = !RILIS1S.on;
+      rilis1sStatus(RILIS1S.on ? 'Auto-rilis 1 detik: aktif' : 'Auto-rilis dijeda — ketuk untuk aktif', RILIS1S.on);
+    }
+  });
 }
 /* Halaman detail (overlay penuh) — episode/chapter tidak lagi dibuka di bawah */
 function openDetail(title) {
@@ -1394,6 +2218,8 @@ function route(fromPop) {
     else if (!$('playerModal').hidden) closePlayer();
     return;
   }
+  // 2b) Pustaka (halaman Riwayat + Daftarku) — halaman sendiri, bukan modal
+  if (h === '#/pustaka') { openPustaka(null, false); return; }
   // 3) Kategori eksplisit
   const cat = catFromHash(h) || st.cat;
   if (cat && CATS.indexOf(cat) >= 0) {
@@ -1460,6 +2286,7 @@ function buildFullEps(showId, total, items) {
 function openDetailAnime(showId, nav) {
   const s = findShow(showId);
   if (!s) return;
+  try { seenMark(showId); } catch (e) {} // TAHAP 3.3: catat terakhir dilihat
   const ak = akOf(showId);
   const aniFresh = $('detailView').hidden || !DV || DV.id !== showId;
   $('detailView').classList.add('dv-anime');
@@ -1470,8 +2297,11 @@ function openDetailAnime(showId, nav) {
     status: isSoonDet ? T('soon_meta') : (s.status === 'tayang' ? T('st_airing') : (s.kind === 'film' ? T('film_w') : T('st_done'))) };
   // Desain orisinal Guoke (bukan jiplakan screenshot): kartu hero + stat strip + aksi fungsional
   const h = String(showId).split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  // TAHAP 2.1: tanpa label "Series" dan tanpa "N EP" yang janggal di meta;
+  // jumlah episode sudah ada di strip statistik di bawah.
   const rating = (7 + (h % 19) / 10).toFixed(2);
-  const kindLabel = s.kind === 'film' ? 'Film' : 'Series';
+  const metaBits = ['★ ' + esc(rating)];
+  if (s.year) metaBits.push(esc(String(s.year)));
   const bm = isBookmarked(showId);
   const statStatus = isSoonDet ? T('soon_meta') : (s.status === 'tayang' ? T('st_airing') : (s.kind === 'film' ? T('film_w') : T('st_done')));
   $('dvBody').innerHTML =
@@ -1483,9 +2313,8 @@ function openDetailAnime(showId, nav) {
     (s.cover ? '<img class="dv-pro-cover" src="' + esc(s.cover) + '" alt="Cover ' + esc(s.title) + '" onerror="this.remove()">' : '') +
     '<div class="dv-pro-info"><h2>' + esc(s.title) + '</h2>' +
     (s.alt ? '<p class="dv-pro-alt">' + esc(s.alt) + '</p>' : '') +
-    '<p class="dv-pro-meta">★ ' + esc(rating) + ' · ' + esc(kindLabel) +
-    (s.year ? ' · ' + esc(String(s.year)) : '') + ' · ' + esc(DV.total + ' EP') + '</p>' +
-    '<div class="dv-pro-genres">' + (s.genres || []).slice(0, 3).map((g) =>
+    '<p class="dv-pro-meta">' + metaBits.join(' · ') + '</p>' +
+    '<div class="dv-pro-genres">' + (s.genres || []).map((g) =>
       '<span>' + esc(g) + '</span>').join('') + '</div></div></div>' +
     '<div class="dv-pro-actions">' + (isSoonDet
       ? '<button class="btn btn-small btn-ghost" type="button" disabled>📅 ' + esc(T('soon_meta')) + (s.rilis ? ' • ' + esc(String(s.rilis)) : (s.year ? ' • ' + esc(String(s.year)) : '')) + '</button>'
@@ -1496,8 +2325,17 @@ function openDetailAnime(showId, nav) {
     '<div class="dv-stats"><div><small>EPISODE</small><strong>' + esc(String(DV.total)) + '</strong></div>' +
     '<div><small>STATUS</small><strong>' + esc(statStatus) + '</strong></div>' +
     '<div><small>TAHUN</small><strong>' + esc(s.year ? String(s.year) : '—') + '</strong></div></div>' +
-    (s.synopsis ? '<div class="dv-pro-syn"><h3>Sinopsis</h3><p>' + esc(s.synopsis) + '</p></div>' : '') +
+    (s.synopsis ? '<div class="dv-pro-syn"><h3>Sinopsis</h3><p class="syn-text">' + esc(s.synopsis) + '</p><button class="linkbtn syn-more" data-synmore type="button">Baca selengkapnya</button></div>' : '') +
     '</div>' +
+    (() => {
+      // TAHAP 3.4: rekomendasi berdasarkan genre
+      try {
+        const recs = similarTitles('anime', showId, s.genres, 6);
+        if (!recs.length) return '';
+        return '<div class="rec-sec"><h3>Mirip dengan ini</h3><div class="show-grid">' +
+          recs.map(showCard).join('') + '</div></div>';
+      } catch (e) { return ''; }
+    })() +
     '<h3 class="dv-ep-h">Daftar Episode</h3>' +
     '<div class="ep-tools">' +
     '<div class="src-tabs" role="group" aria-label="' + esc(T('epsort_label')) + '">' +
@@ -1575,7 +2413,7 @@ function paintNyaaNote(n) {
   const p = document.createElement('p');
   p.className = 'muted small';
   p.id = 'dvNyaa';
-  p.textContent = 'Nyaa: ' + n + ' rilis';
+  p.textContent = '• ' + n + ' versi tersedia';
   box.appendChild(p);
 }
 /* Gabung episode live ke daftar (dipakai refresh biasa + sinkron paksa nyaa). */
@@ -1647,6 +2485,70 @@ function paintEps() {
     ' — ' + T('ep_hint') + ' <span class="ep-legend">' + T('ep_legend') + '</span></p>';
 }
 
+/* TAHAP 3.2: episode berikutnya otomatis (hitung mundur 5 dtk + Batal + Lewati).
+   Jujur: pemutar pihak ketiga tidak memberi tahu kapan video selesai, jadi
+   tawaran muncul 15 detik setelah episode dibuka bila autoplay aktif dan
+   episode lanjut tersedia. "Lewati intro" = lewati hitung mundur, langsung
+   putar episode berikutnya (geser menit di dalam video tetap lewat kontrol
+   pemutar bawaan server, karena browser melarang akses ke embed). */
+const AUTO = { t1: null, tick: null, target: null };
+function autoClear() {
+  if (AUTO.t1) { clearTimeout(AUTO.t1); AUTO.t1 = null; }
+  if (AUTO.tick) { clearInterval(AUTO.tick); AUTO.tick = null; }
+  AUTO.target = null;
+  try { const box = $('autoNext'); if (box) box.hidden = true; } catch (e) {}
+}
+function autoEnabled() {
+  try {
+    const v = store.get('gq_autoplay', 1);
+    const c = $('pAuto');
+    if (c) c.checked = v !== 0;
+    return v !== 0;
+  } catch (e) { return true; }
+}
+function nextPlayable() {
+  try {
+    if (typeof DV === 'undefined' || !DV || DV.type !== 'anime' || typeof PCtx === 'undefined' || !PCtx || DV.id !== PCtx.showId || !DV.eps.length) return null;
+    const i = DV.eps.findIndex((e) => String(e.number) === String(PCtx.epNum));
+    if (i < 0) return null;
+    const nx = DV.eps[i + 1];
+    return (nx && nx.ok) ? nx : null;
+  } catch (e) { return null; }
+}
+function autoArm() {
+  autoClear();
+  if (!autoEnabled()) return;
+  if (!nextPlayable()) return;
+  AUTO.t1 = setTimeout(() => {
+    if ($('playerModal').hidden) return;
+    const nx = nextPlayable();
+    if (!nx) return;
+    AUTO.target = nx;
+    const box = $('autoNext');
+    if (!box) { autoPlayNext(); return; }
+    box.hidden = false;
+    let n = 5;
+    const paint = () => {
+      const t = $('autoTxt');
+      if (t) t.textContent = 'EP ' + nx.number + ' mulai dalam ' + n + '…';
+      const f = $('autoFill');
+      if (f) f.style.width = (n / 5 * 100) + '%';
+    };
+    paint();
+    AUTO.tick = setInterval(() => {
+      n--;
+      if (n <= 0) { autoPlayNext(); return; }
+      paint();
+    }, 1000);
+  }, 15000);
+}
+function autoPlayNext() {
+  const nx = AUTO.target || nextPlayable();
+  autoClear();
+  if (!nx || typeof PCtx === 'undefined' || !PCtx) return;
+  const s = findShow(PCtx.showId);
+  openPlayerStream(s ? s.title : '', nx.number, nx);
+}
 /* (player torrent/WebTorrent dihapus — semua diputar langsung di situs) */
 let PCtx = null; // {showId, epNum}
 function closePlayer() {
@@ -1655,7 +2557,9 @@ function closePlayer() {
     store.set('gq_posv_' + PCtx.showId + '_' + PCtx.epNum, Date.now());
   }
   PCtx = null;
+  try { autoClear(); } catch (e) {}
   $('playerModal').hidden = true;
+  try { epSocialUnwatch(); } catch (e) {}
   if ($('readModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
   const f = $('pFrame');
   f.removeAttribute('src');
@@ -1691,8 +2595,18 @@ function openPlayerStream(showTitle, epNum, ep, nav) {
   if (nav !== false && sid) pushView('#/tonton/' + sid + '/e' + epNum,
     { cat: CURCAT, view: 'play', id: sid, ep: String(epNum) }, playFresh);
   if (sid) {
-    store.set('gq_contv', { id: sid, ep: String(epNum), at: Date.now() });
-    pushHist({ type: 'anime', id: sid, sub: T('episode_w') + ' ' + epNum });
+    // TAHAP 3.1: catat episode dibuka (progres) + server terakhir; saat dibuka
+    // ulang, server yang sama otomatis dipakai lagi.
+    try { progAdd('gq_watched', sid, epNum); } catch (e) {}
+    let startSrv = 0;
+    try {
+      const prev = store.get('gq_contv', null);
+      if (prev && prev.id === sid && String(prev.ep) === String(epNum) && Number(prev.srv) >= 0) startSrv = Number(prev.srv);
+    } catch (e) {}
+    if (startSrv >= servers.length) startSrv = 0;
+    PCtx.srv = startSrv;
+    store.set('gq_contv', { id: sid, ep: String(epNum), srv: startSrv, at: Date.now() });
+    pushHist({ type: 'anime', id: sid, ep: String(epNum), sub: T('episode_w') + ' ' + epNum, t: String(showTitle || '').slice(0, 80) });
     const last = store.get('gq_posv_' + sid + '_' + epNum, 0);
     $('pResume').textContent = last
       ? T('resume_last') + ' ' + new Date(last).toLocaleString(getLang() === 'en' ? 'en-US' : 'id-ID') + T('resume_tip1')
@@ -1715,19 +2629,263 @@ function openPlayerStream(showTitle, epNum, ep, nav) {
     box.querySelectorAll('button').forEach((b, j) => b.classList.toggle('btn-ghost', j !== i));
   };
   box.querySelectorAll('button').forEach((b) => {
-    b.onclick = () => play(Number(b.dataset.srv));
+    b.onclick = () => {
+      play(Number(b.dataset.srv));
+      // TAHAP 3.1: ingat pilihan server manual untuk bukaan berikutnya
+      try {
+        if (sid) {
+          const cv = store.get('gq_contv', null) || {};
+          cv.srv = Number(b.dataset.srv) || 0;
+          store.set('gq_contv', cv);
+        }
+      } catch (e) {}
+    };
   });
-  play(0);
+  play(PCtx.srv || 0);
+  // TAHAP 3.2: siapkan hitung mundur episode berikutnya
+  try { autoArm(); } catch (e) {}
   // Reset baris download tiap ganti episode + prefetch file di latar
   // (supaya klik Download nanti INSTAN — URL sudah ketemu sebelum diklik).
   const ds = $('pDlStatus');
   if (ds) { ds.hidden = true; ds.textContent = ''; }
   try { pDlBtnsClear(); } catch (e) {}
   const db = $('pDl');
-  if (db) { db.disabled = false; db.innerHTML = esc(T('dl_btn')); }
+  if (db) { db.disabled = false; delete db.dataset.dead; db.innerHTML = esc(T('dl_btn')); }
   try { prefetchDl(); } catch (e) {}
   paintEpNav();
+  try { paintEpSocial(); } catch (e) {}
+  // TAHAP 3.2: kabel sekali untuk toggle + tombol hitung mundur
+  try {
+    const pa = $('pAuto');
+    if (pa && !pa.dataset.wired) {
+      pa.dataset.wired = '1';
+      pa.addEventListener('change', () => {
+        try { store.set('gq_autoplay', pa.checked ? 1 : 0); } catch (e) {}
+        if (!pa.checked) autoClear(); else autoArm();
+      });
+    }
+    const ac = $('autoCancel');
+    if (ac && !ac.dataset.wired) {
+      ac.dataset.wired = '1';
+      ac.addEventListener('click', () => {
+        autoClear();
+        try { store.set('gq_autoplay', 0); } catch (e) {}
+        const p2 = $('pAuto'); if (p2) p2.checked = false;
+      });
+    }
+    const as = $('autoSkip');
+    if (as && !as.dataset.wired) {
+      as.dataset.wired = '1';
+      as.addEventListener('click', () => autoPlayNext());
+    }
+  } catch (e) {}
 }
+/* --- LIKE & KOMENTAR per episode ---
+   Global (semua pengguna) bila Firebase terpasang — pola sama seperti galeri
+   ikon (ikonFb): like = transaction di ep_likes/<kunci>, komentar = push ke
+   ep_comments/<kunci> + live listener. Tambahkan kedua path di Rules
+   (lihat SETUP_GALERI_PUBLIK.md). Tanpa Firebase: tetap berfungsi penuh,
+   tersimpan di HP ini (localStorage), tanpa error. */
+let EP_SOC_KEY = '', epLikeRef = null, epCmtBase = null, epCmtRef = null, epLikeBusy = false;
+function epSocKey() {
+  const sid = (typeof PCtx !== 'undefined' && PCtx && PCtx.showId) ? String(PCtx.showId) : '';
+  const ep = (typeof PCtx !== 'undefined' && PCtx && PCtx.epNum) ? String(PCtx.epNum) : '';
+  const show = (DV && DV.type === 'anime' && DV.title) ? String(DV.title) : '';
+  const raw = ((sid || show || 'untitled') + '__e' + (ep || '0'));
+  return raw.replace(/[.#$\[\]\/]/g, '-').slice(0, 120);
+}
+function epLikedGet() { try { return JSON.parse(localStorage.getItem('gq_ep_liked') || '[]'); } catch (e) { return []; } }
+function epLikedSet(a) { try { localStorage.setItem('gq_ep_liked', JSON.stringify(a)); } catch (e) {} }
+function epLikeMapGet() { try { return JSON.parse(localStorage.getItem('gq_ep_likemap') || '{}'); } catch (e) { return {}; } }
+function epLikeMapSet(o) { try { localStorage.setItem('gq_ep_likemap', JSON.stringify(o)); } catch (e) {} }
+function epLikeCount() {
+  if (typeof EP_LIKES !== 'undefined' && EP_LIKES && EP_LIKES[EP_SOC_KEY] != null) return EP_LIKES[EP_SOC_KEY];
+  return epLikeMapGet()[EP_SOC_KEY] || 0;
+}
+var EP_LIKES = (typeof EP_LIKES !== 'undefined' && EP_LIKES) || {};
+function fmtLike(n) {
+  n = Math.max(0, Number(n) || 0);
+  if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + (getLang() === 'en' ? 'K' : ' rb');
+  return String(n);
+}
+function paintEpLike(n) {
+  const b = $('epLike'), c = $('epLikeCount');
+  if (!b || !c) return;
+  const liked = epLikedGet().indexOf(EP_SOC_KEY) >= 0;
+  c.textContent = fmtLike(n == null ? epLikeCount() : n);
+  b.classList.toggle('on', liked);
+  b.setAttribute('aria-pressed', liked ? 'true' : 'false');
+}
+function epToggleLike() {
+  if (typeof PCtx === 'undefined' || !PCtx || epLikeBusy || !EP_SOC_KEY) return;
+  const liked = epLikedGet();
+  const on = liked.indexOf(EP_SOC_KEY) < 0;
+  const done = (n) => {
+    epLikeBusy = false;
+    if (on) { if (liked.indexOf(EP_SOC_KEY) < 0) liked.push(EP_SOC_KEY); }
+    else { const i = liked.indexOf(EP_SOC_KEY); if (i >= 0) liked.splice(i, 1); }
+    epLikedSet(liked);
+    EP_LIKES[EP_SOC_KEY] = Math.max(0, n);
+    const m = epLikeMapGet(); m[EP_SOC_KEY] = EP_LIKES[EP_SOC_KEY]; epLikeMapSet(m);
+    paintEpLike(EP_LIKES[EP_SOC_KEY]);
+  };
+  epLikeBusy = true;
+  const f = (typeof ikonFb === 'function') ? ikonFb() : null;
+  if (f) {
+    f.db.ref('ep_likes/' + EP_SOC_KEY).transaction((c) => (c || 0) + (on ? 1 : -1), (err, ok, snap) => {
+      if (err || !ok) { epLikeBusy = false; toast(T('net_busy')); return; }
+      done((snap && snap.val()) || 0);
+    });
+  } else {
+    done(epLikeCount() + (on ? 1 : -1));
+  }
+}
+function epCmtLocalGet() { return store.get('gq_epc_' + EP_SOC_KEY, []); }
+function epCmtLocalSet(a) { store.set('gq_epc_' + EP_SOC_KEY, (a || []).slice(-50)); }
+function epMyCmtGet() { try { return JSON.parse(localStorage.getItem('gq_ep_mycmt') || '{}'); } catch (e) { return {}; } }
+function epMyCmtSet(o) { try { localStorage.setItem('gq_ep_mycmt', JSON.stringify(o)); } catch (e) {} }
+/* TAHAP 5.3: filter kata kasar + tombol Laporkan pada komentar.
+   Daftar kata umum; cocok sebagai kata utuh (bukan bagian kata lain).
+   Komentar yang dilaporkan disembunyikan di perangkat pelapor + tersimpan
+   untuk ditindaklanjuti. */
+const BADWORDS = ['anjing', 'babi', 'bangsat', 'bajingan', 'kontol', 'memek', 'ngentot', 'tolol', 'goblok', 'idiot', 'bego', 'kampret', 'setan', 'sialan', 'brengsek', 'jancuk', 'cuk', 'asu', 'pepek', 'lonte', 'pelacur', 'fuck', 'shit', 'bitch', 'bastard', 'dick', 'pussy', 'porn', 'xxx', 'bokep'];
+function kasarFound(t) {
+  const s = ' ' + String(t || '').toLowerCase().replace(/[^a-z0-9\u00c0-\u024f]+/gi, ' ') + ' ';
+  return BADWORDS.some((w) => s.indexOf(' ' + w + ' ') >= 0);
+}
+function cmtRepGet() { try { const a = store.get('gq_cmtrep', []); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function renderEpCmts(arr) {
+  const list = $('epCmtList'), empty = $('epCmtEmpty'), cnt = $('epCmtCount');
+  const reported = {};
+  cmtRepGet().forEach((r) => { reported[String(r.key)] = 1; });
+  arr = (arr || []).filter((c) => !reported[String(c.key != null ? c.key : (c.ts || ''))]);
+  arr = arr.slice().sort((a, b) => (b.ts || 0) - (a.ts || 0)).slice(0, 50);
+  if (cnt) cnt.textContent = fmtLike(arr.length);
+  if (empty) empty.hidden = arr.length > 0;
+  if (!list) return;
+  const mine = epMyCmtGet()[EP_SOC_KEY] || [];
+  const isLocal = !(typeof ikonFb === 'function' && ikonFb());
+  list.innerHTML = arr.map((c) => {
+    const k = String(c.key != null ? c.key : (c.ts || ''));
+    const tm = c.ts ? new Date(c.ts).toLocaleString(getLang() === 'en' ? 'en-US' : 'id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '';
+    const canDel = isLocal || mine.indexOf(k) >= 0;
+    return '<li><div class="cm-top"><span class="cm-name">' + esc(c.n) + '</span>' +
+      '<span class="cm-time">' + esc(tm) + '</span></div>' +
+      '<div>' + esc(c.t) + '</div>' +
+      (canDel ? '<button class="cm-del" data-cdel="' + esc(k) + '" type="button">✕ ' + esc(T('ikon_delete')) + '</button>'
+        : '<button class="cm-del" data-crep="' + esc(k) + '" type="button">⚠ ' + esc(T('cmt_report')) + '</button>') +
+      '</li>';
+  }).join('');
+}
+function epCmtSend(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  if (typeof PCtx === 'undefined' || !PCtx || !EP_SOC_KEY) return;
+  const ti = $('epCmtText'), ni = $('epCmtName');
+  const t = ti ? ti.value.trim().slice(0, 300) : '';
+  if (!t) { toast(T('cmt_need')); return; }
+  if (typeof kasarFound === 'function' && kasarFound(t)) { toast(T('cmt_bad')); return; }
+  const n = ni ? ni.value.trim().slice(0, 30) : '';
+  const name = n || store.get('gq_name', '') || T('cmt_anon');
+  if (ni && !ni.value.trim() && store.get('gq_name', '')) ni.value = store.get('gq_name', '');
+  const f = (typeof ikonFb === 'function') ? ikonFb() : null;
+  if (f && epCmtBase) {
+    epCmtBase.push({ n: name, t, ts: Date.now() }).then((r) => {
+      try {
+        const mine = epMyCmtGet();
+        mine[EP_SOC_KEY] = (mine[EP_SOC_KEY] || []).concat(r && r.key ? [String(r.key)] : []).slice(-50);
+        epMyCmtSet(mine);
+      } catch (err) {}
+      if (ti) ti.value = '';
+    }).catch(() => toast(T('net_busy')));
+  } else {
+    const a = epCmtLocalGet();
+    a.push({ key: 'l' + Date.now(), n: name, t, ts: Date.now() });
+    epCmtLocalSet(a);
+    renderEpCmts(a);
+    if (ti) ti.value = '';
+  }
+}
+function epCmtDel(key) {
+  if (!key || !EP_SOC_KEY) return;
+  const f = (typeof ikonFb === 'function') ? ikonFb() : null;
+  if (f && epCmtBase) {
+    epCmtBase.child(String(key)).remove().then(() => {
+      try {
+        const mine = epMyCmtGet();
+        mine[EP_SOC_KEY] = (mine[EP_SOC_KEY] || []).filter((k) => k !== String(key));
+        epMyCmtSet(mine);
+      } catch (err) {}
+      toast(T('cmt_deleted'));
+    }).catch(() => toast(T('net_busy')));
+  } else {
+    epCmtLocalSet(epCmtLocalGet().filter((c) => String(c.key) !== String(key)));
+    renderEpCmts(epCmtLocalGet());
+    toast(T('cmt_deleted'));
+  }
+}
+function epSocialUnwatch() {
+  try { if (epLikeRef) epLikeRef.off(); } catch (e) {}
+  try { if (epCmtRef) epCmtRef.off(); } catch (e) {}
+  epLikeRef = null; epCmtBase = null; epCmtRef = null;
+}
+function paintEpSocial() {
+  epSocialUnwatch();
+  EP_SOC_KEY = epSocKey();
+  const nm = $('epCmtName');
+  if (nm && !nm.value) nm.value = store.get('gq_name', '');
+  const localNote = $('epCmtLocal');
+  const f = (typeof ikonFb === 'function') ? ikonFb() : null;
+  if (localNote) localNote.hidden = !!f;
+  if (!f) {
+    paintEpLike(epLikeCount());
+    renderEpCmts(epCmtLocalGet());
+    return;
+  }
+  try {
+    paintEpLike(EP_LIKES[EP_SOC_KEY] != null ? EP_LIKES[EP_SOC_KEY] : (epLikeMapGet()[EP_SOC_KEY] || 0));
+    epLikeRef = f.db.ref('ep_likes/' + EP_SOC_KEY);
+    epLikeRef.on('value', (s) => {
+      const n = Math.max(0, (s && s.val()) || 0);
+      EP_LIKES[EP_SOC_KEY] = n;
+      const m = epLikeMapGet(); m[EP_SOC_KEY] = n; epLikeMapSet(m);
+      if (EP_SOC_KEY) paintEpLike(n);
+    });
+    epCmtBase = f.db.ref('ep_comments/' + EP_SOC_KEY);
+    epCmtRef = epCmtBase.limitToLast(50);
+    epCmtRef.on('value', (s) => {
+      const v = (s && s.val()) || {};
+      renderEpCmts(Object.keys(v).map((k) => ({ key: k, n: v[k].n, t: v[k].t, ts: v[k].ts })));
+    });
+  } catch (e) {
+    epSocialUnwatch();
+    if (localNote) localNote.hidden = false;
+    paintEpLike(epLikeCount());
+    renderEpCmts(epCmtLocalGet());
+  }
+}
+try {
+  if ($('epLike')) $('epLike').addEventListener('click', epToggleLike);
+  if ($('epCmtForm')) $('epCmtForm').addEventListener('submit', epCmtSend);
+  if ($('epCmtList')) $('epCmtList').addEventListener('click', (e) => {
+    const b = e.target && e.target.closest ? e.target.closest('[data-cdel]') : null;
+    if (b) epCmtDel(b.dataset.cdel);
+    // TAHAP 5.3: laporkan komentar (sembunyikan di perangkat ini + simpan laporan)
+    const r = e.target && e.target.closest ? e.target.closest('[data-crep]') : null;
+    if (r) {
+      try {
+        const arr = cmtRepGet();
+        arr.unshift({ key: String(r.dataset.crep), ep: (typeof EP_SOC_KEY !== 'undefined' ? EP_SOC_KEY : ''), at: Date.now() });
+        store.set('gq_cmtrep', arr.slice(0, 100));
+      } catch (err) {}
+      try {
+        const li = r.closest('li');
+        if (li) li.remove();
+        else if (typeof EP_SOC_KEY !== 'undefined') renderEpCmts(epCmtLocalGet());
+      } catch (err) {}
+      toast(T('cmt_reported'));
+    }
+  });
+} catch (e) {}
 /* Download episode: klik → HARUS LANGSUNG muncul notifikasi sistem
     "Downloading file... See notification for download status" (seperti
     screenshot) + progres Chrome Download Manager (Pause/Cancel).
@@ -1791,10 +2949,11 @@ function copyDlLink(url) {
 function pDlSetBtn(busy, label) {
   const db = $('pDl');
   if (!db) return;
+  if (db.dataset.dead === '1' && !label) return; // TAHAP 2.4: status "Segera hadir" dipertahankan
   if (label) db.innerHTML = label;
   else db.innerHTML = busy ? esc(T('dl_search')) : esc(T('dl_btn'));
   // sengaja TIDAK disabled — biar tidak terlihat mati/gelap
-  db.disabled = false;
+  if (db.dataset.dead !== '1') db.disabled = false;
 }
 /* Nama file aman untuk folder Download. */
 function dlFileName(title, epNum, label, ext) {
@@ -1832,6 +2991,7 @@ function withTimeout(promise, ms, tag) {
    Hasil masuk dlCache → klik Download jadi INSTAN (tanpa "Mencari (1/2)"). */
 function prefetchDl() {
   if (!PCtx || !PCtx.servers || !PCtx.servers.length) return;
+  if (typeof saverActive === 'function' && saverActive()) return; // TAHAP 4.4: hemat data
   PCtx.servers.forEach((srv) => {
     if (dlCache[srv.url] !== undefined) return;
     withTimeout(resolveServerFiles(srv.url), 9000, 'prefetch timeout')
@@ -1917,7 +3077,9 @@ async function dlEpisode() {
     if (!alive.length) {
       // Semua server mati (mis. megaplay 410 deleted) → JANGAN diam.
       // Beri jalan keluar tuntas: buka server, salin link utk 1DM, cari mirror.
+      // TAHAP 2.4: tombol unduh utama jadi jelas nonaktif ("Segera hadir").
       pDlSay(T('dl_dead'), true);
+      try { var _db = $('pDl'); if (_db) { _db.textContent = 'Segera hadir'; _db.disabled = true; _db.dataset.dead = '1'; } } catch (e) {}
       pDlBtnsShow(
         PCtx.servers.map((sv) => ({ label: T('open_srv') + sv.label, url: sv.url, ghost: true }))
           .concat([
@@ -2061,7 +3223,7 @@ async function downloadToGallery(fileUrl, title, epNum, label, say) {
 
 /* ---------- 5. MANHWA: baca langsung di situs (Komiku) ---------- */
 /* State katalog baca: filter genre, urutan, pencarian, bookmark, status, muat-lebih */
-const MW_UI = { q: '', genre: '', type: '', sort: 'terbaru', bookOnly: false, bmStatus: '', limit: 24, per: 24 };
+const MW_UI = { q: '', genre: '', genres: [], year: '', type: '', sort: 'terbaru', bookOnly: false, bmStatus: '', limit: 24, per: 24 };
 function findMw(id) { return MW.titles.find((t) => t.id === id); }
 /* Daftar chapter LAZY: index (manhwa.json) ringan tanpa chapters; daftar per
    judul diambil dari data/mwch/{slug}.json saat dibuka, cache di sesi. */
@@ -2094,13 +3256,18 @@ async function ensureChapters(id) {
 function mwCard(t) {
   const upd = mwUpdated(t);
   const bm = isBookmarked(t.id);
+  // TAHAP 3.1 + 3.3: progress baca + penanda update bookmark
+  let progHtml = '';
+  try { progHtml = progBarHTML(progCount('gq_readch', t.id), t.total); } catch (e) {}
+  let updHtml = '';
+  try { updHtml = updMarkHTML(t.id, parseTgl(upd)); } catch (e) {}
   return '<article class="show-card" data-mread="' + t.id + '" tabindex="0" role="link" ' +
     'aria-label="' + esc(T('card_read')) + ' ' + esc(t.title) + '">' +
     '<div class="show-cover"><i>' + esc(initials(t.title)) + '</i>' +
     (t.cover ? '<img src="' + esc(cdn(t.cover)) + '" alt="Cover ' + esc(t.title) + '" ' +
       'loading="lazy" decoding="async" onerror="this.remove()">' : '') +
-    '<span class="show-badge">' + t.total + ' CH</span>' + mwBadge(t) + '</div>' +
-    '<div class="show-info"><strong>' + esc(t.title) + '</strong>' +
+    '<span class="show-badge">' + t.total + ' CH</span>' + mwBadge(t) + progHtml + '</div>' +
+    '<div class="show-info"><strong>' + esc(t.title) + '</strong>' + updHtml +
     '<small class="show-meta">' + esc(mwStatus(t)) + ' • ' + esc(mwGenres(t).join(', ')) +
     (upd ? '<br>' + esc(fmtTglID(upd)) : '') + '</small>' +
     '<div class="show-btns"><button class="btn" data-mread="' + t.id + '" type="button">' + esc(T('card_read')) + '</button>' +
@@ -2110,7 +3277,7 @@ function mwCard(t) {
 function mwFiltered() {
   let list = MW.titles.filter((t) =>
     (!MW_UI.q || t.title.toLowerCase().includes(MW_UI.q)) &&
-    (!MW_UI.genre || (t.genres || []).includes(MW_UI.genre)) &&
+    genreHit(t.genres, MW_UI.genre, MW_UI.genres) &&
     (!MW_UI.type || (t.type || 'Manhwa') === MW_UI.type) &&
     (!MW_UI.bookOnly || isBookmarked(t.id)) &&
     (!MW_UI.bmStatus || bmStatus(t.id) === MW_UI.bmStatus));
@@ -2238,20 +3405,64 @@ function paintSuggest(q) {
   box.hidden = false;
   input.setAttribute('aria-expanded', 'true');
 }
-/* Strip "Lanjutkan membaca" dari localStorage */
+/* TAHAP 3.6: riwayat pencarian terakhir (maks 8, lokal per perangkat). */
+function sqGet(k) { try { const a = store.get(k, []); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
+function sqAdd(k, q) {
+  q = String(q || '').trim();
+  if (q.length < 2) return;
+  try {
+    const a = sqGet(k).filter((x) => x.toLowerCase() !== q.toLowerCase());
+    a.unshift(q);
+    store.set(k, a.slice(0, 8));
+  } catch (e) {}
+}
+function sqHistHTML(k) {
+  const a = sqGet(k);
+  if (!a.length) return '';
+  return '<div class="sq-hist" role="group" aria-label="Terakhir dicari">' +
+    a.map((q) => '<button data-sq="' + k + '" data-q="' + esc(q) + '" type="button">' + esc(q) + '</button>').join('') + '</div>';
+}
+/* TAHAP 3.6: saran judul anime saat mengetik (+ riwayat bila kolom kosong). */
+function paintAniSuggest(q) {
+  const box = $('aniSuggest'), input = $('aniSearch');
+  if (!box || !input) return;
+  q = (q || '').toLowerCase().trim();
+  if (q.length < 2) {
+    const h = sqHistHTML('gq_sq_ani');
+    if (!h || !ANI.shows.length) { box.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
+    box.innerHTML = h;
+    box.hidden = false;
+    input.setAttribute('aria-expanded', 'true');
+    return;
+  }
+  if (!ANI.shows.length) { box.hidden = true; return; }
+  const hits = ANI.shows.filter((s) => (s.title + ' ' + (s.alt || '')).toLowerCase().includes(q)).slice(0, 6);
+  if (!hits.length) {
+    const h = sqHistHTML('gq_sq_ani');
+    if (!h) { box.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
+    box.innerHTML = h;
+    box.hidden = false;
+    return;
+  }
+  box.innerHTML = hits.map((s) =>
+    '<button role="option" data-anisug="' + s.id + '" type="button">' +
+    (s.cover ? '<img src="' + esc(s.cover) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
+    '<span>' + esc(s.title) + '<br><small class="show-meta">' + esc(s.status === 'tayang' ? 'Sedang Tayang' : 'Tamat') + (s.year ? ' • ' + s.year : '') + '</small></span></button>'
+  ).join('');
+  box.hidden = false;
+  input.setAttribute('aria-expanded', 'true');
+}
+/* Strip "Lanjutkan membaca": banner tunggal = lanjutHome.
+   Fungsi lama dimatikan agar banner tidak tampil dua kali per halaman. */
 function paintLanjut() {
   const wrap = $('lanjutWrap');
-  if (!wrap) return;
-  const c = store.get('gq_cont', null);
-  const t = c && findMw(c.id);
-  if (!t) { wrap.hidden = true; return; }
-  wrap.hidden = false;
-  $('lanjutJudul').textContent = t.title + ' — ' + (c.ch || '');
-  $('lanjutBtn').onclick = () => openReader(c.id, c.idx || 0);
+  if (wrap) wrap.hidden = true;
+  try { paintLanjutHome(); } catch (e) {}
 }
 function openDetailMw(id, pushHash) {
   const t = findMw(id);
   if (!t) return;
+  try { seenMark(id); } catch (e) {} // TAHAP 3.3: catat terakhir dilihat
   $('detailView').classList.remove('dv-anime');
   openDetail(t.title);
   // URL unik per manhwa (push bila bukaan baru, replace bila pindah judul dari detail)
@@ -2274,7 +3485,16 @@ function openDetailMw(id, pushHash) {
     '<div class="bm-status" role="group" aria-label="' + esc(T('f_bmstatus')) + '">' +
     stBtn('ongoing', T('bm_ongoing')) + stBtn('wishlist', T('bm_wish')) + stBtn('done', T('bm_done')) + '</div></div></div>' +
     '<div class="ani-search"><input id="dvChSearch" type="search" placeholder="' + esc(T('ch_search_ph')) + '" autocomplete="off" aria-label="' + esc(T('ch_search_ph')) + '"></div>' +
-    '<div id="dvChList" class="rel-list"></div>';
+    '<div id="dvChList" class="rel-list"></div>' +
+    (() => {
+      // TAHAP 3.4: rekomendasi berdasarkan genre
+      try {
+        const recs = similarTitles('manhwa', id, t.genres, 6);
+        if (!recs.length) return '';
+        return '<div class="rec-sec"><h3>Mirip dengan ini</h3><div class="show-grid">' +
+          recs.map(mwCard).join('') + '</div></div>';
+      } catch (e) { return ''; }
+    })();
   paintCh(); // "Memuat…" bila chapters belum di-cache; isi di bawah
   if (!mwChapters(t)) {
     const chReq = id;
@@ -2319,6 +3539,26 @@ let rdCtx = null, rdReqSeq = 0;
    Jeda acak sebelum proxy: puluhan gambar yang gagal bareng jangan menghantam
    proxy dalam 1 detik yang sama (itu yang bikin 429 massal → "gagal mulu"). */
 let RDIMG = { total: 0, fail: 0, noticed: false };
+/* Muat ulang SATU gambar yang gagal (dipakai tombol per-gambar). */
+function rdReloadOne(btn) {
+  try {
+    const card = btn.closest('.rd-img-fail');
+    const im = card ? card.previousElementSibling : null;
+    if (!im || im.tagName !== 'IMG') return;
+    im.removeAttribute('data-pb');
+    im.removeAttribute('data-ar');
+    im.removeAttribute('data-card');
+    im.style.display = '';
+    if (im.dataset.orig) im.src = im.dataset.orig;
+    card.remove();
+    RDIMG.fail = Math.max(0, RDIMG.fail - 1);
+    if (RDIMG.fail <= 0) {
+      RDIMG.noticed = false;
+      const rb = $('rdRetryBtn'); if (rb) rb.remove();
+      const gb = $('rdImgBtn'); if (gb) gb.remove();
+    }
+  } catch (e) {}
+}
 function imgFallback(el) {
   try {
     const toOfficial = (u) => String(u).replace(/^https?:\/\/image\d+\.komiku\.to/i, 'https://img.komiku.org');
@@ -2358,12 +3598,53 @@ function imgFallback(el) {
       }
     }
   } catch (e) {}
+  // Rantai habis: coba ulang otomatis 2x (1 dtk, lalu 3 dtk), baru menyerah.
+  // Catatan jujur: onerror <img> tidak memberi kode status HTTP, jadi yang
+  // dicatat adalah tahap + URL (bukan 200/404).
+  const ar = Number(el.dataset.ar || 0);
+  if (ar < 2) {
+    el.dataset.ar = String(ar + 1);
+    el.removeAttribute('data-pb');
+    setTimeout(() => {
+      try { if (el.isConnected && el.dataset.orig) el.src = el.dataset.orig; } catch (e) {}
+    }, ar === 0 ? 1000 : 3000);
+    return;
+  }
   el.dataset.pb = '4';
+  try {
+    const t = (rdCtx && findMw(rdCtx.id)) || {};
+    const chs = (rdCtx && mwChapters(t)) || [];
+    const c = chs[rdCtx.i] || {};
+    console.log('[Guoke] gambar gagal:', t.title || '?', c.t || '?', el.dataset.orig || el.src);
+  } catch (e) {}
   el.style.display = 'none';
+  // Ganti dengan kartu tombol "Muat ulang gambar ini" yang berfungsi
+  try {
+    if (!el.dataset.card) {
+      el.dataset.card = '1';
+      const d = document.createElement('div');
+      d.className = 'rd-img-fail';
+      const s = document.createElement('small');
+      s.textContent = 'Gambar tidak tampil';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'btn btn-small btn-ghost';
+      b.textContent = T('rd_retry_one');
+      b.onclick = () => rdReloadOne(b);
+      d.appendChild(s);
+      d.appendChild(b);
+      el.after(d);
+    }
+  } catch (e) {}
   RDIMG.fail++;
   if (RDIMG.total > 0 && RDIMG.fail >= RDIMG.total && !RDIMG.noticed) {
     RDIMG.noticed = true;
-    rdFailBar(T('rd_all_fail'), true);
+    try {
+      const t = (rdCtx && findMw(rdCtx.id)) || {};
+      const chs = (rdCtx && mwChapters(t)) || [];
+      chprobMark(t.id, rdCtx.i, (chs[rdCtx.i] || {}).t || '', 'semua-gambar-gagal');
+    } catch (e) {}
+    rdFailBar(T('rd_all_fail'), 'all');
   }
 }
 /* Muat ulang semua gambar yang gagal di halaman ini (reset rantai fallback) */
@@ -2372,42 +3653,97 @@ function rdRetryImgs() {
   if (!p) return;
   let n = 0;
   p.querySelectorAll('img').forEach((im) => {
-    try { im.removeAttribute('data-pb'); } catch (e) {}
+    try { im.removeAttribute('data-pb'); im.removeAttribute('data-ar'); im.removeAttribute('data-card'); } catch (e) {}
     if (im.style.display === 'none') im.style.display = '';
     if (im.dataset.orig) { try { im.src = im.dataset.orig; } catch (e) {} }
     n++;
   });
+  p.querySelectorAll('.rd-img-fail').forEach((d) => { try { d.remove(); } catch (e) {} });
   RDIMG.fail = 0;
   RDIMG.noticed = false;
   const st = $('rdStatus');
   if (st) st.textContent = T('rd_loading_imgs') + '… (' + n + ' ' + T('pages_w') + ')';
   toast(T('rd_retry_imgs') + '…');
 }
-/* Bar error di bawah status reader: pesan + tombol Coba lagi / Muat ulang gambar */
-function rdFailBar(msg, imgBtn) {
+/* Kartu "Chapter gagal dimuat": Coba lagi / Coba server lain / Laporkan.
+   mode 'all' = gagal total (3 tombol), 'partial' = sebagian (1 tombol). */
+function rdFailBar(msg, mode) {
   const st = $('rdStatus');
-  if (!st || $('rdRetryBtn')) return;
-  const b = document.createElement('button');
-  b.id = 'rdRetryBtn';
-  b.className = 'btn btn-small';
-  b.type = 'button';
-  b.style.marginTop = '8px';
-  b.textContent = T('retry_btn');
-  b.onclick = () => { const r = $('rdRetryBtn'); if (r) r.remove(); const g = $('rdImgBtn'); if (g) g.remove(); loadChapter(); };
-  st.appendChild(document.createElement('br'));
-  st.appendChild(document.createTextNode(msg + ' '));
-  st.appendChild(b);
-  if (imgBtn && $('rdPages') && $('rdPages').querySelector('img')) {
-    const g = document.createElement('button');
-    g.id = 'rdImgBtn';
-    g.className = 'btn btn-small btn-ghost';
-    g.type = 'button';
-    g.style.marginTop = '8px';
-    g.style.marginLeft = '6px';
-    g.textContent = T('rd_retry_imgs');
-    g.onclick = () => { rdRetryImgs(); };
-    st.appendChild(g);
+  if (!st || $('rdFailCard')) return;
+  // Bersihkan tombol lama bila ada
+  const rb0 = $('rdRetryBtn'); if (rb0) rb0.remove();
+  const gb0 = $('rdImgBtn'); if (gb0) gb0.remove();
+  const card = document.createElement('div');
+  card.id = 'rdFailCard';
+  card.className = 'rd-failcard';
+  const p = document.createElement('p');
+  p.className = 'muted small';
+  p.textContent = msg;
+  card.appendChild(p);
+  const row = document.createElement('div');
+  row.className = 'btn-row';
+  const mk = (label, ghost, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-small' + (ghost ? ' btn-ghost' : '');
+    b.textContent = label;
+    b.onclick = fn;
+    row.appendChild(b);
+    return b;
+  };
+  if (mode === 'partial') {
+    mk(T('rd_retry_imgs'), false, () => { card.remove(); rdRetryImgs(); });
+  } else {
+    mk(T('retry_btn'), false, () => { card.remove(); loadChapter(); });
+    mk(T('rd_alt_srv'), true, () => { card.remove(); rdAltServer(); });
+    mk(T('rd_report_link'), true, () => {
+      try {
+        const t = (rdCtx && findMw(rdCtx.id)) || {};
+        const chs = (rdCtx && mwChapters(t)) || [];
+        const c = chs[rdCtx.i] || {};
+        chprobReport(t.id, rdCtx.i, c.t || '');
+      } catch (e) {}
+      const rp = $('rdReport');
+      if (rp) rp.click();
+      else toast(T('cmt_reported'));
+    });
   }
+  card.appendChild(row);
+  st.appendChild(card);
+}
+/* "Coba server lain": buang cache lama, paksa ambil segar (live + tebak pola). */
+function rdAltServer() {
+  if (!rdCtx) return;
+  try {
+    const t = findMw(rdCtx.id), chs = mwChapters(t) || [], c = chs[rdCtx.i];
+    if (!c) return;
+    if (MW.pages && MW.pages[t.slug]) { try { delete MW.pages[t.slug][c.u]; } catch (e) {} }
+    if ($('rdStatus')) $('rdStatus').textContent = T('rd_loading_imgs') + c.t + '…';
+    if ($('rdPages')) $('rdPages').innerHTML = '';
+    const myReq = rdReqSeq;
+    (async () => {
+      try {
+        const url = 'https://komiku.org' + c.u;
+        const liveP = (async () => {
+          const html = await withTimeout(fetchChapterHtml(url), 25000).catch(() => '');
+          return html ? parseChapterImgs(html) : [];
+        })();
+        const guessP = (async () => {
+          try { return await withTimeout(guessChapterImages(t, c), 120000).catch(() => []); } catch (e) { return []; }
+        })();
+        const imgs = await firstNonEmpty([liveP, guessP], 100000);
+        if (!rdCtx || myReq !== rdReqSeq) return;
+        if (!imgs.length) throw new Error('gambar kosong');
+        try { if (MW.pages && MW.pages[t.slug]) MW.pages[t.slug][c.u] = imgs; } catch (e) {}
+        paintRdImgs(t, c, imgs, 'live');
+      } catch (err) {
+        try { console.log('[Guoke] server lain gagal:', t.title, c.t, (err && err.message) || err); } catch (e) {}
+        if (!rdCtx || myReq !== rdReqSeq) return;
+        if ($('rdStatus')) $('rdStatus').textContent = T('rd_img_fail');
+        rdFailBar(T('rd_reopen'), 'all');
+      }
+    })();
+  } catch (e) {}
 }
 /* 20 dtk setelah gambar dirender: bila SEBAGIAN gagal (tidak semua),
    tawarkan tombol muat ulang — jangan diam. */
@@ -2418,7 +3754,7 @@ function rdWatchPartial(myReq) {
       if (!rdCtx || myReq !== rdReqSeq) return;
       if (RDIMG.total > 0 && RDIMG.fail > 0 && RDIMG.fail < RDIMG.total && !RDIMG.noticed) {
         RDIMG.noticed = true;
-        rdFailBar(RDIMG.fail + '/' + RDIMG.total + T('rd_partial'), true);
+        rdFailBar(RDIMG.fail + '/' + RDIMG.total + T('rd_partial'), 'partial');
       }
     }, 20000);
   } catch (e) {}
@@ -2646,6 +3982,10 @@ async function openReader(titleId, chIdx, pushHash) {
   if (!c) return;
   const rdFresh = $('readModal').hidden; // true = bukaan baru dari daftar
   $('readModal').hidden = false;
+  $('readModal').classList.remove('rd-hide');
+  if ($('rdFloatNext')) $('rdFloatNext').classList.remove('hide');
+  if ($('rdFloatPrev')) $('rdFloatPrev').classList.remove('hide');
+  try { if (window.__rdW) window.__rdW.reset(); } catch (e) {}
   document.body.style.overflow = 'hidden';
   paintFullBtns();
   applyRdWidth();
@@ -2654,7 +3994,9 @@ async function openReader(titleId, chIdx, pushHash) {
     { cat: CURCAT, view: 'rd', id: titleId, idx: rdCtx.i }, rdFresh);
   // Simpan "lanjutkan membaca" (tanpa login) + riwayat
   store.set('gq_cont', { id: titleId, idx: rdCtx.i, ch: c.t, at: Date.now() });
-  pushHist({ type: 'mw', id: titleId, sub: c.t });
+  // TAHAP 3.1: catat chapter dibuka untuk progress bar poster
+  try { progAdd('gq_readch', titleId, rdCtx.i); } catch (e) {}
+  pushHist({ type: 'mw', id: titleId, idx: rdCtx.i, sub: c.t, t: t.title });
   setSEO(t.title + ' ' + c.t + ' | Guoke AMHDQ', T('seo_read') + t.title + ' ' + c.t + ' ' + T('seo_here'));
   $('rdTitle').textContent = t.title + ' — ' + c.t;
   const sel = $('rdSelect');
@@ -2665,6 +4007,11 @@ async function openReader(titleId, chIdx, pushHash) {
   const atFirst = rdCtx.i <= 0, atLast = rdCtx.i >= chs.length - 1;
   [$('rdPrev'), $('rdPrev2')].forEach((b) => { b.disabled = atLast; b.onclick = () => openReader(titleId, rdCtx.i + 1); });
   [$('rdNext'), $('rdNext2'), $('rdFloatNext')].forEach((b) => { if (b) { b.disabled = atFirst; b.onclick = () => openReader(titleId, rdCtx.i - 1); } });
+  // TAHAP 3.5: tombol chapter sebelumnya ikut melayang (kiri bawah)
+  try {
+    const fp = $('rdFloatPrev');
+    if (fp) { fp.disabled = atLast; fp.onclick = () => openReader(titleId, rdCtx.i + 1); }
+  } catch (e) {}
   // A4: tombol lapor terisi otomatis judul + chapter
   const rp = $('rdReport');
   if (rp) rp.onclick = () => openBantuan('lap', { judul: t.title, ch: c.t });
@@ -2678,12 +4025,82 @@ function applyRdWidth() {
   const pg = $('rdPages');
   if (pg) pg.className = 'rd-pages rd-w-' + (w === 'full' ? 'full' : w === 'narrow' ? 'narrow' : 'med');
 }
+/* TAHAP 4 (daftar bermasalah): registry chapter gagal per judul.
+   Bentuk: {titleId: {idx: {ch, cause, at, reports}}} — dipakai admin,
+   tombol "Perbaiki ulang", dan laporan pengguna. */
+function chprobGet() { try { const o = store.get('gq_chprob', {}); return (o && typeof o === 'object') ? o : {}; } catch (e) { return {}; } }
+function chprobMark(titleId, idx, ch, cause) {
+  try {
+    const o = chprobGet();
+    if (!o[titleId]) o[titleId] = {};
+    const prev = o[titleId][idx] || {};
+    o[titleId][idx] = { ch: ch || prev.ch || '', cause: cause || prev.cause || 'gagal', at: Date.now(), reports: prev.reports || 0 };
+    store.set('gq_chprob', o);
+  } catch (e) {}
+}
+function chprobClear(titleId, idx) {
+  try {
+    const o = chprobGet();
+    if (o[titleId] && o[titleId][idx]) { delete o[titleId][idx]; if (!Object.keys(o[titleId]).length) delete o[titleId]; store.set('gq_chprob', o); }
+  } catch (e) {}
+}
+function chprobReport(titleId, idx, ch) {
+  try {
+    const o = chprobGet();
+    if (!o[titleId]) o[titleId] = {};
+    const prev = o[titleId][idx] || { ch: ch || '', cause: 'laporan-pengguna', at: Date.now(), reports: 0 };
+    prev.reports = (prev.reports || 0) + 1;
+    prev.at = Date.now();
+    o[titleId][idx] = prev;
+    store.set('gq_chprob', o);
+  } catch (e) {}
+}
+/* SATU fungsi render gambar reader — dipakai semua jalur (baked/live/tebak/
+   muat ulang). Satu-satunya tempat <img> reader dibuat. */
+function paintRdImgs(t, c, imgs, srcKind) {
+  const myReq = rdReqSeq;
+  RDIMG = { total: imgs.length, fail: 0, noticed: false };
+  const rb = $('rdRetryBtn'); if (rb) rb.remove();
+  const gb = $('rdImgBtn'); if (gb) gb.remove();
+  const fc = $('rdFailCard'); if (fc) fc.remove();
+  $('rdPages').innerHTML = imgs.map((u, k) =>
+    '<img src="' + esc(cdn(u)) + '" data-orig="' + esc(u) + '" alt="' + esc(t.title + ' ' + c.t + ' ' + T('page_w') + ' ' + (k + 1)) +
+    '" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFallback(this)">'
+  ).join('');
+  $('rdStatus').textContent = imgs.length + ' ' + T('pages_w') + ' • ' + c.t + ' • ' + T('rd_scroll');
+  try { if (srcKind === 'live') chprobClear(t.id, rdCtx.i); } catch (e) {}
+  rdScroller().scrollTop = 0;
+  restorePos();
+  rdWatchPartial(myReq);
+  preloadNext(t, rdCtx.i);
+}
+/* Segarkan daftar gambar di latar setelah chapter tampil dari cache lama:
+   bila daftar segar beda (URL lama basi), ganti di tempat + catat. */
+function rdRefreshBg(t, c, chUrl, myReq) {
+  (async () => {
+    try {
+      const fresh = await withTimeout((async () => {
+        const html = await fetchChapterHtml('https://komiku.org' + chUrl);
+        return html ? parseChapterImgs(html) : [];
+      })(), 15000).catch(() => []);
+      if (!rdCtx || myReq !== rdReqSeq || !fresh.length) return;
+      const cur = Array.from($('rdPages').querySelectorAll('img')).map((im) => im.dataset.orig || '');
+      const same = fresh.length === cur.length && fresh.every((u, i) => u === cur[i]);
+      if (same) return;
+      try { if (MW.pages && MW.pages[t.slug]) MW.pages[t.slug][chUrl] = fresh; } catch (e) {}
+      if (RDIMG.fail > 0) {
+        if (!rdCtx || myReq !== rdReqSeq) return;
+        paintRdImgs(t, c, fresh, 'live');
+        toast(T('rd_retry_imgs') + ' ✓');
+      }
+    } catch (e) {}
+  })();
+}
 function loadChapter() {
   if (!rdCtx) return;
   const t = findMw(rdCtx.id), chs = mwChapters(t) || [], c = chs[rdCtx.i];
   if (!c) return;
   const myReq = ++rdReqSeq;
-  let retried = false;
   $('rdStatus').textContent = T('rd_loading_imgs') + c.t + '…';
   $('rdPages').innerHTML = '';
   $('rdTitle').textContent = t.title + ' — ' + c.t;
@@ -2695,59 +4112,38 @@ function loadChapter() {
     window.__rdWatch = setTimeout(() => {
       if (!rdCtx || myReq !== rdReqSeq) return;
       if ($('rdPages') && $('rdPages').children.length) return;
-      rdFailBar(T('rd_too_long'));
+      rdFailBar(T('rd_too_long'), 'all');
     }, 40000);
   } catch (e) {}
   const clearWatch = () => { try { clearTimeout(window.__rdWatch); } catch (e) {} };
-  chapterImages(t, c.u).then((imgs) => {
-    clearWatch();
-    if (!rdCtx || myReq !== rdReqSeq) return; // anti-campur
-    RDIMG = { total: imgs.length, fail: 0, noticed: false };
-    const rb = $('rdRetryBtn'); if (rb) rb.remove();
-    const gb = $('rdImgBtn'); if (gb) gb.remove();
-    $('rdPages').innerHTML = imgs.map((u, k) =>
-       '<img src="' + esc(cdn(u)) + '" data-orig="' + esc(u) + '" alt="' + esc(t.title + ' ' + c.t + ' ' + T('page_w') + ' ' + (k + 1)) +
-      '" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFallback(this)">'
-    ).join('');
-    $('rdStatus').textContent = imgs.length + ' ' + T('pages_w') + ' • ' + c.t + ' • ' + T('rd_scroll');
-    rdScroller().scrollTop = 0;
-    restorePos(); // kembali ke posisi terakhir bila ada
-    rdWatchPartial(myReq); // bila sebagian gagal → tawarkan muat ulang
-    preloadNext(t, rdCtx.i); // siapkan gambar chapter berikut
-  }).catch(() => {
-    clearWatch();
-    if (!rdCtx || myReq !== rdReqSeq) return;
-    // Auto-retry 1x dengan cache sesi dibuang (kadang proxy mengembalikan
-    // halaman rusak yang ter-cache) sebelum menyerah ke tombol Coba lagi.
-    if (!retried) {
-      retried = true;
+  // Coba ambil daftar gambar: langsung + ulang otomatis 2x (jeda 1 dtk, 3 dtk).
+  let attempt = 0;
+  const tryLoad = () => {
+    attempt++;
+    if (attempt > 1) {
       try { if (MW.pages && MW.pages[t.slug]) delete MW.pages[t.slug][c.u]; } catch (e) {}
-      $('rdStatus').textContent = T('rd_loading_imgs') + c.t + '… (coba lagi)';
-      chapterImages(t, c.u).then((imgs2) => {
-        clearWatch();
-        if (!rdCtx || myReq !== rdReqSeq) return;
-        RDIMG = { total: imgs2.length, fail: 0, noticed: false };
-        const rb = $('rdRetryBtn'); if (rb) rb.remove();
-        const gb = $('rdImgBtn'); if (gb) gb.remove();
-        $('rdPages').innerHTML = imgs2.map((u, k) =>
-          '<img src="' + esc(cdn(u)) + '" data-orig="' + esc(u) + '" alt="' + esc(t.title + ' ' + c.t + ' ' + T('page_w') + ' ' + (k + 1)) +
-          '" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="imgFallback(this)">'
-        ).join('');
-        $('rdStatus').textContent = imgs2.length + ' ' + T('pages_w') + ' • ' + c.t + ' • ' + T('rd_scroll');
-        rdScroller().scrollTop = 0;
-        restorePos();
-        rdWatchPartial(myReq);
-        preloadNext(t, rdCtx.i);
-      }).catch(() => {
-        if (!rdCtx || myReq !== rdReqSeq) return;
-        $('rdStatus').textContent = T('rd_img_fail');
-        rdFailBar(T('rd_reopen'));
-      });
-      return;
+      if ($('rdStatus')) $('rdStatus').textContent = T('rd_loading_imgs') + c.t + '…';
     }
-    $('rdStatus').textContent = T('rd_img_fail');
-    rdFailBar(T('rd_reopen'));
-  });
+    chapterImages(t, c.u).then((imgs) => {
+      clearWatch();
+      if (!rdCtx || myReq !== rdReqSeq) return; // anti-campur
+      if (!imgs.length) throw new Error('gambar kosong');
+      paintRdImgs(t, c, imgs);
+      rdRefreshBg(t, c, c.u, myReq); // daftar segar di latar
+    }).catch((err) => {
+      try { console.log('[Guoke] daftar gambar gagal:', t.title, c.t, c.u, (err && err.message) || err); } catch (e) {}
+      if (!rdCtx || myReq !== rdReqSeq) return;
+      if (attempt < 3) {
+        setTimeout(() => { if (rdCtx && myReq === rdReqSeq) tryLoad(); }, attempt === 1 ? 1000 : 3000);
+        return;
+      }
+      clearWatch();
+      try { chprobMark(t.id, rdCtx.i, c.t, 'daftar-kosong'); } catch (e) {}
+      if ($('rdStatus')) $('rdStatus').textContent = T('rd_img_fail');
+      rdFailBar(T('rd_reopen'), 'all');
+    });
+  };
+  tryLoad();
 }
 /* Ingat posisi baca terakhir per chapter (disimpan berkala saat scroll).
    Catatan: yang scroll adalah .pbox di dalam modal, bukan modalnya. */
@@ -2791,23 +4187,24 @@ function preloadNext(t, i) {
 }
 function closeReader() {
   $('readModal').hidden = true;
-  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  $('readModal').classList.remove('rd-full');
+  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
+  paintFullBtns();
   if ($('playerModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
   rdCtx = null;
   paintLanjut(); // strip lanjutkan ikut update setelah membaca
   paintLanjutHome();
 }
 function toggleFull() {
+  // Pseudo-fullscreen via CSS (tanpa Fullscreen API) agar tidak muncul
+  // toast sistem browser "to exit full screen, drag from ...".
   const el = $('readModal');
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch(() => {});
-    return;
-  }
-  if (el.requestFullscreen) el.requestFullscreen().catch(() => toast(T('fs_denied')));
-  else toast(T('fs_na'));
+  try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
+  el.classList.toggle('rd-full');
+  paintFullBtns();
 }
 function paintFullBtns() {
-  const on = !!document.fullscreenElement;
+  const on = $('readModal').classList.contains('rd-full') || !!document.fullscreenElement;
   document.querySelectorAll('[data-full]').forEach((b) => { b.textContent = on ? T('full_exit') : T('full'); });
 }
 
@@ -2816,7 +4213,7 @@ function initAnime() {
   // Cadangan: fetch JSON bila script data belum termuat.
   const bootAnime = (d) => {
     ANI = d;
-    $('aniDate').textContent = d.updated || '';
+    try { var _ad = $('aniDate'); if (_ad) _ad.textContent = d.updated || ''; } catch (e) {}
     paintAniGenres();
     renderShows('');
     paintPreview();
@@ -2824,7 +4221,7 @@ function initAnime() {
     loadFresh(); // rilis baru otomatis di latar
     loadLatest(); // kategori Episode Terbaru (2026 + live, tanpa judul segera)
     loadUpcoming(); // kategori Anime Akan Rilis (status segera)
-    armLatestAuto(); // cek update tiap 10 menit — upload baru otomatis rilis di sini
+    armLatestAuto(); // auto-rilis 1 DETIK: 1 judul/detik, langsung nonton
   };
   if (window.GQ_ANIME && window.GQ_ANIME.shows && window.GQ_ANIME.shows.length) {
     (window.GQ_ANIME.shows || []).forEach((s) => {
@@ -2849,7 +4246,16 @@ function initAnime() {
       $('showGrid').innerHTML = '<p class="muted">' + esc(T('ani_fail')) + '</p>';
     });
   }
-  $('aniSearch').addEventListener('input', (e) => { ANI_UI.limit = ANI_UI.per; renderShows(e.target.value); });
+  $('aniSearch').addEventListener('input', (e) => { ANI_UI.limit = ANI_UI.per; renderShows(e.target.value); paintAniSuggest(e.target.value); });
+  // TAHAP 3.6: riwayat saat fokus, simpan saat Enter, tutup saat lepas
+  $('aniSearch').addEventListener('focus', (e) => paintAniSuggest(e.target.value));
+  $('aniSearch').addEventListener('blur', () => setTimeout(() => { const b = $('aniSuggest'); if (b) b.hidden = true; }, 150));
+  $('aniSearch').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      sqAdd('gq_sq_ani', e.target.value);
+      const b = $('aniSuggest'); if (b) b.hidden = true;
+    }
+  });
   const am = $('aniMore');
   if (am) am.addEventListener('click', () => {
     ANI_UI.limit += ANI_UI.per;
@@ -2982,7 +4388,34 @@ function initAnime() {
     const sg = e.target.closest('[data-sug]');
     if (sg) {
       const b = $('mwSuggest'); if (b) b.hidden = true;
+      try { sqAdd('gq_sq_mw', (findMw(sg.dataset.sug) || {}).title || ''); } catch (err) {}
       openDetailMw(sg.dataset.sug);
+      return;
+    }
+    // TAHAP 3.6: saran anime → buka detail + simpan riwayat
+    const asg = e.target.closest('[data-anisug]');
+    if (asg) {
+      const b = $('aniSuggest'); if (b) b.hidden = true;
+      try { const _s = findShow(asg.dataset.anisug); sqAdd('gq_sq_ani', _s ? _s.title : ''); } catch (err) {}
+      openDetailAnime(asg.dataset.anisug);
+      return;
+    }
+    // TAHAP 3.6: chip riwayat → isi kolom + cari
+    const sq = e.target.closest('[data-sq]');
+    if (sq) {
+      const k = sq.dataset.sq, q = sq.dataset.q || '';
+      if (k === 'gq_sq_ani' && $('aniSearch')) {
+        $('aniSearch').value = q;
+        ANI_UI.limit = ANI_UI.per;
+        renderShows(q);
+        paintAniSuggest(q);
+      } else if ($('mwSearch')) {
+        $('mwSearch').value = q;
+        MW_UI.q = q.toLowerCase().trim();
+        MW_UI.limit = MW_UI.per;
+        if (MW.loaded) renderMw();
+        paintSuggest(q);
+      }
       return;
     }
     // Salin preset TikTok satu klik
@@ -3012,6 +4445,7 @@ function initAnime() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !$('playerModal').hidden) smartBack('anime');
     else if (e.key === 'Escape' && !$('readModal').hidden) keluarReader();
+    else if (e.key === 'Escape' && $('ikonModal') && !$('ikonModal').hidden) closeIkon();
     else if (e.key === 'Escape' && !$('detailView').hidden) {
       smartBack(DV.type === 'anime' && DV.id ? 'anime' : 'manhwa');
     }
@@ -3029,6 +4463,19 @@ function initManhwa() {
   input.addEventListener('blur', () => setTimeout(() => {
     const b = $('mwSuggest'); if (b) { b.hidden = true; input.setAttribute('aria-expanded', 'false'); }
   }, 150));
+  // TAHAP 3.6: riwayat saat fokus kosong, simpan saat Enter
+  input.addEventListener('focus', () => {
+    if (!input.value.trim()) {
+      const box = $('mwSuggest'), h = sqHistHTML('gq_sq_mw');
+      if (box && h && MW.loaded) { box.innerHTML = h; box.hidden = false; input.setAttribute('aria-expanded', 'true'); }
+    }
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      sqAdd('gq_sq_mw', e.target.value);
+      const b = $('mwSuggest'); if (b) b.hidden = true;
+    }
+  });
   $('mwGenre').addEventListener('change', (e) => { MW_UI.genre = e.target.value; MW_UI.limit = MW_UI.per; syncMwGenreChips(); renderMw(); });
   const mty = $('mwType');
   if (mty) mty.addEventListener('change', (e) => { MW_UI.type = e.target.value; MW_UI.limit = MW_UI.per; renderMw(); });
@@ -3082,7 +4529,7 @@ function ensureMw() {
     .then((r) => { if (!r.ok) throw new Error(); return bodyTimeout(r.json(), 20000); })
     .then((d) => {
       MW = Object.assign(d, { loaded: true, loading: false });
-      $('mwDate').textContent = d.updated || '';
+      try { var _md = $('mwDate'); if (_md) _md.textContent = d.updated || ''; } catch (e) {}
       paintGenres();
       renderMw();
     })
@@ -3131,7 +4578,7 @@ function openModal(id) {
   document.body.style.overflow = 'hidden';
 }
 function closeModals() {
-  ['bantuModal', 'riwayatModal', 'tentangModal', 'profilModal', 'authView'].forEach((id) => { const m = $(id); if (m) m.hidden = true; });
+  ['bantuModal', 'tentangModal', 'legalModal', 'profilModal', 'authView'].forEach((id) => { const m = $(id); if (m) m.hidden = true; });
   if ($('playerModal').hidden && $('readModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
 }
 function openBantuan(tab, prefill) {
@@ -3145,53 +4592,312 @@ function openBantuan(tab, prefill) {
   }
 }
 function switchBtab(which) {
-  const isReq = which === 'req';
-  $('btabReq').hidden = !isReq;
-  $('btabLap').hidden = isReq;
+  ['req', 'lap', 'prob'].forEach((k) => {
+    const el = $('btab' + k[0].toUpperCase() + k.slice(1));
+    if (el) el.hidden = k !== which;
+  });
   document.querySelectorAll('[data-btab]').forEach((b) =>
-    b.classList.toggle('btn-ghost', (b.dataset.btab === 'req') !== isReq));
+    b.classList.toggle('btn-ghost', b.dataset.btab !== which));
+  if (which === 'prob') { try { paintProbAdmin(); } catch (e) {} }
 }
-function paintHist() {
-  const g = $('histGrid');
-  if (!g) return;
-  const h = store.get('gq_hist', []);
-  if (!h.length) { g.innerHTML = '<p class="muted">' + esc(T('hist_empty')) + '</p>'; return; }
-  g.innerHTML = h.map((x) => {
-    if (x.type === 'mw') {
-      const t = findMw(x.id);
-      if (!t) return '';
-      return '<article class="show-card" data-mread="' + t.id + '">' +
-        '<div class="show-cover"><i>' + esc(initials(t.title)) + '</i>' +
-        (t.cover ? '<img src="' + esc(cdn(t.cover)) + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</div>' +
-        '<div class="show-info"><strong>' + esc(t.title) + '</strong><small>' + esc(x.sub || '') + '</small>' +
-        '<div class="show-btns"><button class="btn" data-mread="' + t.id + '" type="button">' + esc(T('card_read')) + '</button></div></div></article>';
+/* TAHAP 4 (daftar bermasalah): tampilkan antrean + tombol perbaiki ulang. */
+function paintProbAdmin() {
+  const ul = $('probList');
+  if (!ul) return;
+  const o = chprobGet();
+  const rows = [];
+  Object.keys(o).forEach((tid) => {
+    const t = findMw(tid);
+    Object.keys(o[tid] || {}).forEach((idx) => {
+      const r = o[tid][idx];
+      rows.push({ tid, idx: Number(idx), judul: t ? t.title : tid, ch: r.ch || '', cause: r.cause || '', at: r.at || 0, reports: r.reports || 0 });
+    });
+  });
+  rows.sort((a, b) => b.at - a.at);
+  if (!rows.length) { ul.innerHTML = '<li class="muted">Belum ada chapter bermasalah. 🎉</li>'; return; }
+  ul.innerHTML = rows.map((r) => '<li>' + esc(r.judul) + ' — ' + esc(r.ch) +
+    ' <em>(' + esc(r.cause) + (r.reports ? ', ' + r.reports + ' laporan' : '') + ' • ' +
+    esc(new Date(r.at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })) + ')</em> ' +
+    '<button class="linkbtn" data-probfix="' + esc(r.tid) + ':' + r.idx + '" type="button">Perbaiki</button></li>').join('');
+}
+let probBusy = false;
+async function probFixOne(tid, idx) {
+  const t = findMw(tid);
+  if (!t) return false;
+  try { await ensureChapters(tid); } catch (e) { return false; }
+  const chs = mwChapters(t) || [];
+  const c = chs[idx];
+  if (!c) return false;
+  try { if (MW.pages && MW.pages[t.slug]) delete MW.pages[t.slug][c.u]; } catch (e) {}
+  try {
+    const imgs = await withTimeout(chapterImages(t, c.u), 60000).catch(() => []);
+    if (imgs && imgs.length) { chprobClear(tid, idx); return true; }
+  } catch (e) {}
+  chprobMark(tid, idx, c.t, 'daftar-kosong');
+  return false;
+}
+async function probFixAll() {
+  if (probBusy) return;
+  const o = chprobGet();
+  const queue = [];
+  Object.keys(o).forEach((tid) => Object.keys(o[tid] || {}).forEach((idx) => queue.push([tid, Number(idx)])));
+  if (!queue.length) { toast('Tidak ada yang perlu diperbaiki'); return; }
+  probBusy = true;
+  const pp = $('probProg');
+  let ok = 0;
+  for (let i = 0; i < queue.length; i++) {
+    if (pp) { pp.hidden = false; pp.textContent = 'Memperbaiki ' + (i + 1) + '/' + queue.length + '…'; }
+    try { if (await probFixOne(queue[i][0], queue[i][1])) ok++; } catch (e) {}
+    await new Promise((r) => setTimeout(r, 800)); // jeda agar tidak diblokir
+  }
+  probBusy = false;
+  if (pp) pp.textContent = 'Selesai: ' + ok + '/' + queue.length + ' pulih.';
+  try { paintProbAdmin(); } catch (e) {}
+  toast('Selesai: ' + ok + '/' + queue.length + ' pulih');
+}
+/* Tugas latar: cek chapter terbaru (bookmark + riwayat) secara berkala.
+   Ringan: hanya verifikasi daftar lokal, tanpa unduh gambar. Pengambilan
+   ulang yang berat terjadi saat chapter dibuka / tombol Perbaiki. */
+let probScanT = 0;
+async function probScan() {
+  if (document.hidden) return;
+  try {
+    const ids = [];
+    (store.get('gq_bm', []) || []).forEach((id) => { if (ids.indexOf(id) < 0) ids.push(id); });
+    (store.get('gq_hist', []) || []).filter((h) => h.type === 'mw').slice(0, 10).forEach((h) => { if (ids.indexOf(h.id) < 0) ids.push(h.id); });
+    for (const id of ids.slice(0, 20)) {
+      try {
+        await ensureChapters(id).catch(() => null);
+        const t = findMw(id);
+        const chs = t ? (mwChapters(t) || []) : [];
+        if (!chs.length) continue;
+        const c = chs[0]; // terbaru
+        let pages = null;
+        try {
+          if (MW.pages && MW.pages[t.slug]) pages = MW.pages[t.slug];
+          else {
+            const r = await fetchTimeout('data/mw/' + t.slug + '.json', 8000).catch(() => null);
+            if (r && r.ok) { const j = await bodyTimeout(r.json(), 8000).catch(() => null); pages = (j && j.pages) || {}; }
+          }
+        } catch (e) { pages = null; }
+        const imgs = (pages && pages[c.u]) || [];
+        if (pages && !imgs.length) chprobMark(id, 0, c.t, 'daftar-kosong');
+      } catch (e) {}
+      await new Promise((r) => setTimeout(r, 400));
     }
-    const s = findShow(x.id);
-    if (!s) return '';
-    return '<article class="show-card">' +
-      '<div class="show-cover"><i>' + esc(initials(s.title)) + '</i>' +
-      (s.cover ? '<img src="' + esc(s.cover) + '" alt="" loading="lazy" onerror="this.remove()">' : '') + '</div>' +
-      '<div class="show-info"><strong>' + esc(s.title) + '</strong><small>' + esc(x.sub || '') + '</small>' +
-    '<div class="show-btns"><button class="btn" data-watch="' + s.id + '" type="button">' + esc(T('card_watch')) + '</button></div></div></article>';
-  }).join('');
+  } catch (e) {}
 }
+function armProbScan() {
+  const go = () => { try { probScan(); } catch (e) {} };
+  try {
+    if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 20000 });
+    else setTimeout(go, 8000);
+  } catch (e) { try { setTimeout(go, 8000); } catch (e2) {} }
+  try { clearInterval(probScanT); probScanT = setInterval(() => { try { probScan(); } catch (e) {} }, 15 * 60 * 1000); } catch (e) {}
+}
+/* PUSTAKA: halaman Riwayat + Daftarku (pengganti popup riwayatModal).
+   - Ketuk baris riwayat = langsung lanjutkan (player episode / reader chapter).
+   - Grup waktu: hari ini / kemarin / minggu ini / lebih lama. */
+let PU_TAB = 'riwayat';
+function histGroup(ts) {
+  const d = new Date(ts || 0), now = new Date();
+  const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const diff = Math.round((day(now) - day(d)) / 86400000);
+  if (diff <= 0) return 'today';
+  if (diff === 1) return 'yday';
+  if (diff <= 7) return 'week';
+  return 'older';
+}
+function histGroupLabel(g) {
+  return g === 'today' ? T('g_today') : g === 'yday' ? T('g_yday') : g === 'week' ? T('g_week') : T('g_older');
+}
+function parseEpNum(sub) {
+  const m = String(sub || '').match(/(\d+)\s*$/);
+  return m ? Number(m[1]) : null;
+}
+function histRowHTML(x) {
+  let title = x.t || '', cover = '', sub = x.sub || '', done = 0, total = 0;
+  let ep = null, idx = null, direct = false;
+  if (x.type === 'mw') {
+    const t = findMw(x.id);
+    if (t) {
+      title = t.title; cover = t.cover || '';
+      const chs = (typeof mwChapters === 'function' && MW && MW.loaded) ? (mwChapters(t) || []) : [];
+      total = chs.length;
+      done = progCount('gq_readch', x.id);
+      if (x.idx != null && !isNaN(Number(x.idx))) { idx = Number(x.idx); direct = true; }
+    }
+  } else {
+    const s = findShow(x.id);
+    if (s) {
+      title = s.title; cover = s.cover || '';
+      total = Number(s.episodes) || 0;
+      done = progCount('gq_watched', x.id);
+      const n = (x.ep != null && x.ep !== '') ? Number(x.ep) : parseEpNum(x.sub);
+      if (n != null && !isNaN(n)) { ep = String(x.ep != null && x.ep !== '' ? x.ep : n); direct = true; }
+    }
+  }
+  if (!title) return '';
+  const pct = total > 0 ? Math.min(100, Math.round(done / total * 100)) : 0;
+  const subTxt = x.type === 'anime' && ep != null ? T('episode_w') + ' ' + ep : sub;
+  return '<li><button class="hist-row" data-resume data-type="' + esc(x.type) + '" data-id="' + esc(x.id) + '"' +
+    (ep != null ? ' data-ep="' + esc(ep) + '"' : '') + (idx != null ? ' data-idx="' + idx + '"' : '') + ' type="button">' +
+    '<span class="hist-cover"><span aria-hidden="true">' + esc(initials(title).slice(0, 1)) + '</span>' +
+    (cover ? '<img src="' + esc(cdn(cover)) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '') + '</span>' +
+    '<span class="hist-info"><strong>' + esc(title) + '</strong>' +
+    '<span class="hist-sub">' + esc(subTxt) + '</span>' +
+    (total > 0 && done > 0
+      ? '<span class="hist-prog"><span class="hist-bar"><i style="width:' + pct + '%"></i></span>' +
+        '<span class="hist-pct">' + pct + '%</span></span>'
+      : '') +
+    '</span><span class="hist-chev" aria-hidden="true">›</span></button></li>';
+}
+function paintPustaka() {
+  const body = $('pustakaBody');
+  if (!body) return;
+  document.querySelectorAll('[data-libtab]').forEach((b) => b.classList.toggle('active', b.dataset.libtab === PU_TAB));
+  const hc = $('histClear');
+  if (hc) hc.hidden = PU_TAB !== 'riwayat';
+  if (PU_TAB === 'daftar') { body.innerHTML = daftarHTML(); return; }
+  let h = store.get('gq_hist', []);
+  // "Lanjutkan" harus selalu ada di Riwayat: gabungkan posisi lanjutkan aktif
+  // bila belum tercatat (mis. dibuka sebelum update ini / dari deep-link).
+  try {
+    const extra = [];
+    const cv = store.get('gq_contv', null);
+    if (cv && cv.id && !h.some((x) => x.type === 'anime' && x.id === cv.id)) {
+      const s = findShow(cv.id);
+      extra.push({ type: 'anime', id: cv.id, ep: cv.ep, sub: T('episode_w') + ' ' + cv.ep, t: s ? s.title : '', at: cv.at || 0 });
+    }
+    const cm = store.get('gq_cont', null);
+    if (cm && cm.id && !h.some((x) => x.type === 'mw' && x.id === cm.id)) {
+      const t = findMw(cm.id);
+      extra.push({ type: 'mw', id: cm.id, idx: cm.idx, sub: cm.ch || '', t: t ? t.title : '', at: cm.at || 0 });
+    }
+    extra.sort((a, b) => (b.at || 0) - (a.at || 0));
+    if (extra.length) h = extra.concat(h).slice(0, 20);
+  } catch (e) {}
+  if (!h.length) { body.innerHTML = '<p class="muted">' + esc(T('hist_empty')) + '</p>'; return; }
+  // Manhwa butuh katalog (4MB+) agar cover/progress akurat — muat sekali,
+  // hanya saat halaman Pustaka sedang dibuka.
+  try {
+    const _puVis = $('pustakaPanel') && !$('pustakaPanel').hidden;
+    if (_puVis && typeof ensureMw === 'function' && MW && !MW.loaded && !window.__puMw) {
+      window.__puMw = true;
+      ensureMw().then(() => {
+        window.__puMw = false;
+        if ($('pustakaPanel') && !$('pustakaPanel').hidden && PU_TAB === 'riwayat') paintPustaka();
+      }).catch(() => { window.__puMw = false; });
+    }
+  } catch (e) {}
+  const groups = { today: [], yday: [], week: [], older: [] };
+  h.forEach((x) => groups[histGroup(x.at || 0)].push(x));
+  body.innerHTML = ['today', 'yday', 'week', 'older'].map((g) => {
+    if (!groups[g].length) return '';
+    const rows = groups[g].map(histRowHTML).join('');
+    if (!rows) return '';
+    return '<h4 class="hist-group"><i></i>' + esc(histGroupLabel(g)) + '</h4>' +
+      '<ul class="hist-list">' + rows + '</ul>';
+  }).join('') || '<p class="muted">' + esc(T('hist_empty')) + '</p>';
+}
+function daftarHTML() {
+  const ids = store.get('gq_bm', []);
+  if (!ids.length) return '<p class="muted">' + esc(T('lib_empty_bm')) + '</p>';
+  const rows = ids.map((id) => {
+    const t = findMw(id);
+    if (t) {
+      const n = (MW && MW.loaded && mwChapters(t)) ? mwChapters(t).length : 0;
+      return { type: 'mw', id, title: t.title, cover: t.cover || '', sub: n ? n + ' chapter' : (t.status || 'Manhwa') };
+    }
+    const s = findShow(id);
+    if (s) return { type: 'anime', id, title: s.title, cover: s.cover || '', sub: (s.episodes ? s.episodes + ' episode' : (s.status || 'Anime')) };
+    return null;
+  }).filter(Boolean);
+  if (!rows.length) return '<p class="muted">' + esc(T('lib_empty_bm')) + '</p>';
+  return '<ul class="hist-list">' + rows.map((r) =>
+    '<li><button class="hist-row" data-detailgo data-type="' + r.type + '" data-id="' + esc(r.id) + '" type="button">' +
+    '<span class="hist-cover"><span aria-hidden="true">' + esc(initials(r.title).slice(0, 1)) + '</span>' +
+    (r.cover ? '<img src="' + esc(cdn(r.cover)) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '') + '</span>' +
+    '<span class="hist-info"><strong>' + esc(r.title) + '</strong>' +
+    '<span class="hist-sub">' + esc(r.sub) + '</span></span>' +
+    '<span class="hist-chev" aria-hidden="true">›</span></button></li>'
+  ).join('') + '</ul>';
+}
+/* Ketuk baris riwayat = langsung lanjutkan (bukan halaman detail). */
+function resumeHist(type, id, ep, idx) {
+  if (type === 'mw') {
+    const t = findMw(id);
+    if (!t) return;
+    if (idx != null && idx !== '' && !isNaN(Number(idx))) openReader(id, Number(idx));
+    else openDetailMw(id);
+    return;
+  }
+  const s = findShow(id);
+  if (!s) return;
+  openDetailAnime(id);
+  if (ep != null && ep !== '') openEpFromRoute(id, String(ep));
+}
+function openPustaka(tab, push) {
+  try { closeOverlaysSilent(); } catch (e) {}
+  ['manhwaPanel', 'animePanel', 'ikonPanel', 'semuaPreview'].forEach((pid) => {
+    const el = $(pid); if (el) el.hidden = true;
+  });
+  const pintu = $('pintu'); if (pintu) pintu.hidden = true;
+  if (tab) PU_TAB = tab;
+  const p = $('pustakaPanel'); if (p) p.hidden = false;
+  paintPustaka();
+  if (push !== false) {
+    try { navPush('#/pustaka', { cat: 'pustaka' }); }
+    catch (e) { try { location.hash = '#/pustaka'; } catch (_) {} }
+  }
+  try { window.scrollTo(0, 0); } catch (e) { window.scrollTo(0, 0); }
+  try { syncBnav('riwayat'); } catch (e) {}
+}
+try {
+  const _pp = $('pustakaPanel');
+  if (_pp) _pp.addEventListener('click', (e) => {
+    const tb = e.target.closest ? e.target.closest('[data-libtab]') : null;
+    if (tb) { PU_TAB = tb.dataset.libtab; paintPustaka(); return; }
+    const r = e.target.closest ? e.target.closest('[data-resume]') : null;
+    if (r) { resumeHist(r.dataset.type, r.dataset.id, r.dataset.ep, r.dataset.idx); return; }
+    const d = e.target.closest ? e.target.closest('[data-detailgo]') : null;
+    if (d) {
+      if (d.dataset.type === 'mw') openDetailMw(d.dataset.id);
+      else openDetailAnime(d.dataset.id);
+    }
+  });
+} catch (e) {}
+/* Nama lama (dipakai beberapa pemanggil lama) = repaint Pustaka. */
+function paintHist() { try { paintPustaka(); } catch (e) {} }
 function wireModals() {
   document.querySelectorAll('[data-open]').forEach((b) => b.addEventListener('click', (e) => {
     e.preventDefault();
     const w = b.dataset.open;
     const pm = $('profilModal');
     if (w === 'bantuan') { if (pm) pm.hidden = true; openBantuan('req'); }
-    else if (w === 'riwayat') { if (pm) pm.hidden = true; paintHist(); openModal('riwayatModal'); }
+    else if (w === 'riwayat') { if (pm) pm.hidden = true; try { openPustaka('riwayat'); } catch (e) {} }
     else if (w === 'tentang') { if (pm) pm.hidden = true; openModal('tentangModal'); }
   }));
   document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeModals));
-  ['bantuModal', 'riwayatModal', 'tentangModal', 'profilModal'].forEach((id) => {
+  ['bantuModal', 'tentangModal', 'profilModal'].forEach((id) => {
     const m = $(id);
     if (m) m.addEventListener('click', (e) => { if (e.target === m) closeModals(); });
   });
   document.querySelectorAll('[data-btab]').forEach((b) =>
     b.addEventListener('click', () => switchBtab(b.dataset.btab)));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModals(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const pu = $('pustakaPanel');
+      if (pu && !pu.hidden && $('playerModal').hidden && $('readModal').hidden && $('detailView').hidden) {
+        try {
+          if (history.state && history.state.cat === 'pustaka' && history.length > 1) history.back();
+          else goCat('semua');
+        } catch (_) { try { goCat('semua'); } catch (__) {} }
+        return;
+      }
+      closeModals();
+    }
+  });
   const hc = $('histClear');
   if (hc) hc.addEventListener('click', () => { store.set('gq_hist', []); paintHist(); toast(T('hist_cleared')); });
   const pp = $('pPrev'), pn = $('pNext');
@@ -3303,8 +5009,8 @@ function applyLang() {
   } catch (e) {}
   // Render ulang hitungan + kartu agar ikut bahasa
   try { if (typeof MW !== 'undefined' && MW.loaded) renderMw(); } catch (e) {}
-  try { if (typeof ANI !== 'undefined' && ANI.shows && ANI.shows.length) { renderShows(); paintJx(); PREV_SIG.l = ''; PREV_SIG.c = ''; paintPreview(); try { paintChapterPreview(); } catch (e2) {} stampLatest(); } } catch (e) {}
-  try { if (typeof paintHist === 'function' && !$('riwayatModal').hidden) paintHist(); } catch (e) {}
+  try { if (typeof ANI !== 'undefined' && ANI.shows && ANI.shows.length) { renderShows(); paintJx(); try { renderIkon(); } catch (e2) {} PREV_SIG.l = ''; PREV_SIG.c = ''; paintPreview(); try { paintChapterPreview(); } catch (e2) {} stampLatest(); } } catch (e) {}
+  try { if (typeof paintPustaka === 'function' && $('pustakaPanel') && !$('pustakaPanel').hidden) paintPustaka(); } catch (e) {}
   try { if (typeof paintProfile === 'function' && !$('profilModal').hidden) paintProfile(); } catch (e) {}
   try { if (typeof paintLanjutHome === 'function') paintLanjutHome(); } catch (e) {}
   try { if (typeof paintLanjut === 'function') paintLanjut(); } catch (e) {}
@@ -3605,7 +5311,7 @@ function closeAuth() {
   if (!v || v.hidden) return;
   v.hidden = true;
   if ($('playerModal').hidden && $('readModal').hidden && $('detailView').hidden &&
-      $('profilModal').hidden && $('riwayatModal').hidden && $('tentangModal').hidden && $('bantuModal').hidden) {
+      $('profilModal').hidden && $('tentangModal').hidden && $('bantuModal').hidden) {
     document.body.style.overflow = '';
   }
 }
@@ -3814,6 +5520,18 @@ try { initProfile(); } catch (e) {}
       masalah: $('laporMasalah').value, at: new Date().toISOString().slice(0, 10),
     });
     store.set('gq_lapor', lap);
+    // TAHAP 4 (daftar bermasalah): laporan chapter ikut antrean perbaikan
+    try {
+      const jt = $('laporJudul').value.trim().toLowerCase();
+      const chm = $('laporCh').value.trim().toLowerCase().replace(/[^0-9]/g, '');
+      const hit = (MW.titles || []).find((x) => x.title.toLowerCase() === jt);
+      if (hit) {
+        const chs = mwChapters(hit) || [];
+        let idx = chs.findIndex((c) => String(c.n) === chm || String(c.t || '').toLowerCase() === $('laporCh').value.trim().toLowerCase());
+        chprobReport(hit.id, idx >= 0 ? idx : -1, $('laporCh').value.trim());
+        try { paintProbAdmin(); } catch (e) {}
+      }
+    } catch (e) {}
     lf.reset();
     $('laporDone').hidden = false;
     const ul = $('laporList');
@@ -3877,7 +5595,7 @@ function jxLocal() {
 function jxCardLive(it) {
   return '<article class="show-card">' +
     '<div class="show-cover"><i>★</i>' +
-    (it.poster ? '<img src="' + esc(it.poster) + '" alt="" loading="lazy" onerror="this.remove()">' : '') +
+    (it.poster ? '<img src="' + esc(it.poster) + '" alt="" loading="lazy" decoding="async" onerror="this.remove()">' : '') +
     '<span class="show-badge">LIVE</span></div>' +
     '<div class="show-info"><strong>' + esc(it.title || it.alternative || T('jx_untitled')) + '</strong>' +
     '<small>' + esc(T('jx_live')) + '</small>' +
@@ -4038,6 +5756,11 @@ async function jxMoreLive() {
         last = Math.max(0, cur());
         if (hidden) onHide(); else onShow();
       },
+      reset() {
+        hidden = false;
+        last = Math.max(0, cur());
+        onShow();
+      },
     };
   }
   const anyModal = () => !!document.querySelector('.pmodal:not([hidden])');
@@ -4046,13 +5769,27 @@ async function jxMoreLive() {
     () => document.body.classList.add('ah-hide'),
     () => document.body.classList.remove('ah-hide'),
     () => anyModal() || !$('detailView').hidden);
-  // (b) Toolbar reader (scroll di dalam .pbox; berlaku juga saat fullscreen)
+  // (b) Toolbar reader + tombol "Chapter berikutnya" (scroll di dalam .pbox)
+  // Aturan: geser bawah → sembunyi, geser atas / paling atas → muncul.
   const rbox = document.querySelector('#readModal .pbox');
   if (rbox) {
-    const rdW = watcher(rbox,
-      () => $('readModal').classList.add('rd-hide'),
-      () => $('readModal').classList.remove('rd-hide'),
+    const rdHideBar = () => {
+      $('readModal').classList.add('rd-hide');
+      const f = $('rdFloatNext');
+      if (f) f.classList.add('hide');
+      const fp = $('rdFloatPrev');
+      if (fp) fp.classList.add('hide');
+    };
+    const rdShowBar = () => {
+      $('readModal').classList.remove('rd-hide');
+      const f = $('rdFloatNext');
+      if (f) f.classList.remove('hide');
+      const fp = $('rdFloatPrev');
+      if (fp) fp.classList.remove('hide');
+    };
+    const rdW = watcher(rbox, rdHideBar, rdShowBar,
       () => !!document.querySelector('.pmodal:not([hidden]):not(#readModal)'));
+    try { window.__rdW = rdW; } catch (e) {}
     // (c) Ketuk sekali di sepertiga tengah layar → tampil/sembunyi toolbar
     let pd = null;
     rbox.addEventListener('pointerdown', (e) => {
@@ -4083,18 +5820,18 @@ async function jxMoreLive() {
    - Kategori terakhir + limit "Muat lagi" dicadangkan di sessionStorage (try/catch).
    - Posisi scroll tiap kategori diingat (memori sesi) dan dipulihkan saat kembali.
    - var (bukan let) agar aman bila route() awal terpanggil sebelum blok ini dieksekusi. */
-var CATS = ['semua', 'anime', 'manhwa', 'segera', 'tiktok'];
+var CATS = ['semua', 'anime', 'manhwa', 'segera', 'tiktok', 'ikon'];
 var CURCAT = 'semua';
 var navSeq = 0;
 var lastRouteKey = '##init';
-var CATMEM = { semua: {}, anime: {}, manhwa: {}, segera: {}, tiktok: {} };
+var CATMEM = { semua: {}, anime: {}, manhwa: {}, segera: {}, tiktok: {}, ikon: {} };
 // Satu-satunya pengatur scroll saat traversasi adalah restoreCatScroll().
 // Matikan restore bawaan browser agar tak balapan/adu geser dengannya.
 try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch (e) {}
 function sessGet(k, fb) { try { const v = sessionStorage.getItem(k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } }
 function sessSet(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 function catFromHash(h) {
-  const m = String(h || '').match(/^#\/(semua|anime|manhwa|segera|tiktok)(?:[\/?]|$)/);
+  const m = String(h || '').match(/^#\/(semua|anime|manhwa|segera|tiktok|ikon)(?:[\/?]|$)/);
   return m ? m[1] : '';
 }
 function isViewHash(h) { return /^#\/(baca|tonton)\//.test(String(h || '')); }
@@ -4187,6 +5924,7 @@ function closeOverlaysSilent() {
   if (typeof PCtx !== 'undefined') PCtx = null;
   if (!$('playerModal').hidden) {
     $('playerModal').hidden = true;
+    try { epSocialUnwatch(); } catch (e) {}
     const f = $('pFrame');
     f.removeAttribute('src');
     f.hidden = true;
@@ -4194,11 +5932,14 @@ function closeOverlaysSilent() {
     $('pServers').innerHTML = '';
   }
   if (!$('readModal').hidden) {
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch (e) {}
+    $('readModal').classList.remove('rd-full');
     $('readModal').hidden = true;
   }
+  const _pu1 = $('pustakaPanel'); if (_pu1) _pu1.hidden = true;
   if (typeof rdCtx !== 'undefined') rdCtx = null;
   if (!$('detailView').hidden) { $('detailView').hidden = true; $('detailView').classList.remove('dv-anime'); }
+  try { if (typeof closeIkon === 'function') closeIkon(); } catch (e) {}
   if ($('playerModal').hidden && $('readModal').hidden && $('detailView').hidden) document.body.style.overflow = '';
   setSEO.apply(null, seoHome());
   paintLanjut();
@@ -4235,6 +5976,375 @@ function keluarReader() {
   const start = hc || (CATS.indexOf(sc) >= 0 ? sc : 'semua');
   setCat(start);
   // Normalisasi URL+state tanpa menambah entri (kecuali URL view bagikan)
-  if (!isViewHash(location.hash)) navReplace('#/' + start, { cat: start });
+  if (!isViewHash(location.hash) && location.hash !== '#/pustaka') navReplace('#/' + start, { cat: start });
   route(false);
+})();
+// Penanda boot guard di index.html: app.js selesai dieksekusi penuh.
+window.__GQ_APP_OK = true;
+
+/* ============================================================
+   GQ PRO 2026 — patch UI/UX (tanpa ubah fitur inti)
+   1 bottom-nav • 2 dedup banner • 3 teks natural • 4 filter sheet
+   5 badge 48jam • 6 ikon rapi • 7 skeleton/scroll • 8 konsisten
+   9 legal • 10 empty/error ramah
+   ============================================================ */
+(function GQ_PRO() {
+  'use strict';
+  var $p = function (id) { return document.getElementById(id); };
+
+  /* --- 8. Paksa Bahasa Indonesia (satu bahasa) --- */
+  try { localStorage.setItem('gq_lang', JSON.stringify('id')); } catch (e) {}
+
+  /* --- 1. Bottom navigation tetap --- */
+  function syncBnav(cat) {
+    document.querySelectorAll('[data-bnav]').forEach(function (b) {
+      var on = b.getAttribute('data-bnav') === cat;
+      b.classList.toggle('active', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+  }
+  document.querySelectorAll('[data-bnav]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var c = b.getAttribute('data-bnav');
+      if (c === 'riwayat') { try { openPustaka('riwayat'); } catch (e) {} return; }
+      try { goCat(c); } catch (e) { try { setCat(c); } catch (e2) {} }
+      syncBnav(c);
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+    });
+  });
+  var _origSetCat = window.setCat;
+  window.setCat = function (cat) {
+    _origSetCat(cat);
+    syncBnav(cat);
+    // Simpan posisi scroll per kategori saat kembali
+    try { sessionStorage.setItem('gq_scroll_' + cat, String(window.scrollY || 0)); } catch (e) {}
+  };
+  try { syncBnav(typeof CURCAT !== 'undefined' ? CURCAT : 'semua'); } catch (e) {}
+
+  /* --- 2. Banner tunggal: pastikan lanjutWrap tak pernah tampil --- */
+  try {
+    var lw = $p('lanjutWrap');
+    if (lw) { lw.hidden = true; lw.style.display = 'none'; }
+    var lhX = $p('lhX');
+    if (lhX) lhX.addEventListener('click', function () {
+      var w = $p('lanjutHome'); if (w) w.hidden = true;
+      try { localStorage.setItem('gq_lh_hide', JSON.stringify(Date.now())); } catch (e) {}
+    });
+  } catch (e) {}
+
+  /* --- 3. Teks natural: ganti sisa teks teknis saat render --- */
+  function naturalize() {
+    try {
+      var mwD = $p('mwDate'); if (mwD) mwD.parentNode.style.display = 'none';
+      var anD = $p('aniDate'); if (anD) anD.parentNode.style.display = 'none';
+    } catch (e) {}
+  }
+  naturalize();
+  setInterval(naturalize, 3000);
+
+  /* --- 4. Filter bottom-sheet --- */
+  var filterCtx = 'manhwa';
+  function collectGenres() {
+    var set = {};
+    try { (MW.titles || []).forEach(function (t) { (t.genres || []).forEach(function (g) { set[g] = 1; }); }); } catch (e) {}
+    try { (ANI.shows || []).forEach(function (s) { (s.genres || []).forEach(function (g) { set[g] = 1; }); }); } catch (e) {}
+    return Object.keys(set).sort(function (a, b) { return a.localeCompare(b, 'id'); });
+  }
+  function openFilter(ctx) {
+    filterCtx = ctx || 'manhwa';
+    var sh = $p('filterSheet'); if (!sh) return;
+    $p('filterTitle').textContent = filterCtx === 'anime' ? 'Filter Anime' : 'Filter Manhwa';
+    // TAHAP 3.7: genre ganda sebagai chip; tahun hanya untuk anime (data manhwa tak ada tahun)
+    var fg = $p('fGenres');
+    if (fg && !fg.dataset.built) {
+      fg.dataset.built = '1';
+      collectGenres().forEach(function (g) {
+        var b = document.createElement('button');
+        b.type = 'button'; b.className = 'f-genre'; b.textContent = g; b.dataset.g = g;
+        b.addEventListener('click', function () { b.classList.toggle('on'); });
+        fg.appendChild(b);
+      });
+    }
+    var yr = $p('fYear');
+    var yrLabel = yr ? yr.closest('label') : null;
+    if (yrLabel) yrLabel.style.display = filterCtx === 'anime' ? '' : 'none';
+    // Muat nilai aktif
+    try {
+      var active = filterCtx === 'anime' ? (ANI_UI.genres.length ? ANI_UI.genres : (ANI_UI.genre ? [ANI_UI.genre] : [])) : (MW_UI.genres.length ? MW_UI.genres : (MW_UI.genre ? [MW_UI.genre] : []));
+      if (fg) Array.prototype.forEach.call(fg.querySelectorAll('.f-genre'), function (b) {
+        b.classList.toggle('on', active.indexOf(b.dataset.g) >= 0);
+      });
+      if (yr) yr.value = filterCtx === 'anime' ? (ANI_UI.year || '') : '';
+      if (filterCtx === 'anime') {
+        $p('fSort').value = 'terbaru';
+        $p('fStatus').value = ANI_UI.f === 'semua' ? '' : ANI_UI.f;
+        $p('fType').value = '';
+        $p('fBookmark').checked = false;
+      } else {
+        $p('fType').value = MW_UI.type || '';
+        $p('fSort').value = MW_UI.sort || 'terbaru';
+        var bs = MW_UI.bmStatus || '';
+        $p('fStatus').value = bs || '';
+        $p('fBookmark').checked = !!MW_UI.bookOnly;
+      }
+    } catch (e) {}
+    sh.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeFilter() { var sh = $p('filterSheet'); if (sh) sh.hidden = true; document.body.style.overflow = ''; }
+  ['mwFilterBtn', 'aniFilterBtn'].forEach(function (id) {
+    var b = $p(id);
+    if (b) b.addEventListener('click', function () { openFilter(id === 'aniFilterBtn' ? 'anime' : 'manhwa'); });
+  });
+  var fx = $p('filterX');
+  if (fx) fx.addEventListener('click', closeFilter);
+  document.querySelectorAll('[data-filter-close]').forEach(function (el) { el.addEventListener('click', closeFilter); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeFilter(); try { closeIkon(); } catch (err) {} } });
+  var fA = $p('fApply');
+  if (fA) fA.addEventListener('click', function () {
+    var st = $p('fStatus').value || '';
+    // TAHAP 3.7: kumpulkan genre yang dipilih (boleh lebih dari 1)
+    var gs = [];
+    try {
+      var fg = $p('fGenres');
+      if (fg) Array.prototype.forEach.call(fg.querySelectorAll('.f-genre.on'), function (b) { gs.push(b.dataset.g); });
+    } catch (e) {}
+    try {
+      if (filterCtx === 'anime') {
+        ANI_UI.genres = gs; ANI_UI.genre = gs[0] || '';
+        ANI_UI.year = ($p('fYear') && $p('fYear').value) || '';
+        ANI_UI.limit = ANI_UI.per;
+        if (st === 'ongoing' || st === 'wishlist' || st === 'done') { ANI_UI.f = 'semua'; }
+        else ANI_UI.f = st || 'semua';
+        if ($p('fSort').value === 'az') ANI_UI.f = ANI_UI.f; // urutan default terbaru
+        try { renderShows(); } catch (e) {}
+        try { document.querySelectorAll('[data-anif]').forEach(function (x) { x.classList.toggle('btn-ghost', x.dataset.anif !== ANI_UI.f); }); } catch (e) {}
+      } else {
+        MW_UI.type = ($p('fType').value === 'film') ? '' : ($p('fType').value || '');
+        MW_UI.genres = gs; MW_UI.genre = gs[0] || '';
+        MW_UI.sort = $p('fSort').value || 'terbaru';
+        MW_UI.bookOnly = !!$p('fBookmark').checked;
+        if (st === 'tayang' || st === 'tamat' || st === 'segera') { MW_UI.bmStatus = ''; }
+        else MW_UI.bmStatus = st;
+        MW_UI.limit = MW_UI.per;
+        var sel = $p('mwType'); if (sel) sel.value = MW_UI.type;
+        var sg = $p('mwGenre');
+        if (sg && MW_UI.genre) { if (!sg.querySelector('[value="' + MW_UI.genre + '"]')) { var o = document.createElement('option'); o.value = MW_UI.genre; o.textContent = MW_UI.genre; sg.appendChild(o); } sg.value = MW_UI.genre; }
+        else if (sg) sg.value = '';
+        var ss = $p('mwSort'); if (ss) ss.value = MW_UI.sort;
+        var sb = $p('mwBmStatus'); if (sb) sb.value = MW_UI.bmStatus;
+        var cb = $p('mwBookmarked'); if (cb) cb.checked = MW_UI.bookOnly;
+        try { renderMw(); } catch (e) {}
+      }
+    } catch (e) {}
+    closeFilter();
+  });
+  var fR = $p('fReset');
+  if (fR) fR.addEventListener('click', function () {
+    try {
+      var fg = $p('fGenres');
+      if (fg) Array.prototype.forEach.call(fg.querySelectorAll('.f-genre.on'), function (b) { b.classList.remove('on'); });
+      if (filterCtx === 'anime') { ANI_UI.genre = ''; ANI_UI.genres = []; ANI_UI.year = ''; ANI_UI.f = 'semua'; ANI_UI.q = ''; var ai = $p('aniSearch'); if (ai) ai.value = ''; ANI_UI.limit = ANI_UI.per; renderShows(); }
+      else { MW_UI.type = ''; MW_UI.genre = ''; MW_UI.genres = []; MW_UI.sort = 'terbaru'; MW_UI.bmStatus = ''; MW_UI.bookOnly = false; MW_UI.q = ''; var mi = $p('mwSearch'); if (mi) mi.value = ''; MW_UI.limit = MW_UI.per; renderMw(); }
+    } catch (e) {}
+    closeFilter();
+  });
+  var fRan = $p('fRandom');
+  if (fRan) fRan.addEventListener('click', function () {
+    closeFilter();
+    try {
+      if (filterCtx === 'anime' && typeof acakAnime === 'function') acakAnime();
+      else if (typeof acakMw === 'function') acakMw();
+      else toast('Judul acak dipilih');
+    } catch (e) {}
+  });
+
+  /* --- 5. Lazy-load + skeleton + Muat lebih banyak berjenjang --- */
+  function skelelize(grid, n) {
+    if (!grid) return;
+    grid.innerHTML = Array.from({ length: n || 6 }, function () {
+      return '<div class="skel" aria-hidden="true"><div class="skel-cover"></div><div class="skel-line"></div></div>';
+    }).join('');
+  }
+  // Pastikan semua <img> hasil render memakai lazy + async
+  var _mo = new MutationObserver(function (muts) {
+    muts.forEach(function (m) {
+      (m.addedNodes || []).forEach(function (nd) {
+        if (!nd || !nd.querySelectorAll) return;
+        nd.querySelectorAll('img').forEach(function (im) {
+          if (!im.getAttribute('loading')) im.setAttribute('loading', 'lazy');
+          if (!im.getAttribute('decoding')) im.setAttribute('decoding', 'async');
+        });
+      });
+    });
+  });
+  try { _mo.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  // Label tombol muat
+  ['mwMore', 'aniMore', 'ikonMore', 'jxMore'].forEach(function (id) {
+    var b = $p(id);
+    if (b) { b.classList.add('load-more'); if (/Muat lagi/.test(b.textContent)) b.textContent = 'Muat lebih banyak'; }
+  });
+  // Error state ramah + retry
+  var mr = $p('mwRetry');
+  if (mr) mr.addEventListener('click', function () { var e = $p('mwError'); if (e) e.hidden = true; try { ensureMw().then(function () { renderMw(); }).catch(function () { $p('mwError').hidden = false; }); } catch (err) {} });
+  var ar = $p('aniRetry');
+  if (ar) ar.addEventListener('click', function () { var e = $p('aniError'); if (e) e.hidden = true; try { renderShows(); } catch (err) {} });
+
+  /* --- 6. Ikon: nama deskriptif, fullscreen unduh+bagikan, upload jelas --- */
+  function prettyIkonName(p) {
+    var n = String((p && p.name) || '').trim();
+    if (!n) return 'Ikon Anime';
+    // Hapus pola nomor file: "123.jpg", "ikon-01", "IMG_2024", dsb → tanpa teks
+    if (/^(ikon|img|image|file|photo|foto)[-_ ]?\d+/i.test(n)) return '';
+    if (/^\d+[-_ .]*\.(jpg|png|webp|jpeg)$/i.test(n)) return '';
+    if (/^\d+$/.test(n)) return '';
+    return n.length > 40 ? n.slice(0, 40) + '…' : n;
+  }
+  window.__gqPrettyIkon = prettyIkonName;
+  var upBtn = $p('ikonUploadBtn'), upFile = $p('ikonFile');
+  function paintUploadState() {
+    if (!upBtn) return;
+    var ok = !!(window.indexedDB);
+    upBtn.disabled = !ok;
+    upBtn.style.opacity = ok ? '1' : '.45';
+    var hint = $p('ikonUploadHint');
+    if (hint) hint.textContent = ok ? 'Upload tersimpan di perangkat ini. Format JPG/PNG.' : 'Upload belum tersedia di browser ini.';
+  }
+  paintUploadState();
+  var shBtn = $p('ikonShare');
+  if (shBtn) shBtn.addEventListener('click', function () {
+    var p = null;
+    try { p = findIkonPhoto(IKON_UI.cur); } catch (e) {}
+    if (!p) return;
+    var share = { title: 'Ikon Anime', text: prettyIkonName(p) || 'Ikon Anime', url: p.url };
+    if (navigator.share) navigator.share(share).catch(function () {});
+    else if (navigator.clipboard) navigator.clipboard.writeText(p.url).then(function () { toast('Tautan disalin'); }).catch(function () {});
+  });
+  var dlBtn = $p('ikonModalDl');
+  if (dlBtn) dlBtn.addEventListener('click', function () {
+    var p = null;
+    try { p = findIkonPhoto(IKON_UI.cur); } catch (e) {}
+    if (p) { try { ikonSave(p.url, (prettyIkonName(p) || 'ikon') + '.jpg'); } catch (e) { window.open(p.url, '_blank'); } }
+  });
+
+  /* --- 9. Legal: Disclaimer / Privasi / Kontak-DMCA --- */
+  var LEGAL = {
+    disclaimer: ['Disclaimer', 'Guoke AMHDQ adalah agregator antarmuka. Seluruh gambar, judul, dan streaming berasal dari penyedia pihak ketiga dan tetap menjadi milik pemiliknya masing-masing.<br><br>Kami tidak menyimpan file video/komik di server sendiri, tidak menjamin ketersediaan setiap judul setiap saat, dan tidak mengklaim kecepatan/ketajaman absolut apa pun. Jika kamu pemilik konten dan keberatan, hubungi kami melalui halaman Kontak/DMCA.'],
+    privasi: ['Kebijakan Privasi', 'Data seperti nama, foto profil, bookmark, riwayat, request, dan like hanya tersimpan di perangkatmu (localStorage/IndexedDB).<br><br>Kami tidak menjalankan akun server sendiri. Jika fitur komunitas (Firebase) diaktifkan admin, upload/like/komentar yang kamu kirim dapat tersimpan di layanan pihak ketiga tersebut sesuai kebijakan mereka.<br><br>Kamu dapat menghapus seluruh data lokal kapan saja dari menu Profil → Hapus semua data saya.'],
+    kontak: ['Kontak / DMCA', 'Laporan pelanggaran hak cipta (DMCA): kirim email ke <b>admin@guoke-amhdq.example.com</b> dengan subjek “DMCA — [judul]”, sertakan tautan halaman, bukti kepemilikan, dan kontak balasan.<br><br>Laporan valid akan ditindaklanjuti maksimal 2×24 jam kerja dengan menghapus/memblokir tautan terkait.<br><br>Untuk laporan chapter rusak atau request judul, gunakan menu Bantuan di situs.']
+  };
+  document.querySelectorAll('[data-legal]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var k = b.getAttribute('data-legal');
+      var d = LEGAL[k]; if (!d) return;
+      $p('legalTitle').textContent = d[0];
+      $p('legalBody').innerHTML = d[1];
+      $p('legalModal').hidden = false;
+    });
+  });
+
+  /* --- 10. Scroll restore saat kembali (popstate) --- */
+  window.addEventListener('popstate', function () {
+    setTimeout(function () {
+      try { syncBnav(typeof CURCAT !== 'undefined' ? CURCAT : 'semua'); } catch (e) {}
+    }, 50);
+  });
+
+  /* --- TAHAP 2.1: Sinopsis "Baca selengkapnya" (delegasi, tahan render ulang) --- */
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[data-synmore]') : null;
+    if (!b) return;
+    var box = b.closest('.dv-pro-syn');
+    if (!box) return;
+    var open = box.classList.toggle('open');
+    b.textContent = open ? 'Tutup' : 'Baca selengkapnya';
+  });
+
+  /* --- TAHAP 4.1: Kode Cadangan (salin/terapkan) --- */
+  var bkC = $p('bkCopy');
+  if (bkC) bkC.addEventListener('click', function () {
+    var code = '';
+    try { code = bkExport(); } catch (e) {}
+    if (!code) { toast('Gagal membuat kode'); return; }
+    var done = function () { toast('Kode disalin — tempel di perangkat lain'); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done, function () { prompt('Salin kode ini:', code); });
+      else prompt('Salin kode ini:', code);
+    } catch (e) { try { prompt('Salin kode ini:', code); } catch (err) {} }
+  });
+  var bkA = $p('bkApply');
+  if (bkA) bkA.addEventListener('click', function () {
+    var inp = $p('bkCode');
+    var r = 'empty';
+    try { r = bkImport(inp ? inp.value : ''); } catch (e) { r = 'format'; }
+    if (r === 'ok') { toast('Data dipulihkan — memuat ulang…'); setTimeout(function () { location.reload(); }, 800); }
+    else if (r === 'empty') toast('Tempel kodenya dulu');
+    else toast('Kode tidak valid');
+  });
+
+  /* --- TAHAP 4.2: tombol Install --- */
+  ['installBtn', 'installBtn2'].forEach(function (id) {
+    var b = $p(id);
+    if (b) b.addEventListener('click', function () { try { doInstall(); } catch (e) {} });
+  });
+
+  /* --- TAHAP 4.4: pengaturan Hemat data + Kualitas --- */
+  try {
+    var sv = $p('setSaver');
+    if (sv) {
+      sv.checked = store.get('gq_saver', 0) === 1;
+      sv.addEventListener('change', function () {
+        store.set('gq_saver', sv.checked ? 1 : 0);
+        toast(sv.checked ? 'Mode hemat aktif — daftar live dimatikan' : 'Mode hemat mati');
+      });
+    }
+    var ql = $p('setQuality');
+    if (ql) {
+      ql.value = store.get('gq_quality', 'auto');
+      ql.addEventListener('change', function () {
+        store.set('gq_quality', ql.value || 'auto');
+        toast(ql.value === 'hemat' ? 'Kualitas Hemat — muat latar dimatikan' : (ql.value === 'hd' ? 'Kualitas HD — mulai video lebih cepat' : 'Kualitas Otomatis'));
+      });
+    }
+  } catch (e) {}
+  /* --- TAHAP 2.5: Laporkan link rusak, 1 ketuk (judul + episode + server otomatis) --- */
+  var prBtn = $p('pReport');
+  if (prBtn) prBtn.addEventListener('click', function () {
+    var title = '', ep = '', srv = '';
+    try {
+      title = ($('pTitle') && $('pTitle').textContent) || '';
+      ep = (typeof PCtx !== 'undefined' && PCtx && PCtx.epNum) || '';
+      var cur = (typeof PCtx !== 'undefined' && PCtx) ? PCtx : null;
+      srv = (cur && cur.servers && cur.servers[cur.srv || 0]) ? cur.servers[cur.srv || 0].label : '';
+    } catch (e) {}
+    try {
+      var list = store.get('gq_linkrep', []);
+      list.unshift({ t: title, ep: ep, srv: srv, at: Date.now() });
+      store.set('gq_linkrep', list.slice(0, 50));
+    } catch (e) {}
+    toast('Laporan terkirim, terima kasih');
+  });
+  /* --- TAHAP 4 (daftar bermasalah): kabel tombol Perbaiki --- */
+  try {
+    var pf = $p('probFixAll');
+    if (pf && !pf.dataset.wired) {
+      pf.dataset.wired = '1';
+      pf.addEventListener('click', function () { try { probFixAll(); } catch (e) {} });
+    }
+  } catch (e) {}
+  document.addEventListener('click', function (e) {
+    var b = e.target && e.target.closest ? e.target.closest('[data-probfix]') : null;
+    if (!b) return;
+    var parts = String(b.dataset.probfix || '').split(':');
+    var tid = parts[0], idx = Number(parts[1]);
+    b.textContent = 'Memperbaiki…';
+    try {
+      probFixOne(tid, idx).then(function (ok) {
+        try { paintProbAdmin(); } catch (err) {}
+        toast(ok ? 'Chapter pulih ✓' : 'Masih gagal — coba lagi nanti');
+      });
+    } catch (err) {}
+  });
+  /* --- TAHAP 4: tugas latar cek chapter terbaru --- */
+  try { armProbScan(); } catch (e) {}
 })();

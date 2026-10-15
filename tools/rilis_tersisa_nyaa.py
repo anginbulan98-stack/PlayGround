@@ -323,12 +323,17 @@ def main():
             eps.sort(key=lambda e: (int(e["n"]) if str(e["n"]).isdigit() else 99999))
         except Exception:
             pass
-        playable = sum(1 for e in eps if e.get("e"))
-        if not eps or playable == 0:
+        playable = [e for e in eps if e.get("e") and (
+            e["e"].get("sub") or e["e"].get("dub") or len(e["e"].keys()) > 0)]
+        if not eps or not playable:
             done[s["id"]] = {"status": "no_result", "why": "no_playable_eps:%s" % api_title, "at": TODAY}
             print("   tanpa episode playable", flush=True)
             time.sleep(args.sleep)
             continue
+        try:
+            watch_n = max(int(e["n"]) for e in playable if str(e.get("n")).isdigit())
+        except ValueError:
+            watch_n = len(playable)
         # nyaa cross-check (hitung saja)
         c, sd = nyaa_check(title)
         nyaa_info[title] = {"rss_hits": c, "seed_max": sd, "checked": TODAY, "akid": aid}
@@ -337,18 +342,18 @@ def main():
         json.dump({"id": aid, "updated": TODAY, "episodes": eps},
                   open("data/eps/%d.json" % aid, "w"), ensure_ascii=False)
         s["akid"] = aid
-        if (s.get("episodes") or 0) < len(eps):
-            s["episodes"] = len(eps)
+        if (s.get("episodes") or 0) < watch_n:
+            s["episodes"] = watch_n
         # catat ke anikoto.json bila ID baru
         if aid not in have_ids:
             ak.append({"show": title, "id": aid, "slug": "", "apiTitle": api_title,
-                       "episodes": len(eps), "match": True, "auto": True,
+                       "episodes": watch_n, "match": True, "auto": True,
                        "via_search": True, "bulk": TODAY, "nyaa_hits": c, "nyaa_seed": sd})
             have_ids.add(aid)
         else:
             for o in ak:
                 if o.get("id") == aid:
-                    o["episodes"] = max(o.get("episodes", 0), len(eps))
+                    o["episodes"] = max(o.get("episodes", 0), watch_n)
                     break
         done[s["id"]] = {"status": "mapped", "aid": aid, "apiTitle": api_title, "at": TODAY}
         ok_n += 1

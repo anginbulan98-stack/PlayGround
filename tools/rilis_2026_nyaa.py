@@ -51,6 +51,17 @@ def parse_detail(aid, d):
         try: declared = int(str(anime.get("episodes") or n or 0))
         except: declared = n
         total = max(n, declared)
+        # katalog = yang bisa diputar saja (ada embed), bukan total deklarasi
+        try:
+            _pn = [int(e.get("number")) for e in eps
+                   if ((e.get("embed_url") or {}).get("sub")
+                       or (e.get("embed_url") or {}).get("dub")
+                       or len((e.get("embed_url") or {}).keys()) > 0)
+                   and str(e.get("number")).isdigit()]
+            if _pn:
+                total = max(_pn)
+        except Exception:
+            pass
         terms = anime.get("terms_by_type") or {}
         genres = terms.get("genre") or []
         if isinstance(genres, str): genres = [genres]

@@ -71,6 +71,27 @@ def refresh_anime():
                             "e": ep.get("embed_url") or {}})
             time.sleep(1.0)
         eps.sort(key=lambda e: (e["n"] if isinstance(e["n"], int) else 99999))
+        # Angka katalog = episode yang benar-benar bisa diputar (ada embed).
+        play_nums = []
+        for ep in eps:
+            eu = ep.get("e") or {}
+            if eu.get("sub") or eu.get("dub") or len(eu.keys()) > 0:
+                try:
+                    play_nums.append(int(ep.get("n")))
+                except (TypeError, ValueError):
+                    pass
+        watch_n = max(play_nums) if play_nums else 0
+        # Angka katalog = episode yang benar-benar bisa diputar (ada embed),
+        # bukan total deklarasi — supaya semua tombol episode bisa dipencet.
+        play_nums = []
+        for ep in eps:
+            eu = ep.get("e") or {}
+            if eu.get("sub") or eu.get("dub") or len(eu.keys()) > 0:
+                try:
+                    play_nums.append(int(ep.get("n")))
+                except (TypeError, ValueError):
+                    pass
+        watch_n = max(play_nums) if play_nums else 0
         fp = "data/eps/%d.json" % o["id"]
         old = json.load(open(fp))["episodes"] if os.path.exists(fp) else []
         if len(eps) < len(old):
@@ -83,11 +104,12 @@ def refresh_anime():
                       open(fp, "w"), ensure_ascii=False)
             print("  anime update: %s %d -> %d eps" % (o["show"], len(old), len(eps)))
             changed = True
-        o["episodes"] = len(eps)
-        hit = by_show.get(o["show"])
-        if hit and hit.get("episodes") != len(eps):
-            hit["episodes"] = len(eps)
-            changed = True
+        if watch_n > 0:
+            o["episodes"] = watch_n
+            hit = by_show.get(o["show"])
+            if hit and hit.get("episodes") != watch_n:
+                hit["episodes"] = watch_n
+                changed = True
         time.sleep(1.2)
     # --- temukan serial baru ---
     try:
@@ -109,11 +131,22 @@ def refresh_anime():
             eps = d.get("data", {}).get("episodes") or []
             title = (d.get("data", {}).get("anime", {}) or {}).get("title") or it.get("title", "")
             sid = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-") or ("rx-%d" % it["id"])
+            play_n = []
+            for e in eps:
+                eu = e.get("embed_url") or {}
+                if eu.get("sub") or eu.get("dub") or len(eu.keys()) > 0:
+                    try:
+                        play_n.append(int(e.get("number")))
+                    except (TypeError, ValueError):
+                        pass
+            watch_n = max(play_n) if play_n else 0
+            if not watch_n:
+                continue  # belum ada yang bisa diputar -> jangan rilis
             ak.append({"show": title, "id": it["id"], "slug": "", "apiTitle": title,
-                       "episodes": len(eps), "match": True, "auto": True})
+                       "episodes": watch_n, "match": True, "auto": True})
             anime["shows"].append({"id": sid, "title": title,
                                    "cover": it.get("poster") or anilist_cover(title),
-                                   "akid": it["id"], "episodes": len(eps)})
+                                   "akid": it["id"], "episodes": watch_n})
             json.dump({"id": it["id"], "updated": TODAY, "episodes":
                        [{"n": e.get("number"), "t": e.get("title"), "e": e.get("embed_url") or {}}
                         for e in eps]}, open("data/eps/%d.json" % it["id"], "w"), ensure_ascii=False)
@@ -148,11 +181,53 @@ def build_eps_recent():
     print("  eps-recent: %d entri" % len(out))
 
 
+STOPW_ALIAS = {"season", "cour", "part", "movie", "ova", "special", "specials",
+                "the", "a", "an"}
+
+
+def alias_key(t):
+    """('MHA Season 3') == ('MHA 3') == ('MHA 3rd Season')."""
+    w = re.sub(r"[^a-z0-9 ]+", " ", str(t or "").lower())
+    w = re.sub(r"(\d+)(st|nd|rd|th)\s+season", r"season \1", w)
+    w = re.sub(r"\bseason\s*(\d+)", r"season \1", w)
+    w = re.sub(r"\bcour\s*(\d+)", r"cour \1", w)
+    w = re.sub(r"\bpart\s*(\d+)", r"part \1", w)
+    w = re.sub(r"\bs(\d+)\b", r"season \1", w)
+    toks = w.split()
+    return (tuple(x for x in toks if not x.isdigit() and x not in STOPW_ALIAS),
+            tuple(x for x in toks if x.isdigit()))
+
+
+def playable_max(aid):
+    """Nomor episode playable terbesar (embed SUB/DUB/non-kosong) dari
+    data/eps/{aid}.json. 0 = tak ada file / tak ada yang bisa diputar."""
+    import os as _os
+    fp = "data/eps/%s.json" % aid
+    if not _os.path.exists(fp):
+        return 0
+    try:
+        eps = json.load(open(fp)).get("episodes", [])
+    except Exception:
+        return 0
+    nums = []
+    for e in eps:
+        eu = e.get("e") or {}
+        if eu.get("sub") or eu.get("dub") or len(eu.keys()) > 0:
+            try:
+                nums.append(int(e["n"]))
+            except (TypeError, ValueError, KeyError):
+                pass
+    return max(nums) if nums else 0
+
+
 def sync_anime_js(anime, ak):
     """Tulis ulang data-anime.js (sumber runtime) dari anime.json + anikoto.json.
-    Kolom manual (status/kind/year/genres/synopsis) dipertahankan; judul baru
-    dapat default (tayang/series/tahun berjalan). Total episode = max(manual, live)
-    agar angka 'segera hadir' yang disengaja tidak turun sendiri."""
+    Kolom manual (status/kind/year/genres/synopsis) dipertahankan.
+    SATU KEBENARAN: anime.json adalah sumber akid + angka episode.
+    - akid diambil dari anime.json; fallback pencocokan judul hanya dipakai
+      bila aid-nya playable (>0) — jangan pasang aid mati ke kartu.
+    - episodes = angka playable (bukan deklarasi), supaya semua tombol
+      episode yang tampil BISA dipencet."""
     import re as _re
     fp = "data-anime.js"
     old_shows = []
@@ -168,11 +243,49 @@ def sync_anime_js(anime, ak):
     akid = {o["show"]: o["id"] for o in ak if o.get("id")}
     year_now = int(TODAY[:4])
     out = []
+    aid_api = {}
+    for oo in ak:
+        if oo.get("id"):
+            aid_api.setdefault(oo["id"], oo.get("apiTitle") or oo.get("show"))
+
+    def _alias_ok(title, aid):
+        at = aid_api.get(aid) or ""
+        if not at:
+            return False
+        if alias_key(title) == alias_key(at):
+            return True
+        # fallback substring HANYA bila tak ada penanda season di kedua sisi
+        # (mencegah S1 terpasang ke kartu Cour 2 / Season N).
+        mk = re.search(r"(season|cour|part)\s*\d+", str(title).lower())
+        ma = re.search(r"(season|cour|part)\s*\d+", str(at).lower())
+        if mk or ma:
+            return False
+        nt = re.sub(r"[^a-z0-9]+", "", str(title).lower())
+        na = re.sub(r"[^a-z0-9]+", "", str(at).lower())
+        return bool(na) and (na == nt or na in nt or nt in na)
+
     for s in anime["shows"]:
         o = old.get(s["id"], {})
-        live_n = s.get("episodes", 0) or 0
-        manual_n = o.get("episodes", 0) or 0
-        _ak = akid.get(s["title"]) or s.get("akid") or o.get("akid")
+        # akid: anime.json dulu; judul-cocok hanya bila playable + alias cocok
+        # (anti salah-season); warisan js (o) hanya bila cocok + playable.
+        _ak = s.get("akid") or None
+        if not _ak:
+            cand = akid.get(s["title"])
+            if cand and playable_max(cand) > 0 and _alias_ok(s["title"], cand):
+                _ak = cand
+        if not _ak and o.get("akid"):
+            cand = o.get("akid")
+            if playable_max(cand) > 0 and _alias_ok(s["title"], cand):
+                _ak = cand
+        # episodes: playable bila ada file; kalau tidak, max(manual, live)
+        # agar tak ada tombol mati.
+        pn = playable_max(_ak) if _ak else 0
+        if pn > 0:
+            _ep = pn
+        else:
+            live_n = s.get("episodes", 0) or 0
+            manual_n = o.get("episodes", 0) or 0
+            _ep = max(manual_n, live_n)
         _yr = o.get("year", s.get("year", year_now)) or year_now
         _st = o.get("status", s.get("status", ""))
         if not _st:
@@ -182,7 +295,7 @@ def sync_anime_js(anime, ak):
             "id": s["id"], "title": s["title"], "cover": s.get("cover", ""),
             "akid": _ak,
             "alt": o.get("alt", "") or s.get("alt", ""),
-            "episodes": max(manual_n, live_n),
+            "episodes": _ep,
             "status": _st, "kind": o.get("kind", s.get("kind", "series")),
             "year": _yr,
             "genres": o.get("genres", s.get("genres", [])), "synopsis": o.get("synopsis", s.get("synopsis", "")),

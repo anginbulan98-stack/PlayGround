@@ -18,6 +18,11 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png" />
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
 <link rel="stylesheet" href="styles.css" />
+<style>/* Penjaga boot (inline): tetap tampil walau styles.css gagal dimuat */
+#bootFail{display:none;position:fixed;top:0;left:0;right:0;z-index:99999;background:#7a1f1f;color:#fff;padding:10px 12px;font:14px/1.5 system-ui,-apple-system,sans-serif}
+#bootFail.show{display:block}
+#bootFail button{margin:6px 8px 0 0;padding:8px 12px;border:0;border-radius:8px;font-weight:700;cursor:pointer}
+</style>
 </head>
 <body>
 <div class="bg" aria-hidden="true">
@@ -30,51 +35,38 @@
 <header class="topbar">
   <a class="brand" href="#top">
     <span class="brand-mark" aria-hidden="true">
-      <img src="logo.svg" alt="" width="40" height="40" />
+      <img src="logo.svg" alt="" width="40" height="40" loading="eager" decoding="async" />
     </span>
     <span class="brand-text">Guoke <span>AMHDQ</span><small>ANIME • MANHWA • HD</small></span>
   </a>
-  <!-- Navigasi atas: 4 grup + Profil -->
-  <nav class="nav" aria-label="Navigasi utama">
-    <a href="#manhwaPanel" data-navcat="manhwa" data-i18n="nav_read">Baca</a>
-    <a href="#animePanel" data-navcat="anime" data-i18n="nav_watch">Tonton</a>
-    <a href="#alatTiktok" data-navcat="tiktok" data-i18n="nav_tiktok">Alat TikTok</a>
-    <a href="#bantuan" data-open="bantuan" data-i18n="nav_help">Bantuan</a>
-  </nav>
   <button id="profileBtn" class="profile-btn" type="button" aria-label="Profil" aria-haspopup="dialog">
     <span id="profileAvatarTop" class="profile-avatar" aria-hidden="true">👤</span>
   </button>
 </header>
 
 <main id="top">
-  <!-- KATEGORI: Semua / Anime / Manhwa / Akan Rilis (+ Upload TikTok Quality disembunyikan) -->
-  <div class="catbar" role="tablist" aria-label="Kategori">
+  <!-- KATEGORI: disembunyikan — digantikan bottom navigation tetap -->
+  <div class="catbar" role="tablist" aria-label="Kategori" hidden>
     <button class="cat active" data-cat="semua" role="tab" aria-selected="true" data-i18n="cat_semua">Semua</button>
     <button class="cat" data-cat="anime" role="tab" data-i18n="cat_anime">Anime</button>
     <button class="cat" data-cat="manhwa" role="tab" data-i18n="cat_manhwa">Manhwa</button>
     <button class="cat" data-cat="segera" role="tab" data-i18n="cat_segera">Akan Rilis</button>
+    <button class="cat" data-cat="ikon" role="tab" data-i18n="cat_ikon">🎭 Ikon</button>
     <button class="cat cat-tiktok" data-cat="tiktok" role="tab" data-i18n="cat_tiktok" hidden>Upload TikTok Quality</button>
   </div>
 
-  <!-- LANJUTKAN (B1): kartu di atas beranda, diisi dari localStorage -->
+  <!-- LANJUTKAN (satu-satunya banner per halaman, dirender via JS) -->
   <div id="lanjutHome" class="lanjut-home" hidden>
     <div class="lh-info">
-      <small id="lhKicker" data-i18n="lh_kicker">LANJUTKAN</small>
+      <small id="lhKicker">LANJUTKAN</small>
       <strong id="lhJudul"></strong>
       <span id="lhSub" class="muted small"></span>
     </div>
     <div class="lh-actions">
-      <button id="lhBtn" class="btn btn-small" type="button" data-i18n="lh_continue">Lanjut →</button>
-      <button id="lhX" class="lh-x" type="button" aria-label="Tutup">✕</button>
+      <button id="lhBtn" class="btn btn-small" type="button">Lanjut →</button>
+      <button id="lhX" class="lh-x" type="button" aria-label="Tutup banner">✕</button>
     </div>
   </div>
-
-  <!-- Pintu masuk ringkas: satu baris tombol (A6) agar konten langsung terlihat -->
-  <section id="pintu" class="doors doors-mini" aria-label="Pintu masuk">
-    <button class="door-mini" data-goto="manhwa" type="button">📖 <strong data-i18n="nav_read">Baca</strong></button>
-    <button class="door-mini" data-goto="anime" type="button">▶ <strong data-i18n="nav_watch">Tonton</strong></button>
-    <button class="door-mini" data-open="riwayat" type="button">🕘 <strong data-i18n="menu_history_short">Riwayat</strong></button>
-  </section>
 
   <!-- BERANDA: Episode Terbaru + Chapter Terbaru -->
   <section id="semuaPreview" class="panel">
@@ -86,69 +78,65 @@
 
   <!-- MANHWA : baca langsung di sini -->
   <section id="manhwaPanel" class="panel">
-    <p class="eyebrow" data-i18n="mw_eyebrow">◆ MANHWA • BACA LANGSUNG</p>
-    <h2 data-i18n="mw_h2">Baca Manhwa di sini</h2>
-    <p class="muted"><span data-i18n="mw_desc">Chapter lengkap + gambar, dibaca langsung di situs ini</span> (<span id="mwDate">–</span>).</p>
-    <!-- Kategori genre cepat (sinkron dengan dropdown Genre di bawah) -->
-    <div id="mwGenreChips" class="genre-chips" role="tablist" aria-label="Genre manhwa">
-      <button class="gchip active" data-mwgenre="" role="tab" aria-selected="true" type="button" data-i18n="chip_all">Semua</button>
-    </div>
-    <!-- Lanjutkan membaca (localStorage, tanpa login) -->
-    <div id="lanjutWrap" class="lanjut" hidden>
-      <div>
-        <small data-i18n="continue_reading">LANJUTKAN MEMBACA</small>
-        <strong id="lanjutJudul"></strong>
-      </div>
-      <button id="lanjutBtn" class="btn btn-small" type="button" data-i18n="continue_btn">Lanjutkan →</button>
-    </div>
-    <!-- Toolbar baca: cari + saran, genre, urutan, bookmark -->
+    <p class="eyebrow">◆ MANHWA • BACA LANGSUNG</p>
+    <h2>Baca Manhwa di sini</h2>
+    <p class="muted"><span>Chapter lengkap, dibaca langsung di situs ini</span>.</p>
+    <!-- Toolbar baca: hanya kolom pencarian + tombol Filter -->
     <div class="mw-toolbar">
-      <div class="mw-searchwrap">
-        <input id="mwSearch" type="search" placeholder="Cari judul manhwa…" autocomplete="off"
-               role="combobox" aria-expanded="false" aria-controls="mwSuggest" aria-label="Cari judul manhwa" data-i18n-ph="mw_search_ph" data-i18n-aria="mw_search_ph" />
-        <div id="mwSuggest" class="suggest" role="listbox" hidden></div>
+      <div class="search-filter-row">
+        <div class="mw-searchwrap">
+          <input id="mwSearch" type="search" placeholder="Cari judul manhwa…" autocomplete="off"
+                 role="combobox" aria-expanded="false" aria-controls="mwSuggest" aria-label="Cari judul manhwa" />
+          <div id="mwSuggest" class="suggest" role="listbox" hidden></div>
+        </div>
+        <button id="mwFilterBtn" class="btn btn-small filter-btn" type="button" aria-haspopup="dialog">⧩ Filter</button>
       </div>
-      <p class="muted small req-hint"><span data-i18n="not_found">Tidak ketemu?</span> <button class="linkbtn" data-reqopen="manhwa" type="button" data-i18n="req_title">Request judul</button></p>
-      <div class="mw-filters">
-        <label><span data-i18n="f_type">Tipe</span>
+      <p class="muted small req-hint"><span>Tidak ketemu?</span> <button class="linkbtn" data-reqopen="manhwa" type="button">Request judul</button></p>
+      <div class="mw-filters" hidden>
+        <label><span>Tipe</span>
           <select id="mwType">
-            <option value="" data-i18n="f_type_all">Manhwa + Manhua</option>
+            <option value="">Manhwa + Manhua</option>
             <option value="Manhwa">Manhwa</option>
             <option value="Manhua">Manhua</option>
           </select>
         </label>
-        <label><span data-i18n="f_genre">Genre</span>
-          <select id="mwGenre"><option value="" data-i18n="f_genre_all">Semua genre</option></select>
+        <label><span>Genre</span>
+          <select id="mwGenre"><option value="">Semua genre</option></select>
         </label>
-        <label><span data-i18n="f_sort">Urutkan</span>
+        <label><span>Urutkan</span>
           <select id="mwSort">
-            <option value="terbaru" data-i18n="f_sort_new">Terbaru update</option>
-            <option value="populer" data-i18n="f_sort_pop">Populer</option>
+            <option value="terbaru">Terbaru update</option>
+            <option value="populer">Populer</option>
             <option value="az">A–Z</option>
           </select>
         </label>
-        <label><span data-i18n="f_bmstatus">Status bookmark</span>
+        <label><span>Status bookmark</span>
           <select id="mwBmStatus">
-            <option value="" data-i18n="f_bms_all">Semua status</option>
-            <option value="ongoing" data-i18n="f_bms_ongoing">Sedang dibaca</option>
-            <option value="wishlist" data-i18n="f_bms_wish">Mau dibaca</option>
-            <option value="done" data-i18n="f_bms_done">Selesai</option>
+            <option value="">Semua status</option>
+            <option value="ongoing">Sedang dibaca</option>
+            <option value="wishlist">Mau dibaca</option>
+            <option value="done">Selesai</option>
           </select>
         </label>
         <div class="mw-checkrow">
-          <label class="checkline"><input id="mwBookmarked" type="checkbox" /> <span data-i18n="f_bookmarked">📌 Bookmark saya</span></label>
-          <button id="mwAcak" class="btn btn-small btn-ghost" type="button" data-i18n="acak">🎲 Acak</button>
+          <label class="checkline"><input id="mwBookmarked" type="checkbox" /> <span>📌 Bookmark saya</span></label>
+          <button id="mwAcak" class="btn btn-small btn-ghost" type="button">🎲 Acak</button>
         </div>
       </div>
     </div>
     <p id="mwCount" class="muted small"></p>
     <div id="mwGrid" class="show-grid" aria-live="polite"></div>
     <div id="mwEmpty" class="empty-req" hidden>
-      <p class="muted"><span data-i18n="empty_for">Tidak ada hasil untuk</span> “<strong id="mwEmptyQ"></strong>”.</p>
-      <button id="mwEmptyReq" class="btn btn-small" type="button" data-i18n="req_this">Request judul ini</button>
+      <p class="empty-title">Judul tidak ditemukan</p>
+      <p class="muted">Tidak ada hasil untuk “<strong id="mwEmptyQ"></strong>”. Coba kata kunci lain atau request judul.</p>
+      <button id="mwEmptyReq" class="btn btn-small" type="button">Request judul ini</button>
     </div>
-    <!-- Muat lagi gantikan paginasi halaman (A7) -->
-    <button id="mwMore" class="btn btn-small btn-ghost" type="button" style="width:100%;margin-top:10px" data-i18n="load_more">Muat lagi</button>
+    <div id="mwError" class="empty-req" hidden>
+      <p class="empty-title">Gagal memuat</p>
+      <p class="muted">Periksa koneksimu lalu coba lagi.</p>
+      <button id="mwRetry" class="btn btn-small" type="button">Coba lagi</button>
+    </div>
+    <button id="mwMore" class="btn btn-small btn-ghost load-more" type="button">Muat lebih banyak</button>
   </section>
 
   <!-- HALAMAN DETAIL (episode / chapter) -->
@@ -174,7 +162,6 @@
         <button id="rdNext" class="btn btn-small btn-ghost" type="button" data-i18n="next">Next →</button>
         <button class="btn btn-small" data-full type="button" title="Baca layar penuh" data-i18n="full">⛶ Penuh</button>
       </div>
-      </div>
       <div class="rd-tools">
         <label><span data-i18n="img_width">Lebar gambar</span>
           <select id="rdWidth">
@@ -186,72 +173,148 @@
         <button id="rdReport" class="btn btn-small btn-ghost" type="button" data-i18n="report">⚠ Lapor chapter rusak</button>
       </div>
       <p id="rdStatus" class="muted small"></p>
+      </div>
       <div id="rdPages" class="rd-pages rd-w-med"></div>
       <div class="rd-nav rd-bottom">
         <button id="rdPrev2" class="btn btn-small btn-ghost" type="button" data-i18n="prev">← Prev</button>
         <button id="rdNext2" class="btn btn-small btn-ghost" type="button" data-i18n="next">Next →</button>
       </div>
     </div>
+    <button id="rdFloatPrev" class="float-prev" type="button">← Chapter sebelumnya</button>
     <button id="rdFloatNext" class="float-next" type="button" data-i18n="float_next">Chapter berikutnya →</button>
   </div>
 
   <!-- ANIME : nonton langsung di sini -->
   <section id="animePanel" class="panel" hidden>
-    <p class="eyebrow" data-i18n="ani_eyebrow">◆ ANIME • NONTON LANGSUNG</p>
-    <h2 data-i18n="ani_h2">Nonton Anime di sini</h2>
-    <p class="muted"><span data-i18n="ani_desc">Pilih judul, pilih episode, langsung putar di sini</span> (<span id="aniDate">–</span>).</p>
-    <!-- Kategori genre cepat anime -->
-    <div id="aniGenreChips" class="genre-chips" role="tablist" aria-label="Genre anime">
-      <button class="gchip active" data-anigenre="" role="tab" aria-selected="true" type="button" data-i18n="chip_all">Semua</button>
+    <p class="eyebrow">◆ ANIME • NONTON LANGSUNG</p>
+    <h2>Nonton Anime di sini</h2>
+    <p class="muted">Pilih judul, pilih episode, langsung putar di sini.</p>
+    <div class="search-filter-row">
+      <div class="ani-search has-suggest">
+        <input id="aniSearch" type="search" placeholder="Cari judul anime…" autocomplete="off" aria-label="Cari judul anime" role="combobox" aria-expanded="false" aria-controls="aniSuggest" />
+        <div id="aniSuggest" class="suggest" role="listbox" hidden></div>
+      </div>
+      <button id="aniFilterBtn" class="btn btn-small filter-btn" type="button" aria-haspopup="dialog">⧩ Filter</button>
     </div>
-    <div class="ani-search">
-      <input id="aniSearch" type="search" placeholder="Cari judul anime…" autocomplete="off" data-i18n-ph="ani_search_ph" data-i18n-aria="ani_search_ph" />
-      <button id="aniAcak" class="btn btn-small btn-ghost" type="button" data-i18n-aria="acak" title="Acak">🎲</button>
-    </div>
-    <p class="muted small req-hint"><span data-i18n="not_found">Tidak ketemu?</span> <button class="linkbtn" data-reqopen="anime" type="button" data-i18n="req_title">Request judul</button></p>
-    <div id="aniStatusTabs" class="src-tabs" role="group" aria-label="Filter status anime">
-      <button class="btn btn-small" data-anif="semua" type="button" data-i18n="anif_all">Semua</button>
-      <button class="btn btn-small btn-ghost" data-anif="terbaru" type="button" data-i18n="anif_new">Episode Terbaru</button>
-      <button class="btn btn-small btn-ghost" data-anif="tayang" type="button" data-i18n="anif_airing">Sedang Tayang</button>
-      <button class="btn btn-small btn-ghost" data-anif="tamat" type="button" data-i18n="anif_done">Tamat</button>
-      <button class="btn btn-small btn-ghost" data-anif="film" type="button" data-i18n="anif_film">Film</button>
+    <p class="muted small req-hint"><span>Tidak ketemu?</span> <button class="linkbtn" data-reqopen="anime" type="button">Request judul</button></p>
+    <div id="aniStatusTabs" class="src-tabs" role="group" aria-label="Filter status anime" hidden>
+      <button class="btn btn-small" data-anif="semua" type="button">Semua</button>
+      <button class="btn btn-small btn-ghost" data-anif="terbaru" type="button">Episode Terbaru</button>
+      <button class="btn btn-small btn-ghost" data-anif="tayang" type="button">Sedang Tayang</button>
+      <button class="btn btn-small btn-ghost" data-anif="tamat" type="button">Tamat</button>
+      <button class="btn btn-small btn-ghost" data-anif="film" type="button">Film</button>
     </div>
     <p id="aniCount" class="muted small"></p>
     <div id="aniEmpty" class="empty-req" hidden>
-      <p class="muted"><span data-i18n="empty_for">Tidak ada hasil untuk</span> “<strong id="aniEmptyQ"></strong>”.</p>
-      <button id="aniEmptyReq" class="btn btn-small" type="button" data-i18n="req_this">Request judul ini</button>
+      <p class="empty-title">Judul tidak ditemukan</p>
+      <p class="muted">Tidak ada hasil untuk “<strong id="aniEmptyQ"></strong>”. Coba kata kunci lain atau request judul.</p>
+      <button id="aniEmptyReq" class="btn btn-small" type="button">Request judul ini</button>
+    </div>
+    <div id="aniError" class="empty-req" hidden>
+      <p class="empty-title">Gagal memuat</p>
+      <p class="muted">Periksa koneksimu lalu coba lagi.</p>
+      <button id="aniRetry" class="btn btn-small" type="button">Coba lagi</button>
     </div>
     <div id="freshWrap" hidden>
-      <h3 style="margin:14px 0 2px;font-size:15px" data-i18n="fresh_h">🔥 Baru Rilis — otomatis</h3>
-      <p class="muted small" data-i18n="fresh_d">Judul terbaru yang langsung ditambahkan otomatis. Klik untuk menonton.</p>
+      <h3 class="sec-title">🔥 Baru Rilis</h3>
+      <p class="muted small">Judul terbaru. Ketuk untuk menonton. <span id="freshStamp"></span></p>
       <div id="freshGrid" class="show-grid"></div>
     </div>
     <div id="latestWrap" hidden>
-      <h3 style="margin:14px 0 2px;font-size:15px;display:flex;align-items:center;gap:8px"><span data-i18n="latest_h">🆕 Episode Terbaru — 2026</span> <button id="latestRefresh" class="linkbtn" type="button" data-i18n="latest_refresh">↻ Perbarui</button></h3>
-      <p class="muted small"><span data-i18n="latest_d">Rilisan 2026 + update episode terbaru (data nyaa.si sebagai cek ketersediaan, putar langsung di situs). Klik untuk menonton.</span> <span id="latestStamp"></span></p>
+      <h3 class="sec-title"><span>🆕 Episode Terbaru</span> <button id="latestRefresh" class="linkbtn" type="button">↻ Perbarui</button></h3>
+      <p class="muted small">Update episode terbaru, putar langsung di situs. <span id="latestStamp"></span></p>
       <div id="latestGrid" class="show-grid"></div>
     </div>
     <div id="upcomingWrap" hidden>
-      <h3 style="margin:14px 0 2px;font-size:15px" data-i18n="upcoming_h">📅 Anime Akan Rilis — belum tayang</h3>
-      <p class="muted small" data-i18n="upcoming_d">Judul yang sudah diumumkan tapi belum ada episodenya. Klik untuk info + jadwal. Tombol Nonton aktif otomatis setelah rilis.</p>
+      <h3 class="sec-title">📅 Segera Hadir</h3>
+      <p class="muted small">Sudah diumumkan, belum tayang. Tombol Nonton aktif otomatis setelah rilis.</p>
       <div id="upcomingGrid" class="show-grid"></div>
     </div>
     <div id="showGrid" class="show-grid"></div>
-    <button id="aniMore" class="btn btn-small btn-ghost" type="button" style="width:100%;margin-top:10px" data-i18n="load_more">Muat lagi</button>
+    <button id="aniMore" class="btn btn-small btn-ghost load-more" type="button">Muat lebih banyak</button>
     <div id="jxWrap">
-      <h3 style="margin:16px 0 2px;font-size:15px" data-i18n="jx_h">🌐 Jelajahi semua anime</h3>
-      <p class="muted small" data-i18n="jx_d">Katalog live ribuan judul — cari apa pun, klik untuk menonton langsung di sini.</p>
-      <div class="src-tabs">
-        <button class="btn btn-small" data-jxmode="top" type="button" data-i18n="jx_pop">Populer</button>
-        <button class="btn btn-small btn-ghost" data-jxmode="airing" type="button" data-i18n="jx_air">Sedang Tayang</button>
-      </div>
+      <h3 class="sec-title">🌐 Jelajahi semua anime</h3>
+      <p class="muted small">Katalog lengkap — cari apa pun, ketuk untuk menonton langsung di sini.</p>
       <div class="ani-search">
-        <input id="jxSearch" type="search" placeholder="Cari semua anime… (mis. One Piece)" autocomplete="off" data-i18n-ph="jx_search_ph" data-i18n-aria="jx_search_ph" />
+        <input id="jxSearch" type="search" placeholder="Cari semua anime… (mis. One Piece)" autocomplete="off" aria-label="Cari semua anime" />
       </div>
       <div id="jxGrid" class="show-grid"></div>
-      <button id="jxMore" class="btn btn-small btn-ghost" type="button" style="width:100%;margin-top:10px" data-i18n="load_more">Muat lagi</button>
+      <button id="jxMore" class="btn btn-small btn-ghost load-more" type="button">Muat lebih banyak</button>
     </div>
   </section>
+
+  <!-- IKON ANIME: galeri foto profil -->
+  <section id="ikonPanel" class="panel" hidden>
+    <p class="eyebrow">◆ IKON ANIME • GALERI FOTO</p>
+    <h2><span aria-hidden="true">🎭</span> <span>Ikon Anime</span></h2>
+    <p class="muted">Koleksi foto profil anime — ketuk foto untuk pratinjau.</p>
+    <div class="search-filter-row">
+      <div class="ani-search">
+        <input id="ikonSearch" type="search" placeholder="Cari foto ikon…" autocomplete="off" aria-label="Cari foto ikon" />
+      </div>
+      <button id="ikonUploadBtn" class="btn btn-small" type="button">➕ Upload</button>
+      <input id="ikonFile" type="file" accept="image/*" multiple hidden />
+    </div>
+    <div id="ikonSrcChips" class="src-tabs" role="tablist" aria-label="Filter galeri anime">
+      <button class="btn btn-small active" data-ikonsrc="semua" role="tab" aria-selected="true" type="button">Semua</button>
+      <button class="btn btn-small btn-ghost" data-ikonsrc="single" role="tab" aria-selected="false" type="button">Single</button>
+      <button class="btn btn-small btn-ghost" data-ikonsrc="couple" role="tab" aria-selected="false" type="button">💕 Couple</button>
+      <button class="btn btn-small btn-ghost" data-ikonsrc="mine" role="tab" aria-selected="false" type="button">Upload Saya</button>
+    </div>
+    <div class="couple-upload">
+      <label class="muted small" for="ikonKind">Upload sebagai
+        <select id="ikonKind">
+          <option value="single">Single</option>
+          <option value="couple" selected>Couple 💕</option>
+        </select>
+      </label>
+      <details class="bulk-import">
+        <summary>Tambah banyak via link (tempel banyak URL gambar, 1 per baris)</summary>
+        <p class="muted small">Pinterest tidak bisa disedot otomatis dari situs (wajib login + anti-bot). Simpan dulu gambarnya, lalu upload sekaligus — atau tempel link gambar langsung di sini.</p>
+        <textarea id="ikonBulkUrls" rows="4" placeholder="https://contoh.com/foto1.jpg&#10;https://contoh.com/foto2.jpg"></textarea>
+        <div class="btn-row">
+          <button id="ikonBulkAdd" class="btn btn-small" type="button">➕ Tambah semua link</button>
+        </div>
+      </details>
+    </div>
+    <p id="ikonUploadHint" class="muted small">Upload tersimpan di perangkat ini. Format JPG/PNG.</p>
+    <p id="ikonCount" class="muted small"></p>
+    <div id="ikonEmpty" class="empty-req" hidden>
+      <p class="empty-title">Belum ada foto</p>
+      <p class="muted">Ketuk Upload untuk menambah ikon favoritmu.</p>
+    </div>
+    <div id="ikonGrid" class="ikon-grid" aria-live="polite"></div>
+    <button id="ikonMore" class="btn btn-small btn-ghost load-more" type="button">Muat lebih banyak</button>
+  </section>
+
+  <!-- PUSTAKA: halaman Riwayat + Daftarku (bukan popup) -->
+  <section id="pustakaPanel" class="panel" hidden>
+    <p class="eyebrow" data-i18n="lib_eyebrow">◆ PUSTAKAMU</p>
+    <h2 data-i18n="lib_title">Pustaka</h2>
+    <div class="lib-tabs" role="tablist" aria-label="Pustaka">
+      <button class="lib-tab active" data-libtab="riwayat" role="tab" type="button" data-i18n="lib_riwayat">Riwayat</button>
+      <button class="lib-tab" data-libtab="daftar" role="tab" type="button" data-i18n="lib_daftar">Daftarku</button>
+    </div>
+    <div id="pustakaBody"></div>
+    <div class="btn-row">
+      <button id="histClear" class="btn btn-small btn-ghost" type="button" data-i18n="hist_clear">Hapus riwayat</button>
+    </div>
+  </section>
+
+  <!-- PRATINJAU FOTO IKON (fullscreen) -->
+  <div id="ikonModal" class="pmodal ikon-full" hidden role="dialog" aria-modal="true" aria-label="Pratinjau foto">
+    <div class="pbox ikon-box">
+      <div class="phead"><strong id="ikonModalTitle">Foto</strong><button id="ikonClose" type="button" aria-label="Tutup">✕</button></div>
+      <img id="ikonModalImg" src="" alt="Pratinjau ikon" loading="lazy" decoding="async" />
+      <p id="ikonModalSub" class="muted small"></p>
+      <div class="btn-row ikon-actions">
+        <button id="ikonLike" class="btn btn-small btn-ghost" type="button">🤍 0</button>
+        <button id="ikonModalDl" class="btn btn-small" type="button">⬇ Unduh</button>
+        <button id="ikonShare" class="btn btn-small btn-ghost" type="button">📤 Bagikan</button>
+        <button id="ikonDel" class="btn btn-small btn-ghost" type="button">🗑 Hapus</button>
+      </div>
+    </div>
+  </div>
 
   <!-- PLAYER -->
   <div id="playerModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Nonton anime">
@@ -264,54 +327,49 @@
         <button id="pPrev" class="btn btn-small btn-ghost" type="button" data-i18n="prev">← Prev</button>
         <button id="pNext" class="btn btn-small btn-ghost" type="button" data-i18n="next">Next →</button>
       </div>
+      <label class="checkline auto-line"><input id="pAuto" type="checkbox" checked /> <span>Putar episode berikutnya otomatis</span></label>
+      <div id="autoNext" class="auto-next" hidden>
+        <div class="auto-info"><strong id="autoTxt">EP berikutnya dalam 5…</strong></div>
+        <div class="auto-btns">
+          <button id="autoCancel" class="btn btn-small btn-ghost" type="button">Batal</button>
+          <button id="autoSkip" class="btn btn-small" type="button">Lewati intro ⏩</button>
+        </div>
+        <div class="auto-bar"><div id="autoFill" class="auto-fill"></div></div>
+      </div>
       <div id="pServers" class="btn-row" hidden></div>
+      <p class="muted small" style="margin:6px 0 0">Kualitas video diatur di ikon ⚙ pada pemutar server.</p>
       <div class="btn-row">
         <button id="pDl" class="btn" type="button" data-i18n="pl_dl">⬇ Download episode</button>
       </div>
       <p id="pDlStatus" class="muted small" hidden></p>
       <div id="pDlBtns" class="btn-row" hidden></div>
+      <!-- Suka & komentar per episode: global bila Firebase terpasang, lokal bila tidak -->
+      <div class="social">
+        <div class="social-row">
+          <button id="epLike" class="like-btn" type="button" aria-pressed="false" data-i18n-aria="ep_like_aria" title="♥"><span aria-hidden="true">♥</span><span id="epLikeCount">0</span></button>
+          <span class="muted small">💬 <span id="epCmtCount">0</span></span>
+        </div>
+        <div class="cmt-head"><strong>Komentar</strong></div>
+        <ul id="epCmtList" class="cmt-list"></ul>
+        <p id="epCmtEmpty" class="muted small">Belum ada komentar. Jadilah yang pertama!</p>
+        <form id="epCmtForm" class="cmt-form">
+          <label class="cmt-label"><span>Nama</span>
+            <input id="epCmtName" type="text" maxlength="30" autocomplete="nickname" placeholder="Namamu" aria-label="Nama" />
+          </label>
+          <div class="cmt-sendrow">
+            <input id="epCmtText" type="text" maxlength="300" required autocomplete="off" placeholder="Tulis komentar…" aria-label="Tulis komentar" />
+            <button class="btn btn-small" type="submit">Kirim</button>
+          </div>
+        </form>
+        <div class="btn-row">
+          <button id="pReport" class="btn btn-small btn-ghost" type="button">⚠ Laporkan link rusak</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- HERO = Guoke Uploader+ style, fungsi tetap Guoke (cek + proses lokal) -->
   <section class="hero rein-hero" id="alatTiktok">
-    <p class="eyebrow rein-eyebrow">◆ GUOKE UPLOADER+</p>
-    <h1 class="rein-h1">Upload lebih bagus.<br />Pertahankan kualitas.</h1>
-    <p class="lede rein-lede">Siapin video kamu buat upload kualitas tinggi pakai Guoke Uploader+.</p>
-
-    <div class="rein-card" id="reinCard">
-      <div class="rein-card-top">
-        <span class="rein-card-brand">GUOKE UPLOADER+</span>
-        <span class="rein-active" id="reinActiveBadge"><i></i> AKTIF</span>
-      </div>
-      <h2 class="rein-status" id="reinStatusTitle">Siap Upload</h2>
-      <p class="rein-sub" id="reinStatusDesc">Uploader aktif dan siap proses.</p>
-      <div class="rein-specs">
-        <div class="rein-spec"><strong>1080P</strong><small>RESOLUSI MAKS.</small></div>
-        <div class="rein-spec"><strong>60 FPS</strong><small>FRAME RATE MAKS.</small></div>
-        <div class="rein-spec"><strong>H.264 / H.265</strong><small>DIDUKUNG</small></div>
-      </div>
-      <div class="rein-row">
-        <div class="rein-row-txt"><strong>Uploader</strong><small id="reinUploaderLbl">AKTIF</small></div>
-        <button class="rein-switch on" id="reinUploaderToggle" type="button" role="switch" aria-checked="true" aria-label="Uploader aktif"><span></span></button>
-      </div>
-      <div class="rein-row">
-        <div class="rein-row-txt"><strong>Watermark</strong><small id="reinWmLbl">MATI</small></div>
-        <button class="rein-switch" id="reinWmToggle" type="button" role="switch" aria-checked="false" aria-label="Watermark"><span></span></button>
-      </div>
-      <div class="rein-prog" id="reinProgWrap" hidden><div class="rein-prog-fill" id="reinProgFill"></div></div>
-      <p class="rein-file" id="reinFileName" hidden></p>
-      <button class="rein-upload" id="reinUploadBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg> MULAI UPLOAD</button>
-      <p class="muted small rein-note">Watermark MATI = output bersih, tanpa watermark web lain. File diproses lokal (ffmpeg.wasm) → MP4 H.264 + AAC + tombol Download.</p>
-    </div>
-
-    <nav class="rein-tabs" aria-label="Navigasi uploader">
-      <a href="#cek" data-reintab="cek"><span class="rt-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/><path d="M10 8.5v5l4-2.5z" fill="currentColor" stroke="none"/></svg></span><small>Cek</small></a>
-      <a href="#proses" data-reintab="upload"><span class="rt-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V6"/><path d="M7 11l5-5 5 5"/><path d="M4 20h16"/></svg></span><small>Upload</small></a>
-      <a href="#kalkulator" data-reintab="metode"><span class="rt-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span><small>Metode</small></a>
-      <a href="#presetSiap" data-reintab="opt"><span class="rt-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L5 13h6l-1 9 8-11h-6z"/></svg></span><small class="lbl-full">Video Optimizer</small><small class="lbl-short">Optimizer</small></a>
-      <a href="#panduan" data-reintab="panduan"><span class="rt-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg></span><small>Panduan</small></a>
-    </nav>
 
     <div class="honest" data-i18n-html="honest">
       <strong>Jujur dulu:</strong> TikTok <em>selalu</em> me-<em>re-encode</em> video kamu. Nggak ada tool yang bikin “0% kompres”.
@@ -359,11 +417,11 @@
     </div>
   </section>
 
-  <!-- PROSES VIDEO (C): ffmpeg.wasm di browser, privat + tombol Download -->
+  <!-- PROSES VIDEO: olah langsung di browser, privat + tombol Download -->
   <section id="proses" class="panel">
     <p class="eyebrow" data-i18n="pz_eyebrow">◆ ALAT UTAMA — PROSES & DOWNLOAD</p>
     <h2 data-i18n="pz_h2">Proses video jadi TikTok HD</h2>
-    <p class="muted" data-i18n-html="pz_d">File <strong>tidak diunggah ke server</strong> — diproses lokal di HP-mu via ffmpeg.wasm. Output selalu <strong>MP4 H.264 + AAC, 60fps</strong> + tombol <strong>Download</strong>.</p>
+    <p class="muted">File <strong>tidak diunggah ke server</strong> — diproses langsung di HP-mu. Output selalu <strong>MP4 siap upload + tombol Download</strong>.</p>
     <div id="pzDrop" class="dropzone" tabindex="0" role="button" aria-label="Pilih atau drop video untuk diproses">
       <input id="pzFile" type="file" accept="video/mp4,video/quicktime,video/webm,video/x-matroska,video/avi,video/*" hidden />
       <div class="dz-icon">⬆</div>
@@ -607,6 +665,7 @@ Format: MP4 + faststart</pre>
       <div class="src-tabs" role="tablist" aria-label="Bantuan">
         <button class="btn btn-small" data-btab="req" type="button" role="tab" data-i18n="tab_req">Request judul</button>
         <button class="btn btn-small btn-ghost" data-btab="lap" type="button" role="tab" data-i18n="tab_lap">Lapor rusak</button>
+        <button class="btn btn-small btn-ghost" data-btab="prob" type="button" role="tab">Bermasalah</button>
       </div>
       <div id="btabReq">
         <p class="muted small" data-i18n="req_d">Mau anime/manhwa yang belum ada? Tulis di sini — tersimpan di HP-mu, bisa disalin untuk dikirim ke admin.</p>
@@ -650,6 +709,14 @@ Format: MP4 + faststart</pre>
         <p id="laporDone" class="muted small" hidden data-i18n="lap_done">Laporan tersimpan. Terima kasih! 🙏</p>
         <ul id="laporList" class="fixlist"></ul>
       </div>
+      <div id="btabProb" hidden>
+        <p class="muted small">Chapter yang gagal dimuat tercatat di sini, di perangkat ini. Perbaikan berjalan satu per satu agar tidak diblokir.</p>
+        <div class="btn-row">
+          <button id="probFixAll" class="btn btn-small" type="button">Perbaiki ulang semua yang gagal</button>
+        </div>
+        <p id="probProg" class="muted small" hidden></p>
+        <ul id="probList" class="fixlist"></ul>
+      </div>
     </div>
   </div>
 
@@ -690,6 +757,36 @@ Format: MP4 + faststart</pre>
         </label>
         <div class="btn-row">
           <button id="cfgSave" class="btn btn-small" type="button" data-i18n="oauth_save">Simpan ID</button>
+        </div>
+      </div>
+      <div class="prof-group">
+        <strong>Kode Cadangan (pindah perangkat)</strong>
+        <p class="muted small" style="margin:0">Salin kode di HP lama, tempel di HP baru — bookmark, riwayat, dan progres ikut pindah.</p>
+        <div class="btn-row">
+          <button id="bkCopy" class="btn btn-small" type="button">Salin kode saya</button>
+        </div>
+        <label><span>Tempel kode dari perangkat lain</span>
+          <input id="bkCode" type="text" autocomplete="off" spellcheck="false" placeholder="Tempel kode cadangan…" />
+        </label>
+        <div class="btn-row">
+          <button id="bkApply" class="btn btn-small btn-ghost" type="button">Terapkan kode</button>
+        </div>
+      </div>
+      <div class="prof-group">
+        <strong>Data &amp; Video</strong>
+        <label class="checkline"><input id="setSaver" type="checkbox" /> <span>Mode hemat data (matikan muat latar)</span></label>
+        <label><span>Kualitas video</span>
+          <select id="setQuality">
+            <option value="auto">Otomatis</option>
+            <option value="hemat">Hemat</option>
+            <option value="hd">HD (muat awal lebih cepat)</option>
+          </select>
+        </label>
+      </div>
+      <div class="prof-group">
+        <strong>Aplikasi</strong>
+        <div class="btn-row">
+          <button id="installBtn2" class="btn btn-small btn-ghost" type="button" hidden>Install ke layar utama</button>
         </div>
       </div>
       <div class="prof-group">
@@ -754,39 +851,113 @@ Format: MP4 + faststart</pre>
     </div>
   </div>
 
-  <!-- RIWAYAT (B4): 20 judul terakhir -->
-  <div id="riwayatModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Riwayat">
+  <!-- TENTANG: singkat + kontak admin -->
+  <div id="tentangModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Tentang">
     <div class="pbox">
-      <div class="phead"><strong data-i18n="hist_h">Riwayat — 20 terakhir</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
-      <div id="histGrid" class="show-grid"></div>
-      <div class="btn-row">
-        <button id="histClear" class="btn btn-small btn-ghost" type="button" data-i18n="hist_clear">Hapus riwayat</button>
+      <div class="phead"><strong>Tentang Guoke AMHDQ</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
+      <p class="muted">Guoke AMHDQ: baca manhwa dan tonton anime langsung di browser. Data pribadimu (bookmark, riwayat, request) hanya tersimpan di perangkatmu.</p>
+      <p class="muted small">Kontak admin: <a id="adminLink" href="mailto:admin@guoke-amhdq.example.com">admin@guoke-amhdq.example.com</a> — sertakan judul + chapter + tangkapan layar saat melapor.</p>
+      <p class="muted small">Konten berasal dari penyedia pihak ketiga; ketersediaan judul dapat berubah sewaktu-waktu.</p>
+    </div>
+  </div>
+
+  <!-- LEGAL: Disclaimer / Privasi / Kontak & DMCA -->
+  <div id="legalModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Halaman legal">
+    <div class="pbox">
+      <div class="phead"><strong id="legalTitle">Info</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
+      <div id="legalBody" class="muted small" style="line-height:1.7"></div>
+    </div>
+  </div>
+
+  <!-- FILTER: satu bottom sheet untuk Anime & Manhwa -->
+  <div id="filterSheet" class="sheet" hidden role="dialog" aria-modal="true" aria-label="Filter">
+    <div class="sheet-backdrop" data-filter-close></div>
+    <div class="sheet-box">
+      <div class="sheet-head"><strong id="filterTitle">Filter</strong><button id="filterX" type="button" aria-label="Tutup filter">✕</button></div>
+      <div class="sheet-body">
+        <label><span>Tipe</span>
+          <select id="fType">
+            <option value="">Semua tipe</option>
+            <option value="Manhwa">Manhwa</option>
+            <option value="Manhua">Manhua</option>
+            <option value="film">Film</option>
+          </select>
+        </label>
+        <label><span>Genre (boleh lebih dari 1)</span></label>
+        <div id="fGenres" class="f-genres" role="group" aria-label="Genre"></div>
+        <label><span>Tahun rilis</span>
+          <select id="fYear">
+            <option value="">Semua tahun</option>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="old">2021 ke bawah</option>
+          </select>
+        </label>
+        <label><span>Urutkan</span>
+          <select id="fSort">
+            <option value="terbaru">Terbaru update</option>
+            <option value="populer">Populer</option>
+            <option value="az">A–Z</option>
+          </select>
+        </label>
+        <label><span>Status</span>
+          <select id="fStatus">
+            <option value="">Semua status</option>
+            <option value="tayang">Sedang Tayang</option>
+            <option value="tamat">Tamat</option>
+            <option value="segera">Segera Hadir</option>
+            <option value="ongoing">Sedang dibaca (bookmark)</option>
+            <option value="wishlist">Mau dibaca (bookmark)</option>
+            <option value="done">Selesai (bookmark)</option>
+          </select>
+        </label>
+        <label class="checkline"><input id="fBookmark" type="checkbox" /> <span>Hanya bookmark saya</span></label>
+        <button id="fRandom" class="btn btn-small btn-ghost" type="button">🎲 Acak judul</button>
+      </div>
+      <div class="sheet-foot">
+        <button id="fReset" class="btn btn-small btn-ghost" type="button">Reset</button>
+        <button id="fApply" class="btn btn-small" type="button">Terapkan</button>
       </div>
     </div>
   </div>
 
-  <!-- TENTANG (B9): singkat + kontak admin -->
-  <div id="tentangModal" class="pmodal" hidden role="dialog" aria-modal="true" aria-label="Tentang">
-    <div class="pbox">
-      <div class="phead"><strong data-i18n="about_h">Tentang Guoke AMHDQ</strong><button data-close type="button" aria-label="Tutup">✕</button></div>
-      <p class="muted" data-i18n="about_d1">Guoke AMHDQ: baca manhwa, tonton anime, dan proses video TikTok HD — semua gratis, langsung di browser, tanpa login. Data pribadimu (bookmark, riwayat, request) hanya tersimpan di perangkatmu.</p>
-      <p class="muted small"><span data-i18n="about_d2a">Kontak admin:</span> <a id="adminLink" href="mailto:admin@guoke-amhdq.example.com">admin@guoke-amhdq.example.com</a> <span data-i18n="about_d2b">— sertakan judul + chapter + tangkapan layar saat melapor.</span></p>
-      <p class="muted small" data-i18n="about_d3">Sumber bacaan/tontonan berasal dari penyedia pihak ketiga; ketersediaan judul dapat berubah sewaktu-waktu.</p>
-    </div>
-  </div>
-
   <footer class="footer">
-    <p data-i18n-html="foot_tag"><strong>Guoke AMHDQ</strong> — nonton & baca gratis, semua jalan di situs ini.</p>
-    <p class="muted small">
-      <a href="#bantuan" data-open="bantuan" data-i18n="menu_help">Bantuan</a> • <a href="#riwayat" data-open="riwayat" data-i18n="menu_history_short">Riwayat</a> • <a href="#tentang" data-open="tentang" data-i18n="menu_about2">Tentang</a> • <a href="sitemap.xml">Sitemap</a>
+    <p><strong>Guoke AMHDQ</strong> — nonton &amp; baca langsung di situs ini.</p>
+    <p class="muted small footer-links">
+      <button class="linkbtn" data-legal="disclaimer" type="button">Disclaimer</button> •
+      <button class="linkbtn" data-legal="privasi" type="button">Kebijakan Privasi</button> •
+      <button class="linkbtn" data-legal="kontak" type="button">Kontak / DMCA</button> •
+      <button class="linkbtn" data-open="bantuan" type="button">Bantuan</button> •
+      <button class="linkbtn" data-open="tentang" type="button">Tentang</button> •
+      <button class="linkbtn" id="installBtn" type="button" hidden>Install aplikasi</button>
     </p>
-    <p class="muted small" data-i18n="foot_made">Dibuat untuk kreator Indonesia • Setting mengikuti panduan bitrate umum TikTok 2025–2026 • Hasil akhir tetap tergantung koneksi & server TikTok.</p>
+    <p class="muted small">Seluruh konten berasal dari penyedia pihak ketiga. Ketersediaan dapat berubah sewaktu-waktu.</p>
   </footer>
 </main>
 
+<nav class="bottomnav" aria-label="Navigasi utama">
+  <button class="bnav active" data-bnav="semua" type="button" aria-current="page"><span aria-hidden="true">⌂</span><small>Beranda</small></button>
+  <button class="bnav" data-bnav="anime" type="button"><span aria-hidden="true">▶</span><small>Anime</small></button>
+  <button class="bnav" data-bnav="manhwa" type="button"><span aria-hidden="true">📖</span><small>Manhwa</small></button>
+  <button class="bnav" data-bnav="ikon" type="button"><span aria-hidden="true">🎭</span><small>Ikon</small></button>
+  <button class="bnav" data-bnav="riwayat" type="button"><span aria-hidden="true">🕘</span><small>Riwayat</small></button>
+</nav>
+
 <div id="toast" class="toast" role="status">Disalin!</div>
 <script src="data-anime.js"></script>
+<script>
+/* Galeri publik (opsional): isi dengan config Firebase bila ingin upload &
+   like terlihat semua pengguna. Tanpa config = semua tetap jalan lokal.
+   Lihat SETUP_GALERI_PUBLIK.md. */
+window.GQ_FIREBASE = null;
+</script>
 <script src="app.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js"></script>
 <script src="proses.js"></script>
 <script>
@@ -933,19 +1104,18 @@ Format: MP4 + faststart</pre>
   }
   function showView(key, noScroll) {
     currentView = VIEWS[key] ? key : 'upload';
-    var want = VIEWS[currentView];
-    // WAJIB: panel TikTok hanya boleh tampil di kategori TikTok.
-    // Di Semua/Manhwa/Anime semuanya disembunyikan (jangan bocor ke beranda).
+    // Navigasi tab dihapus: semua panel alat tampil sekaligus (scroll biasa).
+    // Tetap hanya boleh tampil di kategori TikTok (jangan bocor ke beranda).
     var allow = isTiktokCat();
     tiktokPanels().forEach(function (el) {
-      var show = allow && want.some(function (sel) { try { return el.matches(sel); } catch (e) { return false; } });
-      el.hidden = !show;
+      el.hidden = !allow;
     });
     tabs.forEach(function (a) {
       a.classList.toggle('active', a.getAttribute('data-reintab') === currentView);
     });
     if (!noScroll) {
-      var first = document.querySelector(want[0]);
+      var want = VIEWS[currentView] || [];
+      var first = want.length ? document.querySelector(want[0]) : null;
       if (first) {
         var top = first.getBoundingClientRect().top + window.scrollY - 120;
         window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
@@ -970,6 +1140,60 @@ Format: MP4 + faststart</pre>
     }
   } catch (e) {}
   showView(currentView, true);
+})();
+</script>
+<div id="bootFail" role="alert"></div>
+<script>
+/* Penjaga boot: kalau styles.css / app.js / data gagal dimuat (halaman polos
+   seperti tanpa CSS), tampilkan pesan + tombol pulihkan, bukan error misterius. */
+(function () {
+  function cssOK() {
+    try {
+      for (var i = 0; i < document.styleSheets.length; i++) {
+        var s = document.styleSheets[i];
+        if (s.href && s.href.indexOf('styles.css') >= 0) {
+          try { return (s.cssRules || []).length > 0; } catch (e) { return true; }
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+  function jsOK() {
+    return (typeof window.__GQ_APP_OK !== 'undefined') &&
+      !!(window.GQ_ANIME && window.GQ_ANIME.shows && window.GQ_ANIME.shows.length);
+  }
+  function forceReload() {
+    try {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (rs) {
+          rs.forEach(function (r) { try { r.unregister(); } catch (e) {} });
+          if (window.caches && caches.keys) {
+            caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); })
+              .then(function () { location.href = location.pathname + '?v=' + Date.now() + location.hash; })
+              .catch(function () { location.reload(); });
+          } else { location.reload(); }
+        }).catch(function () { location.reload(); });
+        return;
+      }
+    } catch (e) {}
+    location.reload();
+  }
+  window.__gqForceReload = forceReload;
+  function check() {
+    var bad = [];
+    if (!cssOK()) bad.push('styles.css tidak termuat (tampilan polos)');
+    if (!jsOK()) bad.push('app.js / data-anime.js tidak jalan (tombol & terjemahan mati)');
+    if (!bad.length) return;
+    var b = document.getElementById('bootFail');
+    if (!b || b.className === 'show') return;
+    b.innerHTML = '<b>Halaman gagal dimuat penuh:</b> ' + bad.join(' • ') +
+      '.<br>Matikan mode hemat/data-saver, pakai Chrome, lalu ' +
+      '<button type="button" onclick="window.__gqForceReload()">Paksa muat ulang</button>';
+    b.className = 'show';
+  }
+  if (document.readyState === 'complete') setTimeout(check, 800);
+  else window.addEventListener('load', function () { setTimeout(check, 800); });
+  setTimeout(check, 6000);
 })();
 </script>
 <script>
