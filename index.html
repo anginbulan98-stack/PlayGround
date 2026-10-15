@@ -302,7 +302,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 <div><label>Resolusi output</label><select id="apRes"><option value="keep" selected>Otomatis sesuai paket ⭐</option><option value="1080x1920">1080 × 1920 — Full HD</option><option value="720x1280">720 × 1280 — Hemat</option></select></div>
 <div><label>Frame rate</label><select id="apFps"><option value="30">30 fps</option><option value="60" selected>60 fps — asli dipertahankan ⭐</option></select></div>
 <div><label>Kualitas</label><select id="apBr" disabled><option selected>CRF 14 · maks 40/60M — Tetap ⭐</option></select></div>
-<div><label>Video miring / kotak?</label><select id="apFit"><option value="cover" selected>Crop penuh 9:16</option><option value="pad">Bar hitam (utuh)</option></select></div>
+<div><label>Video miring / kotak?</label><select id="apFit"><option value="blur" selected>Blur latar 9:16 (isi utuh) ⭐</option><option value="cover">Crop penuh 9:16</option><option value="pad">Bar hitam (utuh)</option></select></div>
 </div>
 <div style="font-size:12px;color:var(--t3);margin-top:10px">Otomatis: resolusi & fps asli dipertahankan. Opsi resolusi/frame di atas hanya dipakai bila kamu pilih ukuran eksplisit. Mesin otomatis: <b>Native</b> (tanpa unduh, lolos blokir) bila browser mendukung, kalau tidak pakai FFmpeg (~30MB, sekali saja). Proses 100% di perangkatmu.</div>
 </div>
@@ -583,6 +583,15 @@ async function pickFile(f){
  const vb=$('verdictBox');vb.className='verdict show '+v.level;
  vb.innerHTML='<b>'+v.title+'</b><ul>'+v.reasons.map(r=>'<li>'+r+'</li>').join('')+'</ul>'+(v.rec==='ap'?'<div style="margin-top:8px;font-size:13px">💡 <b>Disarankan: Mode Anti-Pecah</b> di bawah.</div>':'');
  if(needAP||v.rec==='ap')$('modeAP').click();else $('modeFast').click();
+ // Sumber bukan 9:16 (kotak/miring): TikTok memotong paksa → buram. Arahkan
+ // otomatis ke kanvas 9:16 dengan latar blur agar ISI UTUH (tanpa crop).
+ if(meta.w&&meta.h&&Math.abs(meta.w/Math.max(1,meta.h)-9/16)>0.08){
+  // Rasio dipertahankan apa adanya (kotak tetap kotak). Opsi latar blur
+  // dipilih sebagai default agar bila pengguna memilih 9:16 eksplisit,
+  // isinya tetap utuh tanpa crop.
+  try{$('apFit').value='blur';}catch(e){}
+  vb.innerHTML+='<div style="margin-top:8px;font-size:13px">📐 Rasio sumber bukan 9:16 — <b>rasio asli dipertahankan penuh</b> (kotak tetap kotak) dengan bitrate tinggi. Mau penuh 1 layar? Pilih Resolusi 1080×1920 + blur latar.</div>';
+ }
  if(needAP)vb.innerHTML+='<div style="margin-top:8px;font-size:13px">📦 File non-MP4 terdeteksi — otomatis pakai <b>Mode Anti-Pecah</b> (re-encode ke MP4 HD).</div>';
 }
 $('clearBtn').onclick=resetPatch;
@@ -641,6 +650,35 @@ function patchChunkOffsets(moovBytes,delta){
    o+=size;
   }
  }
+}
+/* Cek cepat: apakah file MP4/MOV punya track suara? (baca box moov saja,
+   tanpa decode). true = bersuara, false = pasti bisu, null = tak bisa dipastikan.
+   Dipakai agar mesin native TAK PERNAH menghasilkan video bisu dari sumber bersuara. */
+function fileHasAudioTrack(ab){
+ try{
+  const dv=new DataView(ab);
+  const top=readBoxes(ab,0,ab.byteLength);
+  let foundMoov=false;
+  for(const b of top){
+   if(b.type!=='moov')continue;
+   foundMoov=true;
+   const traks=readBoxes(ab,b.start+8,b.start+b.size).filter(x=>x.type==='trak');
+   for(const t of traks){
+    const mdias=readBoxes(ab,t.start+8,t.start+t.size).filter(x=>x.type==='mdia');
+    for(const m of mdias){
+     const kids=readBoxes(ab,m.start+8,m.start+m.size);
+     for(const k of kids){
+      if(k.type==='hdlr'&&k.size>=20){
+       // hdlr: size(4) type(4) version+flags(4) pre_defined(4) handler(4)
+       const h=String.fromCharCode(dv.getUint8(k.start+16),dv.getUint8(k.start+17),dv.getUint8(k.start+18),dv.getUint8(k.start+19));
+       if(h==='soun')return true;
+      }
+     }
+    }
+   }
+  }
+  return foundMoov?false:null;
+ }catch(e){return null;}
 }
 function strBytes(s){return new TextEncoder().encode(s);}
 function makeUuidBox(){
@@ -761,6 +799,8 @@ function cekPecah(meta,sizeBytes){
  if(mbps!==null&&mbps<2){level='rawan';reasons.push('Bitrate sangat rendah ('+mbps.toFixed(1)+' Mbps) — ciri video sudah dikompres (bekas download WA/TikTok/FB).');}
  else if(mbps!==null&&mbps<6){if(level==='aman')level='warn';reasons.push('Bitrate sedang ('+mbps.toFixed(1)+' Mbps) — detail tipis, mudah patah saat gerak cepat.');}
  if(w%2===1||h%2===1){if(level==='aman')level='warn';reasons.push('Dimensi ganjil ('+w+'×'+h+') — sering bikin encoder TikTok gagal → muncul kotak-kotak.');}
+ const ar=w/Math.max(1,h);
+ if(Math.abs(ar-9/16)>0.08){level=(level==='rawan')?'rawan':'warn';reasons.push('Rasio '+w+'×'+h+' bukan 9:16 — TikTok memotong + kompres lebih agresif. Mode Anti-Pecah mempertahankan rasio aslinya (kotak tetap kotak) dengan bitrate tinggi agar tetap tajam.');}
  if(level==='aman')return{level:'aman',title:'✅ Sumber sudah bagus',reasons:['Resolusi '+w+'×'+h+', bitrate '+mbps.toFixed(1)+' Mbps, dimensi genap. Cukup pakai Mode Cepat.'],rec:'fast'};
  const title=level==='rawan'?'🔴 RAWAN PECAH':'🟡 KURANG AMAN';
  return{level, title, reasons, rec:'ap'};
@@ -768,11 +808,12 @@ function cekPecah(meta,sizeBytes){
 function tierShortMax(tierKey){return tierKey==='free'?1080:2160;} // selaras server: free 1080, booster/premium 2160 (sisi pendek)
 function buildVf(srcW,srcH,resSel,fit,tierKey){
  const even=n=>Math.max(2,Math.round(n/2)*2);
- if(resSel&&resSel!=='keep'){
-  const p=resSel.split('x'),tw=+p[0],th=+p[1];
-  if(fit==='pad')return{tw,th,vf:'scale='+tw+':'+th+':force_original_aspect_ratio=decrease,pad='+tw+':'+th+':(ow-iw)/2:(oh-ih)/2,setsar=1'};
-  return{tw,th,vf:'scale='+tw+':'+th+':force_original_aspect_ratio=increase,crop='+tw+':'+th+',setsar=1'};
- }
+  if(resSel&&resSel!=='keep'){
+   const p=resSel.split('x'),tw=+p[0],th=+p[1];
+   if(fit==='pad')return{tw,th,vf:'scale='+tw+':'+th+':force_original_aspect_ratio=decrease,pad='+tw+':'+th+':(ow-iw)/2:(oh-ih)/2,setsar=1'};
+   if(fit==='blur')return{tw,th,vf:'split[a][b];[a]scale='+tw+':'+th+':force_original_aspect_ratio=increase,crop='+tw+':'+th+',boxblur=20:2[bg];[b]scale='+tw+':'+th+':force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=(W-w)/2:(H-h)/2,setsar=1'};
+   return{tw,th,vf:'scale='+tw+':'+th+':force_original_aspect_ratio=increase,crop='+tw+':'+th+',setsar=1'};
+  }
  // Otomatis: resolusi ASLI dipertahankan (tidak diturunkan/dinaikkan).
  // Hanya genapkan dimensi + setsar + format agar encoder tidak gagal.
  // HDR->SDR (zscale tonemap) dilewat: tak terdeteksi dari <video> & zscale umumnya
@@ -1209,7 +1250,7 @@ function mp4Box(type,...pl){let n=8;for(const p of pl)n+=p.length;const o=new Ui
 function mp4Full(type,ver,flags,...pl){return mp4Box(type,new Uint8Array([ver,(flags>>>16)&255,(flags>>>8)&255,flags&255]),...pl);}
 function mp4Ftyp(){return mp4Box('ftyp',mp4Str('isom'),mp4U32(0),mp4Str('isom'),mp4Str('iso2'),mp4Str('avc1'),mp4Str('mp41'));}
 function mp4Mvhd(durMs){return mp4Full('mvhd',0,0,mp4U32(0),mp4U32(0),mp4U32(1000),mp4U32(Math.max(1,Math.round(durMs))),mp4U32(0x10000),mp4U16(0x100),mp4U16(0),new Uint8Array(10),mp4Concat([mp4U32(0x10000),mp4U32(0),mp4U32(0),mp4U32(0),mp4U32(0x10000),mp4U32(0),mp4U32(0),mp4U32(0),mp4U32(0x40000000)]),new Uint8Array(24),mp4U32(2));}
-function mp4Tkhd(id,durMs,w,h){return mp4Full('tkhd',0,7,mp4U32(0),mp4U32(0),mp4U32(id),mp4U32(0),mp4U32(Math.max(1,Math.round(durMs))),new Uint8Array(8),mp4U16(0),mp4U16(0),mp4U16(0),mp4U16(0),mp4U32(w*65536),mp4U32(h*65536));}
+function mp4Tkhd(id,durMs,w,h){return mp4Full('tkhd',0,7,mp4U32(0),mp4U32(0),mp4U32(id),mp4U32(0),mp4U32(Math.max(1,Math.round(durMs))),new Uint8Array(8),mp4U16(0),mp4U16(0),mp4U16(0),mp4U16(0),mp4Concat([mp4U32(0x10000),mp4U32(0),mp4U32(0),mp4U32(0),mp4U32(0x10000),mp4U32(0),mp4U32(0),mp4U32(0),mp4U32(0x40000000)]),mp4U32(w*65536),mp4U32(h*65536));}
 function mp4Mdhd(ts,dur){return mp4Full('mdhd',0,0,mp4U32(0),mp4U32(0),mp4U32(ts),mp4U32(Math.max(1,Math.round(dur))),mp4U16(0x55c4),mp4U16(0));}
 function mp4Hdlr(kind){return mp4Full('hdlr',0,0,mp4U32(0),mp4Str(kind==='vide'?'vide':'soun'),new Uint8Array(12),mp4Str(kind==='vide'?'VideoHandle\0':'SoundHandle\0'));}
 function mp4Vmhd(){return mp4Full('vmhd',0,1,mp4U16(0),new Uint8Array(6));}
@@ -1217,7 +1258,7 @@ function mp4Smhd(){return mp4Full('smhd',0,0,mp4U16(0),mp4U16(0));}
 function mp4Url(){return mp4Full('url ',0,1);}
 function mp4Dref(){return mp4Full('dref',0,0,mp4U32(1),mp4Url());}
 function mp4Dinf(){return mp4Box('dinf',mp4Dref());}
-function mp4Avc1(w,h,avcC){return mp4Box('avc1',new Uint8Array(6),mp4U16(1),new Uint8Array(16),mp4U16(w),mp4U16(h),mp4U32(0x480000),mp4U32(0),mp4U32(1),new Uint8Array(32),mp4U16(0x18),mp4U16(0xffff),mp4Box('avcC',avcC));}
+function mp4Avc1(w,h,avcC){return mp4Box('avc1',new Uint8Array(6),mp4U16(1),new Uint8Array(16),mp4U16(w),mp4U16(h),mp4U32(0x480000),mp4U32(0),mp4U32(0),mp4U16(1),new Uint8Array(32),mp4U16(0x18),mp4U16(0xffff),mp4Box('avcC',avcC));}
 function mp4Esds(asc,maxBr,avgBr){
  const b128=(len)=>{const st=[];let x=len;do{st.unshift(x&127);x>>=7;}while(x>0);for(let i=0;i<st.length-1;i++)st[i]|=128;return new Uint8Array(st);};
  const tag=(t,body)=>mp4Concat([new Uint8Array([t]),b128(body.length),body]);
@@ -1231,20 +1272,43 @@ function mp4Stsc(n){return mp4Full('stsc',0,0,mp4U32(1),mp4U32(1),mp4U32(n),mp4U
 function mp4Stss(nonsync){return mp4Full('stss',0,0,mp4U32(nonsync.length),mp4Concat(nonsync.map(mp4U32)));}
 function mp4Stsz(sizes){return mp4Full('stsz',0,0,mp4U32(0),mp4U32(sizes.length),mp4Concat(sizes.map(mp4U32)));}
 function mp4Stco(offs){return mp4Full('stco',0,0,mp4U32(offs.length),mp4Concat(offs.map(mp4U32)));}
-function annexBtoMP4(data,naluLen){
+function toMP4Samples(data,naluLen){
+ // Encoder WebCodecs boleh keluar Annex-B (start code) ATAU length-prefixed (avcC).
+ // Deteksi jujur per chunk; fallback = anggap satu NAL utuh.
+ if(!data.length)return{data:data,annexb:false};
  const isSC=(i)=>i+2<data.length&&data[i]===0&&data[i+1]===0&&(data[i+2]===1||(i+3<data.length&&data[i+2]===0&&data[i+3]===1));
  const scLen=(i)=>(data[i+2]===1?3:4);
- if(!(data[0]===0&&data[1]===0))return{data:data,annexb:false}; // sudah length-prefixed
- const parts=[];let p=0;
- while(p<data.length){
-  if(!isSC(p)){p++;continue;}
-  const s=p+scLen(p);let e=s;
-  while(e<data.length&&!isSC(e))e++;
-  const nal=data.slice(s,e);if(nal.length){parts.push(mp4U32(nal.length),nal);}
-  p=e;
+ if(data.length>3&&isSC(0)){
+  const parts=[],nals=[];let p=0;
+  while(p<data.length){
+   if(!isSC(p)){p++;continue;}
+   const s=p+scLen(p);let e=s;
+   while(e<data.length&&!isSC(e))e++;
+   const nal=data.slice(s,e);if(nal.length){parts.push(mp4U32(nal.length),nal);nals.push(nal);}
+   p=e;
+  }
+  const sane=nals.length>0&&nals.every(n=>(n[0]&128)===0);
+  if(parts.length&&sane)return{data:mp4Concat(parts),annexb:true};
  }
- return{data:mp4Concat(parts),annexb:true};
+ for(const ln of [naluLen,4,2,1]){
+  if(!ln||ln>4)continue;
+  let p=0,ok=true;
+  while(p+ln<=data.length){
+   let L=0;for(let k=0;k<ln;k++)L=(L<<8)|data[p+k];
+   if(L<=0||p+ln+L>data.length){ok=false;break;}
+   if(p===0&&(data[p+ln]&128)!==0){ok=false;break;}
+   p+=ln+L;
+  }
+  if(ok&&p===data.length&&p>ln){
+   if(ln===naluLen)return{data:data,annexb:false};
+   const out=[];let q=0;
+   while(q<data.length){let L=0;for(let k=0;k<ln;k++)L=(L<<8)|data[q+k];out.push(mp4U32(L),data.slice(q+ln,q+ln+L));q+=ln+L;}
+   return{data:mp4Concat(out),annexb:false};
+  }
+ }
+ return{data:mp4Concat([mp4U32(data.length),data]),annexb:false};
 }
+function annexBtoMP4(data,naluLen){return toMP4Samples(data,naluLen);}
 function muxMP4(v,a){
  // v:{w,h,avcC(Uint8Array),samples:[{data:Uint8Array,ts(us),sync}],ts:1e6}
  // a:null|{sr,ch,asc(Uint8Array),samples:[{data,ts(us)}],ts:sr}
@@ -1309,7 +1373,16 @@ async function nativePCM(file,targetSr){
 async function runAPNative(o){
  const t=o.t,fps0=Math.max(1,Math.min(120,o.fps||30));
  const fit=$('apFit').value;
- const tw=o.spec.tw||1280,th=o.spec.th||720;
+ // AKAR RASIO SALAH: bila user pilih "Otomatis" (keep), spec.tw/th = 0 dan
+ // fallback lama `||1280 / ||720` memaksa kanvas 16:9 — video 1:1/kotak jadi
+ // gepeng + bar hitam. Sekarang: pertahankan dimensi ASLI (digenapkan).
+ let tw=o.spec.tw||0,th=o.spec.th||0;
+ if(!tw||!th){
+  const sw=(curMeta&&curMeta.w)||0,sh=(curMeta&&curMeta.h)||0;
+  const even2=n=>Math.max(2,Math.round(n/2)*2);
+  tw=even2(sw||1280);th=even2(sh||720);
+  log('Target: '+tw+'×'+th+' (asli dipertahankan)');
+ }
  const dur=(curMeta&&curMeta.d&&isFinite(curMeta.d))?curMeta.d:0;
  const pixels=tw*th;
  const br=Math.round(Math.min(20000000,Math.max(6000000,pixels/2073600*14000000)));
@@ -1336,12 +1409,19 @@ async function runAPNative(o){
  const closeA=()=>{try{aenc&&aenc.close();}catch(e){}aenc=null;};
  try{
   let pcm=null;
-  if(o.nat.audio){
-   setP(6,'Menyiapkan audio…');log('Decode audio…');
-   try{pcm=await nativePCM(curFile,48000);log('Audio: '+pcm.sampleRate+' Hz · '+pcm.channels+' ch');}
-   catch(e){log('Audio dilewati ('+((e&&e.message)||e)+') — output tanpa suara.');}
-   if(cancelled)throw new Error('Dibatalkan pengguna.');
-  }else log('Encoder audio tak tersedia — output tanpa suara.');
+   if(o.nat.audio){
+    setP(6,'Menyiapkan audio…');log('Decode audio…');
+    try{pcm=await nativePCM(curFile,48000);log('Audio: '+pcm.sampleRate+' Hz · '+pcm.channels+' ch');}
+    catch(e){
+     // Decode gagal BUKAN berarti tak bersuara (bisa codec tak didukung browser).
+     // Pastikan via track moov sebelum berani output bisu.
+     let tr=null;
+     try{tr=fileHasAudioTrack(await curFile.arrayBuffer());}catch(_){}
+     if(tr!==false)throw new Error('Audio sumber tak bisa di-decode browser ('+((e&&e.message)||e)+') — memakai FFmpeg agar suara tidak hilang.');
+     log('Audio dilewati ('+((e&&e.message)||e)+') — sumber memang tanpa suara.');
+    }
+    if(cancelled)throw new Error('Dibatalkan pengguna.');
+   }else log('Encoder audio tak tersedia — output tanpa suara.');
   const achunks=[];let asc=null,nativeErr=null;
   if(pcm){
    aenc=new AudioEncoder({output:(ch,md)=>{try{if(md&&md.decoderConfig&&md.decoderConfig.description&&!asc)asc=new Uint8Array(md.decoderConfig.description);if(!ch.byteLength)return;const b=new Uint8Array(ch.byteLength);ch.copyTo(b);achunks.push({ts:ch.timestamp,data:b});}catch(e){}},error:(e)=>{nativeErr=e;}});
@@ -1360,6 +1440,7 @@ async function runAPNative(o){
   const draw=(vv)=>{
    const sw=vv.videoWidth,sh=vv.videoHeight;if(!sw||!sh)return;
    if(fit==='pad'){ctx.fillStyle='#000';ctx.fillRect(0,0,tw,th);const s=Math.min(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(vv,(tw-dw)/2,(th-dh)/2,dw,dh);}
+   else if(fit==='blur'){const s=Math.max(tw/sw,th/sh);const bw=sw*s,bh=sh*s;ctx.save();try{ctx.filter='blur('+Math.max(18,Math.round(tw/50))+'px) brightness(.65)';}catch(e){}ctx.drawImage(vv,(tw-bw)/2,(th-bh)/2,bw,bh);ctx.restore();const s2=Math.min(tw/sw,th/sh);const dw=sw*s2,dh=sh*s2;ctx.drawImage(vv,(tw-dw)/2,(th-dh)/2,dw,dh);}
    else{const s=Math.max(tw/sw,th/sh);const dw=sw*s,dh=sh*s;ctx.drawImage(vv,(tw-dw)/2,(th-dh)/2,dw,dh);}
   };
   const attemptVideo=async(cc)=>{
@@ -1368,7 +1449,7 @@ async function runAPNative(o){
     await new Promise((res,rej)=>{vv.onloadedmetadata=res;vv.onerror=()=>rej(new Error('Video tidak bisa dibaca browser.'));setTimeout(()=>rej(new Error('Timeout baca metadata video (20 dtk).')),20000);});
     if(cancelled)throw new Error('Dibatalkan pengguna.');
     const vchunks=[];let avcC=null;nativeErr=null;
-    venc=new VideoEncoder({output:(ch,md)=>{try{if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);if(!ch.byteLength)return;const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});}catch(e){}},error:(e)=>{nativeErr=e;}});
+     venc=new VideoEncoder({output:(ch,md)=>{try{if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);if(!ch.byteLength)return;const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});}catch(e){}},error:(e)=>{nativeErr=e;}});
     venc.configure({codec:cc,width:tw,height:th,bitrate:br,framerate:fps0,latencyMode:'realtime'});
     log('Encoder: '+cc);
     setP(10,'Merender video… (native '+cc+', tanpa unduh)');
@@ -1438,7 +1519,7 @@ async function runAPNative(o){
   let asamp=null;
   if(pcm&&achunks.length&&asc){
    asamp={sr:pcm.sampleRate,ch:pcm.channels,asc:asc,ts:pcm.sampleRate,samples:achunks.map(c=>({data:c.data,ts:c.ts}))};
-  }else if(pcm&&achunks.length&&!asc){log('Parameter audio (ASC) tak tersedia — audio dibuang, video tetap dipakai.');}
+   }else if(pcm&&achunks.length&&!asc){throw new Error('Parameter audio (ASC) tak tersedia — memakai FFmpeg agar suara tidak hilang.');}
   const blob=muxMP4({w:tw,h:th,avcC:attempt.avcC,ts:1000000,samples:vsamples},asamp);
   log('Mux OK · '+vsamples.length+' video'+(asamp?' + '+asamp.samples.length+' audio':' (tanpa audio)')+' · '+fmtMB(blob.size));
   cleanup();
@@ -1475,16 +1556,28 @@ async function runAP(){
  const spec0=buildVf(curMeta.w,curMeta.h,$('apRes').value,$('apFit').value,t.key);
  // Jalur NATIVE dulu (tanpa unduh engine — lolos blokir CDN/operator & file://).
  // Gagal di titik mana pun -> lanjut FFmpeg seperti biasa, bukan error final.
- try{
-  const nat=await nativeProbe();
-  if(nat.video&&!cancelled){
-   log('Mesin: Native WebCodecs (tanpa unduh)'+(nat.audio?'':' · encoder audio tak tersedia → output tanpa suara'));
-   await runAPNative({t:t,fps:fps,spec:spec0,nat:nat});
-   if(outBlob&&!cancelled){setP(100,'Anti-Pecah selesai ✓ (native)');log('Terverifikasi bisa diputar ✓');}
-   return;
-  }
-  if(!cancelled)log('Perangkat tak mendukung Native WebCodecs — memakai FFmpeg.');
- }catch(ne){
+  try{
+   const nat=await nativeProbe();
+   let useNative=nat.video&&!cancelled;
+   if(useNative&&!nat.audio){
+    // ATURAN SUARA: native tanpa encoder audio HANYA boleh jalan bila sumber
+    // memang TAK bersuara. Sumber bersuara wajib FFmpeg agar suara tidak hilang.
+    setP(4,'Mengecek track audio…');
+    let noisy=null;
+    try{
+     noisy=fileHasAudioTrack(await curFile.arrayBuffer());
+     log('Cek audio: '+(noisy===true?'ADA track suara → wajib FFmpeg agar suara tidak hilang.':noisy===false?'tak ada track suara → native tanpa audio OK.':'tak bisa dipastikan → FFmpeg agar aman.'));
+    }catch(e){log('Cek audio gagal ('+((e&&e.message)||e)+') → FFmpeg agar aman.');}
+    if(noisy!==false)useNative=false;
+   }
+   if(useNative){
+    log('Mesin: Native WebCodecs (tanpa unduh)'+(nat.audio?' · suara dipertahankan':' · sumber tanpa suara'));
+    await runAPNative({t:t,fps:fps,spec:spec0,nat:nat});
+    if(outBlob&&!cancelled){setP(100,'Anti-Pecah selesai ✓ (native)');log('Terverifikasi bisa diputar ✓');}
+    return;
+   }
+   if(!cancelled)log(nat.video?'Encoder audio native tak tersedia & sumber bersuara — memakai FFmpeg agar suara tetap ada.':'Perangkat tak mendukung Native WebCodecs — memakai FFmpeg.');
+  }catch(ne){
   if(cancelled||token!==apRunToken){stopProcessingUI();return;}
   log('Native gagal ('+((ne&&ne.message)||ne)+') — memakai FFmpeg.');
  }
