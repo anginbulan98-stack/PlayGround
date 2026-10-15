@@ -384,7 +384,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 <div class="footer-col"><h4>Panduan</h4><a href="#/howto">Cara Pakai</a></div>
 <div class="footer-col"><h4>Komunitas</h4><a href="#/tiers">Discord</a><a href="https://t.me/GuokeBot?start=site" target="_blank" rel="noopener">Telegram</a></div>
 <div class="footer-col"><h4>Legal</h4><a href="#/privacy">Kebijakan Privasi</a><a href="#/terms">Syarat Penggunaan</a></div>
-</div><div class="footer-bottom">Tidak berafiliasi dengan TikTok. Gunakan dengan bijak. · <span id="app-ver">v2.2</span></div></footer>
+</div><div class="footer-bottom">Tidak berafiliasi dengan TikTok. Gunakan dengan bijak. · <span id="app-ver">v2.3</span></div></footer>
 
 <nav class="bottom-nav">
 <a class="bn-item" href="#/" data-nav="dashboard">🏠<span>Beranda</span></a>
@@ -848,7 +848,8 @@ function apWorkerFn(){
      const r=await fetch(url,{signal:ctl?ctl.signal:undefined,credentials:'same-origin'});
      if(!r.ok)return{error:{kind:'http',status:r.status,detail:(r.statusText||'')+' — '+url}};
      const ct=r.headers.get('content-type')||'';
-     if(kind==='wasm'&&ct&&ct.indexOf('wasm')<0)return{error:{kind:'mime',status:r.status,detail:'Content-Type "'+ct+'" bukan application/wasm — '+url}};
+     if(ct&&ct.indexOf('text/html')>=0)return{error:{kind:'http',status:r.status,detail:'server mengembalikan halaman HTML, bukan file engine (kemungkinan 404 / hosting tidak menyertakan /vendor/) — '+url}};
+     if(kind==='wasm'&&ct&&ct.indexOf('wasm')<0&&ct.indexOf('octet-stream')<0)return{error:{kind:'mime',status:r.status,detail:'Content-Type "'+ct+'" bukan application/wasm — '+url}};
      if(kind==='js'&&ct&&(ct.indexOf('javascript')<0&&ct.indexOf('ecmascript')<0))return{error:{kind:'mime',status:r.status,detail:'Content-Type "'+ct+'" bukan javascript — '+url}};
      const total=+r.headers.get('content-length')||0;
      if(!r.body){const ab=await r.arrayBuffer();onProg({loaded:ab.byteLength,total:ab.byteLength||total,cached:false,kind:kind});try{const c=await ewCache();if(c)await c.put(url,new Response(ab,{headers:{'content-type':ct||'application/octet-stream'}}));}catch(e){}return{bytes:ab,cached:false};}
@@ -1026,24 +1027,67 @@ function apWorkerMsg(e){
   return;
  }
 }
+/* Shim FFmpeg diambil via fetch main-thread (status HTTP asli terlihat) lalu
+   DISUNTIK langsung ke badan worker — tidak lagi via importScripts di worker
+   (titik gagal lama: ReferenceError document + URL hosting/CDN yang diblokir).
+   Urutan: stub document -> kode shim -> apWorkerFn. */
+const AP_SHIM_URLS=[
+ 'vendor/ffmpeg.min.js',
+ 'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js',
+ 'https://fastly.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js',
+ 'https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js'
+];
+const AP_DOC_STUB='try{if(typeof self.document==="undefined"){self.document={baseURI:(self.location&&self.location.href)||"",currentScript:null,getElementsByTagName:function(){return[];},createElement:function(){throw new Error("no DOM di worker");}};}}catch(e){}\n';
+async function getShimSrc(){
+ let last='belum dicoba';
+ for(const u of AP_SHIM_URLS){
+  const tag=u.indexOf('://')<0?'lokal ('+u+')':u;
+  try{
+   log('Mengambil shim '+tag+' …');
+   const r=await fetch(u,{mode:'cors',credentials:u.indexOf('://')<0?'same-origin':'omit'});
+   if(!r.ok){log('Shim HTTP '+r.status+' dari '+tag);last='HTTP '+r.status+' — '+u;continue;}
+   const t=await r.text();
+   if(t.length<5000||t.indexOf('createFFmpeg')<0){log('Shim rusak (bukan kode FFmpeg) dari '+tag);last='konten bukan shim — '+u;continue;}
+   log('Shim OK dari '+tag+' ('+(t.length/1024).toFixed(0)+' KB, tanpa importScripts)');
+   return t;
+  }catch(e){const m=String((e&&e.message)||e);log('Shim gagal dari '+tag+': '+m);last=m+' — '+u;}
+ }
+ throw new Error('Shim FFmpeg tidak bisa dimuat dari mana pun (lokal + CDN diblokir?). Terakhir: '+last);
+}
 function ensureAPWorker(){
  if(apWorker&&apReadyState==='ready')return Promise.resolve();
  if(apWorker&&apReadyState==='loading')return new Promise(function(res,rej){apReadyWaiters.push({res:res,rej:rej});});
  terminateAPWorker();
  log('Membuat Web Worker FFmpeg… (encode pindah ke background thread)');
- const src='('+apWorkerFn.toString()+')();';
- apWorkerURL=URL.createObjectURL(new Blob([src],{type:'text/javascript'}));
- const w=new Worker(apWorkerURL);apWorker=w;apReadyState='loading';
- w.onmessage=function(e){apWorkerMsg(e);};
- w.onerror=function(){log('ERROR: worker gagal dibuat/dijalankan.');if(apInitTimer){clearTimeout(apInitTimer);apInitTimer=null;}apReadyState='idle';apFinishWaiters(false,'Worker gagal dibuat. Coba muat ulang halaman.');};
+ apReadyState='loading';
  if($('engSlow'))$('engSlow').style.display='none';
- w.postMessage({type:'init',sources:apSources(),timeout:AP_FETCH_TIMEOUT_MS,attempts:AP_ATTEMPTS,loadTimeout:AP_LOAD_TIMEOUT_MS});
- if(apInitTimer)clearTimeout(apInitTimer);
- apInitTimer=setTimeout(function(){
-  apInitTimer=null;
-  if(apReadyState==='loading'){log('ERROR: init engine timeout '+Math.round(AP_INIT_TIMEOUT_MS/1000)+' dtk tanpa kabar (kemungkinan unduhan macet total).');terminateAPWorker('Init engine timeout '+Math.round(AP_INIT_TIMEOUT_MS/1000)+' dtk tanpa kabar.');}
- },AP_INIT_TIMEOUT_MS);
- return new Promise(function(res,rej){apReadyWaiters.push({res:res,rej:rej});});
+ const readyP=new Promise(function(res,rej){apReadyWaiters.push({res:res,rej:rej});});
+ (async function(){
+  let shim='';
+  try{shim=await getShimSrc();}
+  catch(se){
+   log('ERROR shim: '+se.message);
+   apReadyState='idle';apFinishWaiters(false,se.message);
+   showEngErr('Shim engine gagal dimuat: '+se.message+'. Jika hosting tidak menyertakan /vendor/ dan CDN diblokir operator, pakai Mode Cepat (offline, tanpa engine).');
+   return;
+  }
+  try{
+   const src=AP_DOC_STUB+shim+'\n;('+apWorkerFn.toString()+')();\n;if(self.FFmpeg){self.postMessage({type:"log",message:"Shim tersuntik OK (tanpa importScripts)"});}';
+   apWorkerURL=URL.createObjectURL(new Blob([src],{type:'text/javascript'}));
+   const w=new Worker(apWorkerURL);apWorker=w;
+   w.onmessage=function(e){apWorkerMsg(e);};
+   w.onerror=function(){log('ERROR: worker gagal dibuat/dijalankan.');if(apInitTimer){clearTimeout(apInitTimer);apInitTimer=null;}apReadyState='idle';apFinishWaiters(false,'Worker gagal dibuat. Coba muat ulang halaman.');};
+   w.postMessage({type:'init',sources:apSources(),timeout:AP_FETCH_TIMEOUT_MS,attempts:AP_ATTEMPTS,loadTimeout:AP_LOAD_TIMEOUT_MS});
+   if(apInitTimer)clearTimeout(apInitTimer);
+   apInitTimer=setTimeout(function(){
+    apInitTimer=null;
+    if(apReadyState==='loading'){log('ERROR: init engine timeout '+Math.round(AP_INIT_TIMEOUT_MS/1000)+' dtk tanpa kabar (kemungkinan unduhan macet total).');terminateAPWorker('Init engine timeout '+Math.round(AP_INIT_TIMEOUT_MS/1000)+' dtk tanpa kabar.');}
+   },AP_INIT_TIMEOUT_MS);
+  }catch(e){
+   log('ERROR: '+e.message);apReadyState='idle';apFinishWaiters(false,e.message);
+  }
+ })();
+ return readyP;
 }
 
 function showEngErr(msg){
@@ -1117,7 +1161,7 @@ async function nativeTrialVideo(codec){
    const c=document.createElement('canvas');c.width=64;c.height=64;
    const g=c.getContext('2d');g.fillStyle='#f00';g.fillRect(0,0,64,64);
    let got=false;
-   const enc=new VideoEncoder({output:()=>{got=true;try{enc.close();}catch(e){}fin(true);},error:()=>{try{enc.close();}catch(e){}fin(false);}});
+   const enc=new VideoEncoder({output:(ch)=>{if(ch&&ch.byteLength>0){got=true;try{enc.close();}catch(e){}fin(true);}},error:()=>{try{enc.close();}catch(e){}fin(false);}});
    enc.configure({codec:codec,width:64,height:64,bitrate:100000,framerate:10,latencyMode:'realtime'});
    const f=new VideoFrame(c,{timestamp:0});
    enc.encode(f,{keyFrame:true});f.close();
@@ -1139,18 +1183,18 @@ async function nativeProbe(){
  try{
   const AC=window.AudioContext||window.webkitAudioContext;
   if(AC&&typeof AudioData!=='undefined'){
-   res.audio=await new Promise((done)=>{
-    let finished=false;
-    const fin=(v)=>{if(!finished){finished=true;done(v);}};
-    try{
-     const enc=new AudioEncoder({output:()=>{try{enc.close();}catch(e){}fin(true);},error:()=>{try{enc.close();}catch(e){}fin(false);}});
-     enc.configure({codec:'mp4a.40.2',sampleRate:44100,numberOfChannels:1,bitrate:64000});
-     const ad=new AudioData({format:'f32',sampleRate:44100,numberOfFrames:1024,numberOfChannels:1,timestamp:0,data:new Float32Array(1024).buffer});
-     enc.encode(ad);ad.close();
-     enc.flush().catch(()=>fin(false));
-     setTimeout(()=>{try{enc.close();}catch(e){}fin(false);},4000);
-    }catch(e){fin(false);}
-   });
+    res.audio=await new Promise((done)=>{
+     let finished=false,got=false;
+     const fin=(v)=>{if(!finished){finished=true;done(v);}};
+     try{
+      const enc=new AudioEncoder({output:(ch)=>{if(ch&&ch.byteLength>0){got=true;try{enc.close();}catch(e){}fin(true);}},error:()=>{try{enc.close();}catch(e){}fin(false);}});
+      enc.configure({codec:'mp4a.40.2',sampleRate:44100,numberOfChannels:1,bitrate:64000});
+      const ad=new AudioData({format:'f32',sampleRate:44100,numberOfFrames:1024,numberOfChannels:1,timestamp:0,data:new Float32Array(1024).buffer});
+      enc.encode(ad);ad.close();
+      enc.flush().then(()=>{if(!got){try{enc.close();}catch(e){}fin(false);}}).catch(()=>fin(false));
+      setTimeout(()=>{try{enc.close();}catch(e){}fin(false);},4000);
+     }catch(e){fin(false);}
+    });
   }
  }catch(e){}
  _nativeProbe=res;return res;
@@ -1300,7 +1344,7 @@ async function runAPNative(o){
   }else log('Encoder audio tak tersedia — output tanpa suara.');
   const achunks=[];let asc=null,nativeErr=null;
   if(pcm){
-   aenc=new AudioEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);achunks.push({ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!asc)asc=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
+   aenc=new AudioEncoder({output:(ch,md)=>{try{if(md&&md.decoderConfig&&md.decoderConfig.description&&!asc)asc=new Uint8Array(md.decoderConfig.description);if(!ch.byteLength)return;const b=new Uint8Array(ch.byteLength);ch.copyTo(b);achunks.push({ts:ch.timestamp,data:b});}catch(e){}},error:(e)=>{nativeErr=e;}});
    aenc.configure({codec:'mp4a.40.2',sampleRate:pcm.sampleRate,numberOfChannels:pcm.channels,bitrate:pcm.channels>1?128000:64000});
    const FR=1024,tmp=new Float32Array(FR*pcm.channels);
    for(let i=0;i<pcm.frames;i+=FR){
@@ -1310,7 +1354,7 @@ async function runAPNative(o){
     const ad=new AudioData({format:'f32',sampleRate:pcm.sampleRate,numberOfFrames:n,numberOfChannels:pcm.channels,timestamp:Math.round(i*1e6/pcm.sampleRate),data:tmp.slice(0,n*pcm.channels).buffer});
     aenc.encode(ad);ad.close();
    }
-   await aenc.flush();
+   await Promise.race([aenc.flush(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout flush audio.')),30000))]);
    log('Audio ter-encode: '+achunks.length+' frame');
   }
   const draw=(vv)=>{
@@ -1324,35 +1368,51 @@ async function runAPNative(o){
     await new Promise((res,rej)=>{vv.onloadedmetadata=res;vv.onerror=()=>rej(new Error('Video tidak bisa dibaca browser.'));setTimeout(()=>rej(new Error('Timeout baca metadata video (20 dtk).')),20000);});
     if(cancelled)throw new Error('Dibatalkan pengguna.');
     const vchunks=[];let avcC=null;nativeErr=null;
-    venc=new VideoEncoder({output:(ch,md)=>{try{const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);}catch(e){}},error:(e)=>{nativeErr=e;}});
+    venc=new VideoEncoder({output:(ch,md)=>{try{if(md&&md.decoderConfig&&md.decoderConfig.description&&!avcC)avcC=new Uint8Array(md.decoderConfig.description);if(!ch.byteLength)return;const b=new Uint8Array(ch.byteLength);ch.copyTo(b);vchunks.push({type:ch.type,ts:ch.timestamp,data:b});}catch(e){}},error:(e)=>{nativeErr=e;}});
     venc.configure({codec:cc,width:tw,height:th,bitrate:br,framerate:fps0,latencyMode:'realtime'});
     log('Encoder: '+cc);
     setP(10,'Merender video… (native '+cc+', tanpa unduh)');
-    await vv.play().catch(()=>{});
+    await Promise.race([vv.play().then(()=>{}).catch(()=>{}),new Promise(r=>setTimeout(r,10000))]);
+    log('play state: paused='+vv.paused+' readyState='+vv.readyState+' t='+((vv.currentTime||0).toFixed(2)));
+    if(vv.paused){try{await vv.play();}catch(e){}}
+    if(vv.paused)throw new Error('Video tidak mau diputar di browser (autoplay diblokir?).');
     const step=1e6/fps0;let next=0,frames=0,vdone=false,lastPctShown=-1,lastUiT=0;
     vv.onended=()=>{vdone=true;};
-    await new Promise((res,rej)=>{
-     rejSampling=rej;
-     const to=setTimeout(()=>rej(new Error('Timeout render (melebihi durasi + 2 menit).')),((dur||60)*1000+120000));
-     const cb=(now,meta)=>{
-      if(cancelled){clearTimeout(to);rej(new Error('Dibatalkan pengguna.'));return;}
-      if(nativeErr){clearTimeout(to);rej(new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr)));return;}
-      if(vdone||vv.ended){clearTimeout(to);res();return;}
-      const tms=((meta&&isFinite(meta.mediaTime)?meta.mediaTime:(vv.currentTime||0)))*1e6;
-      if(dur>0){const p=Math.min(0.99,(vv.currentTime||0)/dur);const nowMs=Date.now();if(p-lastPctShown>=0.01||nowMs-lastUiT>500){lastPctShown=p;lastUiT=nowMs;setP(10+p*80,'Render native… '+Math.round(p*100)+'% · '+fmtMB(curFile.size));}lastProgT=Date.now();}
-      else{lastProgT=Date.now();}
-      if(tms>=next){
-       draw(vv);
-       try{const fr=new VideoFrame(canvas,{timestamp:Math.round(next)});venc.encode(fr,{keyFrame:frames===0||frames%(fps0*2)===0});fr.close();}
-       catch(e){clearTimeout(to);rej(e);return;}
-       frames++;next+=step;
-      }
-      try{vv.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
-     };
-     try{vv.requestVideoFrameCallback(cb);}catch(e){clearTimeout(to);rej(e);}
-    });
+     await new Promise((res,rej)=>{
+      rejSampling=rej;
+      let settled=false;
+      const to=setTimeout(()=>{settle(rej,new Error('Timeout render (melebihi durasi + 2 menit).'));},((dur||60)*1000+120000));
+      const settle=(fn,val)=>{if(settled)return;settled=true;clearTimeout(to);clearInterval(wd);try{fn(val);}catch(e){}};
+      // AKAR HANG 89%: requestVideoFrameCallback BERHENTI dipanggil setelah
+      // video berakhir, sehingga cek `vv.ended` di dalam cb tidak pernah
+      // jalan dan res() tak terpanggil. Watchdog independen ini menyelesaikan
+      // render <1 dtk setelah video habis (juga memperbaiki tombol Batal
+      // yang ikut gantung saat rVFC sudah berhenti).
+      const wd=setInterval(()=>{
+       if(cancelled){settle(rej,new Error('Dibatalkan pengguna.'));return;}
+       if(nativeErr){settle(rej,new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr)));return;}
+       if(vdone||vv.ended||(dur>0&&(vv.currentTime||0)>=Math.max(0,dur-0.2))){settle(res);return;}
+      },500);
+      vv.onended=()=>{vdone=true;settle(res);};
+      const cb=(now,meta)=>{
+       if(cancelled){settle(rej,new Error('Dibatalkan pengguna.'));return;}
+       if(nativeErr){settle(rej,new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr)));return;}
+       if(vdone||vv.ended){settle(res);return;}
+       const tms=((meta&&isFinite(meta.mediaTime)?meta.mediaTime:(vv.currentTime||0)))*1e6;
+       if(dur>0){const p=Math.min(0.99,(vv.currentTime||0)/dur);const nowMs=Date.now();if(p-lastPctShown>=0.01||nowMs-lastUiT>500){lastPctShown=p;lastUiT=nowMs;setP(10+p*80,'Render native… '+Math.round(p*100)+'% · '+fmtMB(curFile.size));}lastProgT=Date.now();}
+       else{lastProgT=Date.now();}
+       if(tms>=next){
+        try{draw(vv);}catch(e){settle(rej,new Error('Gagal menggambar frame: '+((e&&e.message)||e)));return;}
+        try{const fr=new VideoFrame(canvas,{timestamp:Math.round(next)});venc.encode(fr,{keyFrame:frames===0||frames%(fps0*2)===0});fr.close();}
+        catch(e){settle(rej,e);return;}
+        frames++;next+=step;
+       }
+       try{vv.requestVideoFrameCallback(cb);}catch(e){settle(rej,e);}
+      };
+      try{vv.requestVideoFrameCallback(cb);}catch(e){settle(rej,e);}
+     });
     rejSampling=null;
-    await venc.flush();
+    await Promise.race([venc.flush(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout flush encoder video (60 dtk).')),60000))]);
     if(nativeErr)throw new Error('Encoder gagal: '+((nativeErr&&nativeErr.message)||nativeErr));
     if(!vchunks.length)throw new Error('Tidak ada frame ter-encode.');
     if(!avcC)throw new Error('Encoder tidak memberi parameter stream (avcC).');
@@ -1512,26 +1572,34 @@ function inputVideoId(url){
  const m=String(url||'').match(/\/video\/(\d{8,})/);
  return m?m[1]:null;
 }
+function canonicalTikTok(url){
+ const m=String(url||'').match(/@([^/?#]+)\/video\/(\d{8,})/);
+ return m?('https://www.tiktok.com/@'+m[1]+'/video/'+m[2]):String(url||'').trim();
+}
 async function fetchTikwm(url,timeoutMs){
+ const canon=canonicalTikTok(url); // buang parameter tracking (?is_from_webapp…), kirim bentuk kanonis
  let lastErr=null;
- for(let attempt=1;attempt<=3;attempt++){
+ for(let attempt=1;attempt<=4;attempt++){
   const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),timeoutMs||45000);
   try{
-   const r=await fetch('https://www.tikwm.com/api/?url='+encodeURIComponent(url),{signal:ctl.signal});
+   const r=await fetch('https://www.tikwm.com/api/?url='+encodeURIComponent(canon),{signal:ctl.signal});
    const j=await r.json().catch(()=>null);
    clearTimeout(to);
    if(j&&j.code===0&&j.data)return j.data;
-   const msg=(j&&(j.msg||j.message))||('HTTP '+r.status);
-   if(/limit|too many|rate|busy|1 request/i.test(msg)){lastErr={ok:false,code:'RATE_LIMIT',message:msg};await new Promise(x=>setTimeout(x,1600*attempt));continue;}
-   throw{ok:false,code:'NOT_FOUND',message:'TikTok: '+msg};
+   const msg=(j&&(j.msg||j.message))||'';
+   if(/limit|too many|rate|busy|1 request/i.test(msg)){lastErr={ok:false,code:'RATE_LIMIT',message:msg||'Batas 1x/detik'};await new Promise(x=>setTimeout(x,1600*attempt));continue;}
+   if(/not found|deleted|private|invalid|20301|21001/i.test(msg)){throw{ok:false,code:'NOT_FOUND',message:'TikTok: '+msg};}
+   // selain itu (termasuk code -1 tanpa pesan — terbukti intermiten) = gangguan sementara, retry
+   lastErr={ok:false,code:'UPSTREAM',message:'API sibuk'+(msg?': '+msg:' (respons kosong, coba lagi)')};
+   await new Promise(x=>setTimeout(x,1500*attempt));
   }catch(e){
    clearTimeout(to);
-   if(e&&e.code) { if(e.code==='RATE_LIMIT'){lastErr=e;continue;} throw e; }
+   if(e&&e.code){if(e.code==='RATE_LIMIT'||e.code==='UPSTREAM'){lastErr=e;continue;}throw e;}
    lastErr={ok:false,code:'NETWORK',message:'API TikWM tidak terjangkau ('+(e&&e.message||e)+').'};
    await new Promise(x=>setTimeout(x,1200));
   }
  }
- throw lastErr||{ok:false,code:'RATE_LIMIT',message:'Server API sibuk.'};
+ throw lastErr||{ok:false,code:'UPSTREAM',message:'Server API sibuk.'};
 }
 function measureStream(playUrl){
  // Ukur resolusi & FPS ASLI dari stream via <video> (tanpa CORS, tanpa backend).
@@ -1581,8 +1649,9 @@ $('ttAnalyzeBtn').onclick=async()=>{
     const r=await apiGet('video?url='+encodeURIComponent(url),60000);
     renderTT(r);$('ttResult').classList.add('show');return;
    }catch(e2){
-    const m=(twErr&&twErr.code&&TT_MSGS[twErr.code]||twErr&&twErr.message||'')+' | Alternatif backend: '+((e2&&e2.code&&TT_MSGS[e2.code])||(e2&&e2.message)||'gagal');
-    ttErr(m+' — coba lagi, atau jalankan server.py untuk jalur backend.');return;
+    const primary=(twErr&&twErr.code&&TT_MSGS[twErr.code])||(twErr&&twErr.message)||'Gagal mengambil data.';
+    const alt=(e2&&e2.code&&TT_MSGS[e2.code])||(e2&&e2.message)||'gagal';
+    ttErr(primary+' (Backend: '+alt+') — tekan Analisis sekali lagi, atau jalankan server.py untuk jalur backend.');return;
    }finally{loading.classList.remove('show');}
   }
   setLoad('Mengukur resolusi & FPS langsung dari stream…');
