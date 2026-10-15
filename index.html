@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Guoke — Siapkan Video HD Untuk TikTok | Hingga 4K 120fps</title>
+<meta name="description" content="Optimalkan video MP4/MOV dengan resolusi dan bitrate tinggi supaya hasilnya di TikTok lebih tajam. Gratis tanpa batas unggahan per hari."/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%237DD3FC'/%3E%3Ctext x='32' y='44' font-size='34' font-weight='900' text-anchor='middle' fill='%23000'%3EG%3C/text%3E%3C/svg%3E"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#050506;--panel:#0D0D12;--elev:#15151B;--border:rgba(255,255,255,.08);--border-hi:rgba(255,255,255,.16);--green:#7DD3FC;--green2:#38BDF8;--greendim:rgba(125,211,252,.12);--text:#F5F5F7;--t2:#9E9EA6;--t3:#686870;--red:#E5484D;--amber:#E8A33D;--cyan:#38BDF8;--r:14px;--r2:18px;--ease:cubic-bezier(.22,1,.36,1);--font:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;--mono:ui-monospace,Consolas,monospace;--nav-h:52px}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.7;min-height:100vh;overflow-x:hidden}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+::selection{background:rgba(125,211,252,.3)}
+.page{padding-top:calc(var(--nav-h) + 46px);min-height:100vh}
+.container{max-width:1000px;margin:0 auto;padding:0 clamp(14px,3vw,22px)}
+/* NAV */
+.top-nav{position:fixed;top:16px;left:0;right:0;margin:0 auto;z-index:100;width:max-content;max-width:calc(100% - 24px);height:var(--nav-h);display:flex;align-items:center;gap:14px;padding:0 8px 0 16px;border:1px solid var(--border);border-radius:16px;background:rgba(12,12,15,.78);backdrop-filter:blur(22px)}
+.nav-logo{display:flex;align-items:center;gap:9px;font-weight:800;letter-spacing:.08em;font-size:15px;text-transform:uppercase;white-space:nowrap}
+.glyph{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg,var(--green2),#0369a1);display:grid;place-items:center;font-size:13px;font-weight:900;color:#050506}
+.nav-links{display:flex;gap:2px}
+.nav-link{font-size:14px;color:var(--t2);padding:8px 12px;border-radius:9px}
+.nav-link:hover{color:#fff;background:rgba(255,255,255,.06)}
+.nav-link.active{color:var(--green)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.usage-pill{font-family:var(--mono);font-size:12px;color:var(--t2);border:1px solid var(--border);border-radius:99px;padding:6px 12px;background:rgba(255,255,255,.03);white-space:nowrap}
+.usage-pill b{color:var(--green)}
+.nav-ver{font-family:var(--mono);font-size:12px;color:var(--t3);border:1px solid var(--border);border-radius:99px;padding:4px 10px}
+.nav-user{display:none;align-items:center;gap:8px;border:1px solid rgba(125,211,252,.3);background:var(--greendim);border-radius:99px;padding:5px 12px 5px 6px;font-size:12px}
+/* strip */
+.tg-strip{display:flex;align-items:center;justify-content:center;gap:10px;width:max-content;max-width:calc(100% - 32px);margin:0 auto 6px;padding:11px 22px;border-radius:99px;background:linear-gradient(90deg,#FFE24B,#FFC400);color:#1A1300;font-size:14px;font-weight:600;text-align:center}
+.tg-strip b{font-weight:800}
+/* hero */
+.page-hero{text-align:center;padding:22px 0 10px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--green);border:1px solid rgba(125,211,252,.3);background:var(--greendim);border-radius:99px;padding:7px 16px}
+.hero-badge i{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.page-hero h1{font-size:clamp(30px,5vw,48px);font-weight:800;letter-spacing:.03em;text-transform:uppercase;line-height:1.2;margin-top:14px}
+.page-hero h1 span{color:var(--green)}
+.hero-sub{color:var(--t2);font-size:16px;margin-top:10px}
+.welcome-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:16px auto 0}
+.welcome-chip{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--t2);border:1px solid var(--border);background:var(--panel);border-radius:99px;padding:7px 14px}
+.welcome-chip b{color:#fff}
+/* sections */
+.section{padding:34px 0 6px}
+.section-kicker{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-weight:700;display:flex;align-items:center;gap:9px}
+.section-kicker::before{content:"";width:22px;height:1px;background:var(--green)}
+.section-title{font-size:clamp(21px,2.6vw,27px);font-weight:800;letter-spacing:.05em;text-transform:uppercase;margin-top:8px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-top:22px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r2);padding:20px;transition:.25s}
+.card:hover{border-color:var(--border-hi);transform:translateY(-3px)}
+.kpi-top{display:flex;justify-content:space-between;align-items:flex-start}
+.kpi-label{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:600}
+.kpi-value{font-family:var(--mono);font-size:30px;font-weight:700;margin-top:10px}
+.kpi-foot{font-family:var(--mono);font-size:11px;color:var(--t3);margin-top:7px}
+.engine-status{display:flex;align-items:center;gap:9px;margin-top:12px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.status-text{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--green);letter-spacing:.07em}
+.engine-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.engine-meta span{font-family:var(--mono);font-size:11px;color:var(--t2);border:1px solid var(--border);border-radius:6px;padding:5px 9px}
+/* tier */
+.tier-banner{margin-top:22px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border:1px solid rgba(125,211,252,.26);border-left:3px solid var(--green);background:linear-gradient(120deg,rgba(125,211,252,.07),transparent 55%);border-radius:var(--r2);padding:16px 20px}
+.tier-banner-name{font-size:22px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--green)}
+.tier-banner-specs{display:flex;gap:7px;flex-wrap:wrap;margin-top:6px}
+.tier-banner-specs span{font-family:var(--mono);font-size:12px;color:var(--t2);border:1px solid var(--border);background:var(--panel);border-radius:6px;padding:5px 9px}
+.pb-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--t3);text-transform:uppercase;margin-bottom:6px}
+.pb-track{height:6px;background:var(--elev);border:1px solid var(--border);border-radius:99px;overflow:hidden;width:220px}
+.pb-fill{height:100%;width:0;background:var(--green);border-radius:99px}
+.tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:26px}
+.tier-card{background:linear-gradient(180deg,rgba(255,255,255,.04),transparent 40%),var(--panel);border:1px solid var(--border);border-radius:20px;padding:26px 22px;position:relative;display:flex;flex-direction:column;gap:12px}
+.tier-card.featured{border-color:rgba(125,211,252,.5);box-shadow:0 0 0 1px rgba(125,211,252,.22),0 18px 46px -20px rgba(125,211,252,.45)}
+.rec-chip{position:absolute;top:14px;right:14px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#050506;background:linear-gradient(135deg,var(--green2),var(--green));border-radius:99px;padding:4px 11px}
+.tier-key{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--t3)}
+.tier-name{font-size:30px;font-weight:800;text-transform:uppercase}
+.tier-sub{font-size:14px;color:var(--t3)}
+.feat{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t3)}
+.feat b{color:#fff}.feat.no{opacity:.45;text-decoration:line-through}
+.sw-perk{border-top:1px solid var(--border);padding-top:12px;font-size:13px;color:var(--t2)}
+.sw-perk ul{margin:8px 0 0 18px;color:var(--t3);font-size:13px}
+.tier-btn{display:flex;align-items:center;justify-content:center;width:100%;margin-top:14px;padding:12px;border-radius:99px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:14px}
+.tier-btn:hover{border-color:var(--green);color:var(--green)}
+.tier-card.featured .tier-btn{background:var(--green);border-color:var(--green);color:#050506}
+/* compare */
+.cmp-hero{text-align:center;margin-bottom:20px}
+.cmp-stage{display:flex;justify-content:center}
+.phone-frame{width:min(100%,340px);padding:10px;background:#141419;border:1px solid var(--border-hi);border-radius:30px}
+.cmp{position:relative;height:min(70vh,540px);aspect-ratio:9/16;border-radius:14px;overflow:hidden;background:#0A0A0D;cursor:ew-resize;--pos:50%;user-select:none;touch-action:none}
+.cmp-layer{position:absolute;inset:0}
+.cmp-a{z-index:2;clip-path:inset(0 calc(100% - var(--pos)) 0 0)}
+.scene-a{background:linear-gradient(160deg,#16283a,#0B0B0F 60%),repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 26px);filter:blur(1.5px) saturate(.6);position:absolute;inset:0}
+.scene-b{background:radial-gradient(circle at 30% 25%,rgba(125,211,252,.35),transparent 45%),radial-gradient(circle at 70% 70%,rgba(56,189,248,.25),transparent 45%),linear-gradient(160deg,#16283a,#0a1628);position:absolute;inset:0}
+.scene-cap{position:absolute;inset:auto 0 26px;text-align:center;font-family:var(--mono);font-size:12px;color:#fff}
+.cmp-line{position:absolute;top:0;bottom:0;left:var(--pos);width:2px;background:#fff;z-index:3}
+.cmp-hand{position:absolute;top:50%;left:var(--pos);transform:translate(-50%,-50%);z-index:4;width:38px;height:38px;border-radius:50%;background:#fff;color:#000;display:flex;align-items:center;justify-content:center;font-weight:900}
+.cmp-tag{position:absolute;top:10px;z-index:5;font-family:var(--mono);font-size:10px;border-radius:5px;padding:3px 7px;background:rgba(0,0,0,.6)}
+.cmp-tag.a{left:8px;color:#fff}.cmp-tag.b{right:8px;color:var(--green2)}
+/* FAQ */
+.faq{max-width:1000px;margin:0 auto}
+.faq-item{border:1px solid var(--border);border-radius:12px;margin-top:10px;background:var(--panel);overflow:hidden}
+.faq-q{width:100%;text-align:left;padding:15px 18px;font-size:15px;font-weight:600;display:flex;justify-content:space-between;gap:10px}
+.faq-a{display:none;padding:0 18px 16px;font-size:14px;color:var(--t2)}
+.faq-item.open .faq-a{display:block}
+.faq-support{text-align:center;margin-top:16px;font-size:14px;color:var(--t3)}
+/* patcher */
+.patcher-card{margin-top:22px;background:linear-gradient(170deg,#121218,#0B0B0F);border:1px solid var(--border);border-radius:var(--r2);padding:26px}
+.tt-engine-label{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.tt-engine-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.tt-engine-name{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--t2)}
+.tt-engine-ver{font-family:var(--mono);font-size:11px;color:var(--t3);border:1px solid var(--border);border-radius:99px;padding:2px 8px}
+.drop-zone{border:1.5px dashed var(--border-hi);border-radius:var(--r2);padding:56px 24px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;cursor:pointer}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--green);background:var(--greendim)}
+.drop-title{font-size:18px;font-weight:600}.drop-sub{font-size:14px;color:var(--t3);margin-top:6px}
+.limit-bar{display:flex;align-items:center;gap:12px;margin-top:16px}
+.limit-bar-track{flex:1;height:5px;background:var(--elev);border:1px solid var(--border);border-radius:99px;overflow:hidden}
+.limit-bar-fill{height:100%;width:0;background:var(--green)}
+.limit-text{font-family:var(--mono);font-size:12px;color:var(--t2)}
+.scan-view{display:none;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.scan-view.show{display:grid}
+.sv-item{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.sv-lbl{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3);font-weight:700}
+.sv-val{font-family:var(--mono);font-size:16px;font-weight:700;margin-top:6px}
+.action-row{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap;justify-content:center}
+.btn{font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:14px 24px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+.btn-run{background:var(--green);color:#050506}.btn-run:disabled{opacity:.35}
+.btn-dl{background:#7DD3FC;color:#0b0b0f;font-weight:800}
+.btn-clear{background:none;color:var(--t3);border:1px solid var(--border)}
+.btn-again{background:var(--elev);border:1px solid var(--border-hi);color:#fff}
+.usage-row{display:flex;align-items:center;gap:11px;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);font-size:14px;color:var(--t2)}
+.usage-avatar{width:30px;height:30px;border-radius:50%;background:var(--greendim);border:1px solid rgba(125,211,252,.3);display:grid;place-items:center;color:var(--green);font-weight:700}
+.proc-progress{padding:30px 16px;text-align:center}
+.proc-pct{font-family:var(--mono);font-size:44px;font-weight:700;color:var(--green)}
+.proc-stage{font-size:14px;color:var(--t2);margin-top:8px}
+.progress-track{height:7px;background:var(--elev);border:1px solid var(--border);border-radius:99px;overflow:hidden;margin-top:16px}
+.progress-fill{height:100%;width:0;background:var(--green)}
+.proc-log{font-family:var(--mono);font-size:12px;color:var(--t3);text-align:left;margin-top:14px;max-height:150px;overflow:auto;background:#08080b;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+/* analytics */
+.tt-input-row{display:flex;gap:10px}
+.tt-input{flex:1;background:var(--bg);border:1px solid var(--border-hi);border-radius:11px;color:#fff;font-size:15px;padding:13px 15px;min-width:0}
+.btn-tt-analyze{background:var(--green);color:#050506;font-size:13px;font-weight:700;border-radius:11px;padding:13px 22px;white-space:nowrap}
+.btn-tt-analyze:disabled{opacity:.45;cursor:wait}
+.tt-loading{display:none;padding:36px;text-align:center}.tt-loading.show{display:block}
+.tt-spinner{width:30px;height:30px;border-radius:50%;border:2px solid rgba(255,255,255,.08);border-top-color:var(--green);margin:0 auto 12px;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.tt-error{display:none;padding:13px;border-radius:11px;background:rgba(229,72,77,.07);border:1px solid rgba(229,72,77,.2);color:var(--red);margin-top:14px;font-size:14px}
+.tt-error.show{display:block}
+.tt-result{display:none;margin-top:20px}.tt-result.show{display:block}
+.tt-profile-row{display:flex;align-items:center;gap:14px;padding:14px;border-radius:var(--r2);background:var(--panel);border:1px solid var(--border)}
+.tt-thumb{width:52px;height:52px;border-radius:50%;background:var(--elev);object-fit:cover}
+.tt-author-name{font-size:17px;font-weight:700}
+.tt-author-handle{font-size:13px;color:var(--t3)}
+.tt-verified{font-size:11px;background:var(--greendim);border:1px solid rgba(125,211,252,.3);padding:2px 8px;border-radius:99px}
+.tt-meta-row{display:flex;gap:14px;margin:12px 0;font-size:13px;color:var(--t3);flex-wrap:wrap}
+.tt-title-box{padding:12px 14px;border-radius:var(--r);background:var(--panel);border:1px solid var(--border);margin-bottom:14px;font-size:14px;color:var(--t2)}
+.tt-tech-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tt-tech{padding:10px 12px;border-radius:var(--r);background:var(--panel);border:1px solid var(--border)}
+.tt-tech-lbl{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);font-weight:700}
+.tt-tech-val{font-size:14px;margin-top:5px}
+.tt-video-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:var(--r2);background:var(--green);color:#050506;font-weight:700;width:100%;margin-top:14px}
+.heat{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}
+.heat div{background:var(--elev);border:1px solid var(--border);border-radius:8px;padding:8px 4px;text-align:center;font-size:11px}
+.heat b{display:block;font-size:13px;color:var(--green2)}
+/* compare table */
+.table-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r2);background:var(--panel);margin-top:20px}
+.compare-table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.compare-table th,.compare-table td{padding:12px 16px;border-bottom:1px solid var(--border);text-align:left;color:var(--t2)}
+.compare-table th{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--t3)}
+.yes{color:var(--green);font-weight:700}.no{color:var(--red);font-weight:700}
+/* steps */
+.step-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.step{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px}
+.step b.num{font-family:var(--mono);color:var(--green);font-size:13px}
+.step h4{margin:6px 0;font-size:16px}.step p{font-size:14px;color:var(--t2)}
+/* footer */
+.site-footer{border-top:1px solid var(--border);padding:36px 0 24px;margin-top:50px}
+.footer-cols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:28px;max-width:1100px;margin:0 auto;padding:0 20px}
+.footer-col h4{color:var(--t3);font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px}
+.footer-col a{display:block;color:var(--t2);font-size:14px;padding:3px 0}
+.footer-col a:hover{color:var(--green)}
+.footer-bottom{border-top:1px solid var(--border);margin-top:24px;padding-top:14px;text-align:center;color:var(--t3);font-size:13px}
+.bottom-nav{display:none}
+.view{display:none}.view.active{display:block}
+/* mode anti-pecah */
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.mode-card{border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;cursor:pointer;background:var(--bg);transition:.2s;text-align:left;color:var(--text)}
+.mode-card b{font-size:14px;display:block}
+.mode-card span{font-size:12px;color:var(--t3)}
+.mode-card.sel{border-color:var(--green);background:var(--greendim)}
+.verdict{display:none;margin-top:14px;border-radius:12px;padding:13px 15px;font-size:14px;border:1px solid var(--border)}
+.verdict.show{display:block}
+.verdict.aman{background:rgba(125,211,252,.07);border-color:rgba(125,211,252,.35)}
+.verdict.rawan{background:rgba(229,72,77,.07);border-color:rgba(229,72,77,.35)}
+.verdict.warn{background:rgba(232,163,61,.07);border-color:rgba(232,163,61,.35)}
+.verdict ul{margin:8px 0 0 18px;font-size:13px;color:var(--t2)}
+.ap-opt{display:none;margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:14px;background:var(--bg)}
+.ap-opt.show{display:block}
+.ap-opt .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ap-opt label{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);font-weight:700;display:block;margin:10px 0 5px}
+.ap-opt select{width:100%;background:var(--panel);border:1px solid var(--border-hi);border-radius:9px;color:#fff;font-size:14px;padding:10px 12px}
+.tt-src{font-family:var(--mono);font-size:11.5px;color:var(--t3);margin-top:12px;line-height:1.8;border-top:1px solid var(--border);padding-top:10px}
+.tt-src b{color:var(--t2)}
+.gear-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.gear-table td,.gear-table th{padding:6px 8px;border-bottom:1px solid var(--border);text-align:left;color:var(--t2)}
+.gear-table th{font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--t3)}
+.na{color:var(--t3)!important;font-weight:400!important}
+/* login modal */
+.login-modal{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.72)}
+.login-modal.show{display:flex}
+.login-card{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--border-hi);border-radius:18px;padding:26px 22px;text-align:center}
+.login-card input,.login-card select{width:100%;background:var(--bg);border:1px solid var(--border-hi);border-radius:10px;color:#fff;font-size:14px;padding:11px 13px;margin-top:10px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.tier-grid{grid-template-columns:1fr}.step-grid{grid-template-columns:1fr}.footer-cols{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.top-nav .nav-links,.nav-ver,.usage-pill{display:none}.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(10,10,13,.94);border-top:1px solid var(--border);justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom))}body{padding-bottom:70px}.bn-item{display:flex;flex-direction:column;align-items:center;font-size:10px;color:var(--t3);padding:6px;flex:1}.bn-item.active{color:var(--green)}.tt-input-row{flex-direction:column}.btn-tt-analyze{width:100%}.scan-view{grid-template-columns:repeat(2,1fr)}.tt-tech-row{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<nav class="top-nav">
+  <a class="nav-logo" href="#/"><span class="glyph">G</span>Guoke Method</a>
+  <div class="nav-links">
+    <a class="nav-link" href="#/" data-nav="dashboard">Beranda</a>
+    <a class="nav-link" href="#/howto" data-nav="howto">Cara Pakai</a>
+    <a class="nav-link" href="#/patcher" data-nav="patcher">Optimizer TikTok</a>
+    <a class="nav-link" href="#/analytics" data-nav="analytics">Analitik</a>
+    <a class="nav-link" href="#/tiers" data-nav="tiers">Paket</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-ver">v2.0</span>
+    <div class="usage-pill" id="nav-usage">Unggahan hari ini <b>0</b>/3</div>
+    <div class="nav-user" id="nav-user"><span id="nav-user-name"></span><span class="nav-user-tier" id="nav-user-tier" style="font-size:10px;font-weight:800;background:var(--green);color:#000;border-radius:99px;padding:2px 8px"></span></div>
+    <button class="btn-clear" id="btn-logout" style="display:none;font-size:11px;padding:6px 10px">Logout</button>
+    <button class="btn-tt-analyze" id="bn-login" style="padding:9px 16px;min-height:0">Masuk</button>
+  </div>
+</nav>
+
+<div class="page">
+<div id="tg-strip-wrap" style="display:flex;justify-content:center"><a class="tg-strip" href="https://t.me/GuokeBot?start=site" target="_blank" rel="noopener" style="position:relative;padding-right:38px"><span>🎁</span><span>Dapatkan <b>3 unggahan ekstra</b> dengan bergabung ke <b>channel Telegram</b> kami.</span><button id="tg-strip-close" aria-label="Tutup" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.15);color:#1A1300;font-weight:800;line-height:1">✕</button></a></div>
+
+<!-- DASHBOARD -->
+<section class="view" data-view="dashboard">
+<header class="page-hero container">
+<div class="hero-badge"><i></i>GUOKE METHOD · ENGINE V2</div>
+<h1>SIAPKAN VIDEO HD <span>UNTUK TIKTOK</span></h1>
+<p class="hero-sub">Optimalkan videomu dengan resolusi dan bitrate tinggi supaya hasilnya di TikTok lebih tajam.</p>
+<div class="welcome-row"><a href="#/patcher" class="btn btn-run" style="text-decoration:none">Mulai Proses Video</a></div>
+<div class="welcome-row"><span class="welcome-chip">👤 SELAMAT DATANG, <b id="tier-user">TAMU</b></span><span class="welcome-chip" id="hero-date"></span></div>
+</header>
+<main class="container">
+<section class="section"><div class="section-kicker">Platform</div><div class="section-title">Statistik Platform</div>
+<div class="kpi-grid">
+<div class="card"><div class="kpi-top"><div class="kpi-label">Total proses video</div><div>📦</div></div><div class="kpi-value" id="kpi-patches">0</div><div class="kpi-foot">SEMUA WAKTU · SEMUA PENGGUNA</div></div>
+<div class="card"><div class="kpi-top"><div class="kpi-label">Pengguna terdaftar</div><div>👥</div></div><div class="kpi-value" id="kpi-users">0</div><div class="kpi-foot">AKUN DISCORD DAN TELEGRAM</div></div>
+<div class="card"><div class="kpi-top"><div class="kpi-label">Proses hari ini</div><div>⏱</div></div><div class="kpi-value" id="kpi-today">0</div><div class="kpi-foot" id="kpi-today-foot">—</div></div>
+<div class="card"><div class="kpi-top"><div class="kpi-label">Status mesin</div><div>⚙️</div></div><div class="engine-status"><span class="status-dot"></span><span class="status-text" id="eng-text">AKTIF</span></div><div class="engine-meta"><span>ENGINE v2.0.0</span><span id="eng-uptime">UPTIME —</span><span id="eng-last">PROSES TERAKHIR —</span></div></div>
+</div></section>
+<section class="section"><div class="cmp-hero"><h2>Lihat perbedaannya</h2><p>Klip yang sama, sebelum dan sesudah. Geser untuk membandingkan.</p></div>
+<div class="cmp-stage"><div class="phone-frame"><div class="cmp" id="cmp" style="--pos:50%">
+<div class="cmp-layer"><div class="scene-b"></div><div class="scene-cap">Tajam · Detail utuh · Warna hidup</div></div>
+<div class="cmp-layer cmp-a"><div class="scene-a"></div><div class="scene-cap">Buram · Pecah · Kompres TikTok</div></div>
+<span class="cmp-tag a">Before · 540p 30fps</span><span class="cmp-tag b">After · 4K 120fps</span>
+<div class="cmp-line"></div><div class="cmp-hand" id="cmp-hand">⇔</div>
+</div></div></div></section>
+</main>
+<section class="faq container"><div class="section-kicker">Bantuan</div><div class="section-title">Pertanyaan Umum</div><div id="faq-list"></div>
+<p class="faq-support">Ada kendala? Laporkan ke kami di Discord. <a href="#/tiers" style="color:var(--green)">Gabung di sini</a></p></section>
+</section>
+
+<!-- HOWTO -->
+<section class="view" data-view="howto">
+<header class="page-hero container"><div class="hero-badge"><i></i>GUOKE · PANDUAN</div><h1>CARA <span>PAKAI.</span></h1><p class="hero-sub">Dari ekspor sampai unggah, 4 langkah agar kualitas videomu terjaga di TikTok.</p></header>
+<main class="container"><div class="step-grid">
+<div class="step"><b class="num">LANGKAH 1</b><h4>🎬 Ekspor dengan benar</h4><p>Ekspor video MP4 atau MOV (H.264 atau HEVC), minimal 1080p, 60 fps konstan, bitrate 10-40 Mbps. Jangan pakai video hasil unduhan dari TikTok atau WhatsApp.</p></div>
+<div class="step"><b class="num">LANGKAH 2</b><h4>⚡ Proses di Guoke Engine</h4><p>Buka <a href="#/patcher" style="color:var(--green)">Optimizer TikTok</a>, masukkan videomu, klik <b>Proses Video</b>, lalu <b>Unduh Video HD</b>. Resolusi dan fps tetap sama seperti aslinya, selama masih dalam batas paketmu.</p></div>
+<div class="step"><b class="num">LANGKAH 3</b><h4>🚀 Unggah lewat web</h4><p>Unggah file hasil proses <b>apa adanya</b> lewat tiktok.com/upload. Aktifkan <b>Upload HD</b> dan atur visibilitas ke <b>Semua Orang</b>. Jangan potong, beri filter, atau tambah suara di aplikasi.</p></div>
+<div class="step"><b class="num">LANGKAH 4</b><h4>📊 Cek hasil</h4><p>Tempel link videomu di <a href="#/analytics" style="color:var(--green)">Analitik</a> untuk melihat resolusi dan FPS-nya.</p></div>
+<div><b>UNLIMITED</b><h4>🎫 Unggahan tanpa batas</h4><p>Semua paket: unggahan <b>tanpa batas per hari</b>. Batas ukuran file tetap berlaku (Gratis 100 MB, Booster 200 MB).</p></div>
+<div class="step"><b class="num">ANTI GAGAL</b><h4>⚠️ Jangan edit setelah diproses</h4><p>Memotong, memberi filter, atau mengganti suara di TikTok membuat video di-encode ulang dan kualitasnya turun. Unggah file persis seperti hasil unduhan dari Guoke Engine.</p></div>
+</div></main>
+</section>
+
+<!-- PATCHER -->
+<section class="view" data-view="patcher">
+<header class="page-hero container"><div class="hero-badge"><i></i>GUOKE · OPTIMIZER TIKTOK</div><h1>OPTIMIZER <span>TIKTOK.</span></h1><p class="hero-sub">Siapkan videomu untuk kualitas terbaik di TikTok. Resolusi dan fps asli dipertahankan.</p></header>
+<main class="container"><section class="section"><div class="section-kicker">Guoke Engine</div><div class="section-title">Proses Video Untuk TikTok</div>
+<div class="patcher-card">
+<div class="tt-engine-label"><div class="tt-engine-dot"></div><span class="tt-engine-name">Guoke Engine</span><span class="tt-engine-ver">v2.0</span></div>
+<div id="dropZoneWrap">
+<input type="file" id="fileInput" accept="video/*,.mkv,.avi,.mov,.webm,.3gp,.flv,.m4v,.mts,.ts" style="display:none"/>
+<div id="dropZone" class="drop-zone"><div style="font-size:40px">⬆️</div><div class="drop-title">Letakkan videomu di sini</div><div class="drop-sub">atau klik untuk memilih file · MP4 / MOV · H.264 atau H.265 (HEVC) · wajib ada audio</div></div>
+<p style="font-size:13px;color:var(--t3);margin-top:10px">Resolusi dan fps asli dipertahankan — tidak diturunkan. Proses jalan di background thread sehingga HP tidak macet.</p>
+<div class="limit-bar" id="limitBar" style="display:none"><div class="limit-bar-track"><div class="limit-bar-fill" id="limitFill"></div></div><div class="limit-text" id="limitText">— MB</div></div>
+<div class="scan-view" id="scanView"><div class="sv-item"><div class="sv-lbl">Ukuran</div><div class="sv-val" id="sv-size">—</div></div><div class="sv-item"><div class="sv-lbl">Resolusi</div><div class="sv-val" id="sv-res">—</div></div><div class="sv-item"><div class="sv-lbl">Durasi</div><div class="sv-val" id="sv-dur">—</div></div><div class="sv-item"><div class="sv-lbl">Kondisi</div><div class="sv-val" id="sv-health" style="color:var(--green)">—</div></div></div>
+<div class="verdict" id="verdictBox"></div>
+<div class="mode-row" id="modeRow" style="display:none">
+<button class="mode-card sel" id="modeFast"><b>⚡ Cepat — Tanpa Re-encode</b><span>Rapikan container + metadata. Kualitas 100% utuh. File kecil.</span></button>
+<button class="mode-card" id="modeAP"><b>🛡 Anti-Pecah — Re-encode HD</b><span>Render ulang ke standar TikTok (1080×1920, H.264, bitrate tinggi). Anti pecah.</span></button>
+</div>
+<div class="ap-opt" id="apOpt">
+<div class="grid2">
+<div><label>Resolusi output</label><select id="apRes"><option value="keep" selected>Otomatis sesuai paket ⭐</option><option value="1080x1920">1080 × 1920 — Full HD</option><option value="720x1280">720 × 1280 — Hemat</option></select></div>
+<div><label>Frame rate</label><select id="apFps"><option value="30">30 fps</option><option value="60" selected>60 fps — asli dipertahankan ⭐</option></select></div>
+<div><label>Kualitas</label><select id="apBr" disabled><option selected>CRF 14 · maks 40/60M — Tetap ⭐</option></select></div>
+<div><label>Video miring / kotak?</label><select id="apFit"><option value="cover" selected>Crop penuh 9:16</option><option value="pad">Bar hitam (utuh)</option></select></div>
+</div>
+<div style="font-size:12px;color:var(--t3);margin-top:10px">Otomatis: resolusi & fps asli dipertahankan. Opsi resolusi/frame di atas hanya dipakai bila kamu pilih ukuran eksplisit. Engine FFmpeg (~30MB) diunduh sekali saja ke worker, lalu tersimpan di cache. Proses 100% di perangkatmu.</div>
+</div>
+<div id="engDl" style="display:none;margin-top:14px;border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:var(--bg)">
+<div style="display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--t2)"><span id="engDlLabel">Mengunduh engine…</span><span id="engDlText" style="font-family:var(--mono);white-space:nowrap">0 MB</span></div>
+<div class="limit-bar-track" style="margin-top:8px"><div class="limit-bar-fill" id="engDlFill" style="width:0"></div></div>
+<div id="engSlow" style="display:none;font-size:12px;color:var(--amber);margin-top:8px">⚠️ Koneksi lambat — unduhan tetap berjalan di background. Halaman tetap bisa dipakai.</div>
+</div>
+<div id="engErr" style="display:none;margin-top:14px;border:1px solid rgba(229,72,77,.4);background:rgba(229,72,77,.07);border-radius:12px;padding:14px">
+<div style="font-weight:700">⚠️ Engine gagal dimuat</div>
+<div id="engErrMsg" style="font-size:13px;color:var(--t2);margin-top:6px"></div>
+<div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+<button class="btn btn-run" id="engRetryBtn">↻ Coba Lagi</button>
+<button class="btn btn-clear" id="engFastBtn">⚡ Pakai Mode Cepat</button>
+</div>
+</div>
+<div class="action-row"><button class="btn btn-run" id="runBtn" disabled>⚡ Proses Video</button><button class="btn btn-dl" id="dlBtn" style="display:none">⬇ Unduh Video HD</button><button class="btn btn-clear" id="clearBtn" style="display:none">✕ Hapus</button><button class="btn btn-again" id="againBtn" style="display:none">↻ Proses Video Lain</button></div>
+<div class="usage-row" id="usageRow"><div class="usage-avatar" id="usage-avatar">U</div><div class="usage-label"><b id="usage-tier-label">GRATIS</b> · <span id="usage-count">0 unggahan hari ini</span><div style="font-size:12px;color:var(--t3)" id="usage-paket-info">Paket kamu: Gratis · maks 100 MB · 1080p · 60 fps</div></div></div>
+</div>
+<div id="processingView" style="display:none"><div class="proc-progress"><div class="proc-pct" id="progressPct">0%</div><div class="proc-stage" id="progressStage">Memproses video… jangan tutup halaman ini.</div><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div class="proc-log" id="procLog"></div><div style="margin-top:14px"><button class="btn btn-clear" id="cancelBtn">✕ Batal</button></div></div></div>
+</div></section></main>
+</section>
+
+<!-- ANALYTICS -->
+<section class="view" data-view="analytics">
+<header class="page-hero container"><div class="hero-badge"><i></i>GUOKE METHOD · ANALITIK</div><h1>ANALISIS <span>TIKTOK.</span></h1><p class="hero-sub">Cek kualitas video TikTok yang sudah kamu unggah: resolusi, FPS, dan statistik.</p></header>
+<div class="container">
+<div class="patcher-card"><div class="tt-engine-label"><div class="tt-engine-dot"></div><span class="tt-engine-name">Analisis Video</span><span class="tt-engine-ver">v2.0 · data asli</span></div>
+<p style="font-size:13px;color:var(--t3);margin-bottom:14px">Tempel link video TikTok (bisa link pendek vt.tiktok.com / vm.tiktok.com). Data diambil langsung dari TikTok — tanpa tebakan, tanpa perlu backend.</p>
+<div class="tt-input-row"><input type="url" id="ttUrlInput" class="tt-input" placeholder="https://www.tiktok.com/@username/video/… atau https://vt.tiktok.com/…" autocomplete="off"><button class="btn-tt-analyze" id="ttAnalyzeBtn">🔍 Analisis</button></div>
+<div class="tt-loading" id="ttLoading"><div class="tt-spinner"></div><div>Mengambil data asli dari TikTok…</div></div>
+<div class="tt-error" id="ttError"></div>
+<div class="tt-result" id="ttResult">
+<div class="tt-profile-row"><img id="ttAvatar" class="tt-thumb" alt=""><div><div class="tt-author-name" id="ttAuthorName">—</div><div class="tt-author-handle"><span id="ttHandle">—</span> <span id="ttVerified" class="tt-verified" style="display:none">✓ Terverifikasi</span> <span id="ttPrivate" class="tt-verified" style="display:none">🔒 Privat</span></div></div></div>
+<div class="tt-meta-row"><span id="ttDuration">—</span><span>·</span><span id="ttUploadedAt">—</span></div>
+<div class="tt-title-box"><div id="ttTitle">—</div><div id="ttHashtags" style="color:var(--green);font-weight:600;margin-top:6px"></div></div>
+<div class="scan-view show" style="margin-bottom:14px"><div class="sv-item"><div class="sv-lbl">Views</div><div class="sv-val" id="st-views">—</div></div><div class="sv-item"><div class="sv-lbl">Likes</div><div class="sv-val" id="st-likes">—</div></div><div class="sv-item"><div class="sv-lbl">Comments</div><div class="sv-val" id="st-comments">—</div></div><div class="sv-item"><div class="sv-lbl">Shares</div><div class="sv-val" id="st-shares">—</div></div><div class="sv-item"><div class="sv-lbl">Koleksi</div><div class="sv-val" id="st-collects">—</div></div><div class="sv-item"><div class="sv-lbl">Unduhan</div><div class="sv-val" id="st-downloads">—</div></div></div>
+<div class="tt-tech-row">
+<div class="tt-tech"><div class="tt-tech-lbl">Resolusi</div><div class="tt-tech-val" id="tech-res">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">FPS</div><div class="tt-tech-val" id="tech-fps">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">Kodek</div><div class="tt-tech-val" id="tech-codec">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">Region</div><div class="tt-tech-val" id="tech-region">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">Musik</div><div class="tt-tech-val" id="tech-music" style="font-size:12.5px">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">Bitrate</div><div class="tt-tech-val" id="tech-bitrate">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">Ukuran file</div><div class="tt-tech-val" id="tech-size">—</div></div>
+<div class="tt-tech"><div class="tt-tech-lbl">Format</div><div class="tt-tech-val" id="tech-format">—</div></div>
+</div>
+<div class="tt-tech" style="margin-top:10px"><div class="tt-tech-lbl">Varian kualitas yang disajikan TikTok</div><div id="ttGears" style="margin-top:8px;font-size:13px"></div></div>
+<div class="tt-tech" style="margin-top:10px;border-color:rgba(232,163,61,.35)"><div class="tt-tech-lbl" style="color:var(--amber)">Indikasi jangkauan — perkiraan, bukan data resmi TikTok</div><div class="tt-tech-val" id="ttReach" style="font-size:13px;line-height:1.7">—</div></div>
+<div class="tt-src" id="ttSrc"></div>
+<div class="action-row"><a id="ttOpenBtn" class="btn btn-clear" href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none">↗ Buka di TikTok</a><button class="btn btn-clear" id="ttCopyBtn" style="display:none">📋 Salin link file kualitas terbaik</button></div>
+</div></div>
+</div></section>
+
+<!-- TIERS -->
+<section class="view" data-view="tiers">
+<header class="page-hero container"><div class="hero-badge"><i></i>GUOKE METHOD · ENGINE V2</div><h1>PILIH <span>PAKETMU.</span></h1><p class="hero-sub">Semua paket memakai mesin yang sama. Paket lebih tinggi membuka file lebih besar dan resolusi lebih tinggi.</p></header>
+<main class="container"><div class="tier-grid" id="tier-grid-page"></div>
+<div class="table-scroll"><table class="compare-table"><thead><tr><th>Fitur</th><th>Gratis</th><th>Booster</th><th>Premium</th></tr></thead><tbody id="compare-body"></tbody></table></div>
+<p style="text-align:center;font-size:13px;color:var(--t3);margin-top:14px">Paket ditentukan dari role Discord atau keanggotaan Telegram-mu dan dicek ulang setiap kali masuk.</p></main>
+</section>
+</div>
+
+<!-- PRIVACY -->
+<section class="view" data-view="privacy">
+<header class="page-hero container"><div class="hero-badge"><i></i>GUOKE · LEGAL</div><h1>KEBIJAKAN <span>PRIVASI.</span></h1></header>
+<main class="container"><div class="patcher-card"><p style="font-size:14px;color:var(--t2)">Video yang kamu unggah hanya dipakai untuk diproses dan akan dihapus otomatis dari server kami setelah 1 jam. Kami tidak membagikan videomu kepada pihak lain. Data akun (nama pengguna dan paket) disimpan hanya untuk menjalankan layanan. Kamu bisa meminta penghapusan akun kapan saja lewat Discord atau Telegram.</p></div></main>
+</section>
+
+<!-- TERMS -->
+<section class="view" data-view="terms">
+<header class="page-hero container"><div class="hero-badge"><i></i>GUOKE · LEGAL</div><h1>SYARAT <span>PENGGUNAAN.</span></h1></header>
+<main class="container"><div class="patcher-card"><p style="font-size:14px;color:var(--t2)">Gunakan layanan ini hanya untuk video milikmu atau yang kamu punya izin untuk memakainya. Dilarang mengunggah konten ilegal atau melanggar hak cipta. Hasil di TikTok tergantung pada pemrosesan TikTok sendiri, jadi kami tidak menjamin kualitas akhir. Batas pemakaian mengikuti paket yang kamu pilih, dan kami berhak membatasi akun yang menyalahgunakan layanan.</p></div></main>
+</section>
+
+<footer class="site-footer"><div class="footer-cols">
+<div class="footer-brand"><div class="glyph" style="width:38px;height:38px;font-size:20px">G</div><div style="font-weight:800;letter-spacing:.1em">GUOKE</div><p>Video HD untuk TikTok.<br>Optimizer TikTok — Guoke Engine.</p></div>
+<div class="footer-col"><h4>Produk</h4><a href="#/patcher">Optimizer TikTok</a><a href="#/analytics">Analitik</a><a href="#/tiers">Paket</a></div>
+<div class="footer-col"><h4>Panduan</h4><a href="#/howto">Cara Pakai</a></div>
+<div class="footer-col"><h4>Komunitas</h4><a href="#/tiers">Discord</a><a href="https://t.me/GuokeBot?start=site" target="_blank" rel="noopener">Telegram</a></div>
+<div class="footer-col"><h4>Legal</h4><a href="#/privacy">Kebijakan Privasi</a><a href="#/terms">Syarat Penggunaan</a></div>
+</div><div class="footer-bottom">Tidak berafiliasi dengan TikTok. Gunakan dengan bijak. · <span id="app-ver">v2.1-worker</span></div></footer>
+
+<nav class="bottom-nav">
+<a class="bn-item" href="#/" data-nav="dashboard">🏠<span>Beranda</span></a>
+<a class="bn-item" href="#/howto" data-nav="howto">📖<span>Cara Pakai</span></a>
+<a class="bn-item" href="#/patcher" data-nav="patcher">⚡<span>Optimizer</span></a>
+<a class="bn-item" href="#/analytics" data-nav="analytics">📊<span>Analitik</span></a>
+<a class="bn-item" href="#/tiers" data-nav="tiers">🎫<span>Paket</span></a>
+</nav>
+
+<div class="login-modal" id="loginModal"><div class="login-card">
+<h3 style="letter-spacing:.06em">MASUK</h3>
+<p style="font-size:13px;color:var(--t3);margin-top:6px">Masuk dengan akunmu untuk mengaktifkan paket.</p>
+<button class="btn btn-run" id="loginDiscord" style="width:100%;margin-top:12px;justify-content:center">Masuk dengan Discord</button>
+<button class="btn btn-clear" id="loginTelegram" style="width:100%;margin-top:8px;opacity:.55" disabled>Masuk dengan Telegram · Segera hadir</button>
+<button class="btn-clear" id="loginClose" style="width:100%;margin-top:8px">Tutup</button>
+</div></div>
+
+<script>
+/* ============ STORE ============ */
+const LS='guoke_clone_v1';
+const TIERS={
+ free:{key:'free',name:'GRATIS',mb:100,res:'1080p',maxH:1080,fps:60,perDay:Infinity},
+ booster:{key:'booster',name:'BOOSTER',mb:200,res:'4K',maxH:2160,fps:60,perDay:Infinity},
+ premium:{key:'premium',name:'PREMIUM',mb:Infinity,res:'4K',maxH:4320,fps:120,perDay:Infinity}
+};
+function load(){try{return JSON.parse(localStorage.getItem(LS))||{}}catch(e){return{}}}
+function save(s){localStorage.setItem(LS,JSON.stringify(s))}
+let S=Object.assign({user:null,usage:{date:'',count:0},total:0,today:0,todayDate:'',users:0,lastOpt:'—'},load());
+const todayStr=()=>new Date().toISOString().slice(0,10);
+if(S.todayDate!==todayStr()){S.todayDate=todayStr();S.today=0;save(S)}
+if(S.usage.date!==todayStr()){S.usage={date:todayStr(),count:0};save(S)}
+const myTier=()=>TIERS[(S.user&&S.user.tier)||'free'];
+const fmtMB=b=>(b/1048576).toFixed(b>104857600?0:1)+' MB';
+
+/* ============ ROUTER ============ */
+const views=[...document.querySelectorAll('.view')];
+function route(){
+ let h=(location.hash||'#/').replace('#','');
+ let name=h.replace('/','')||'dashboard';
+  if(!['dashboard','howto','patcher','analytics','tiers','privacy','terms'].includes(name))name='dashboard';
+ views.forEach(v=>v.classList.toggle('active',v.dataset.view===name));
+ document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===name));
+ window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ============ NAV / LOGIN ============ */
+const $=id=>document.getElementById(id);
+function tierLabel(k){return k==='free'?'Gratis':k==='booster'?'Booster':'Premium';}
+function refreshUser(){
+ const u=S.user;
+ $('nav-user').style.display=u?'flex':'none';
+ $('btn-logout').style.display=u?'block':'none';
+ $('bn-login').style.display=u?'none':'block';
+ if(u){$('nav-user-name').textContent='@'+u.name;$('nav-user-tier').textContent=tierLabel(u.tier).toUpperCase();$('tier-user').textContent=u.name.toUpperCase();}
+ else{$('tier-user').textContent='TAMU';}
+ $('hero-date').textContent=new Date().toLocaleDateString('id-ID',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+ const t=myTier(),used=S.usage.count;
+ const maxTxt=t.perDay===Infinity?'tanpa batas':t.perDay;
+  $('nav-usage').innerHTML='Unggahan hari ini <b>'+used+'</b>/'+(t.perDay===Infinity?'∞':t.perDay);
+  if($('tier-name2'))$('tier-name2').textContent=t.name;
+  if($('tier-mb'))$('tier-mb').textContent=t.mb===Infinity?'Tanpa batas':t.mb+' MB';
+  if($('tier-res'))$('tier-res').textContent=t.res;if($('tier-fps'))$('tier-fps').textContent=t.fps+' FPS';
+  if($('pb-text'))$('pb-text').textContent=t.perDay===Infinity?'Tanpa batas':used+' / '+t.perDay;
+  if($('pb-fill'))$('pb-fill').style.width=t.perDay===Infinity?'100%':Math.min(100,used/t.perDay*100)+'%';
+  $('usage-tier-label').textContent=t.name;
+ $('usage-count').textContent=used+' unggahan hari ini'+(t.perDay===Infinity?'':' (maks '+t.perDay+')');
+ if($('usage-paket-info'))$('usage-paket-info').textContent='Paket kamu: '+tierLabel(t.key)+' · maks '+(t.mb===Infinity?'tanpa batas':t.mb+' MB')+' · '+t.res+' · '+t.fps+' fps';
+ $('usage-avatar').textContent=(u?u.name:'U')[0].toUpperCase();
+}
+$('bn-login').onclick=()=>$('loginModal').classList.add('show');
+$('loginClose').onclick=()=>$('loginModal').classList.remove('show');
+$('loginDiscord').onclick=()=>{
+ const n='pengguna'+Math.floor(Math.random()*9000+1000);
+ S.user={name:n,tier:'free'};S.users++;save(S);
+ $('loginModal').classList.remove('show');refreshUser();renderStats();
+};
+$('btn-logout').onclick=()=>{S.user=null;S.usage={date:todayStr(),count:0};save(S);refreshUser();};
+
+/* ============ STATS ============ */
+function renderStats(){
+ $('kpi-patches').textContent=(S.total||0).toLocaleString('id-ID');
+ $('kpi-users').textContent=(S.users||0).toLocaleString('id-ID');
+ $('kpi-today').textContent=S.today;
+ $('kpi-today-foot').textContent='HARI INI · '+new Date().toLocaleDateString('id-ID');
+ $('eng-last').textContent='PROSES TERAKHIR '+S.lastOpt;
+ $('eng-uptime').textContent='UPTIME 99.9%';
+}
+const tgClose=$('tg-strip-close');if(tgClose)tgClose.onclick=(e)=>{e.preventDefault();e.stopPropagation();const w=$('tg-strip-wrap');if(w)w.style.display='none';};
+setInterval(()=>{ if(Math.random()<.3){S.total++;S.today++;save(S);renderStats();} },20000);
+
+/* ============ TIERS RENDER ============ */
+const FEATS=[
+ ['100 MB|200 MB|Unlimited','file size'],['1080p|4K|4K','max resolution'],['60 FPS|60 FPS|120 FPS','max framerate'],['Unlimited|Unlimited|Unlimited','uploads']
+];
+function tierCard(k,feat){
+ const t=TIERS[k];
+ const mbStr=t.mb===Infinity?'tanpa batas':t.mb+' MB';
+ const upStr=t.perDay===Infinity?'tanpa batas':t.perDay+' per hari';
+ const title=k==='free'?'Gratis':k==='booster'?'Booster':'Premium';
+ const sub=k==='free'?'Untuk semua orang':k==='booster'?'Untuk member Discord yang boost server':'Hubungi owner untuk mendapatkannya';
+ const btnTxt=k==='free'?'Mulai Gratis':k==='booster'?'Boost Server':'Hubungi Owner';
+ const rows=['Ukuran file maks <b>'+mbStr+'</b>','Resolusi maks <b>'+t.res+'</b>','Maks <b>'+t.fps+' fps</b>','<b>'+upStr+'</b>','<b>Guoke Engine</b> 2.0'+(k==='premium'?' + antrean prioritas':'')];
+ let h=rows.map(r=>'<div class="feat">✅ '+r+'</div>').join('');
+ if(k!=='premium')h+='<div class="feat no">✕ Antrean prioritas</div><div class="feat no">✕ Dukungan prioritas</div>';
+ else h+='<div class="feat">✅ <b>Antrean prioritas</b></div><div class="feat">✅ <b>Dukungan prioritas</b></div>';
+ return '<div class="tier-card'+(k==='premium'?' featured':'')+'">'+(k==='premium'?'<span class="rec-chip">Rekomendasi</span>':'')+'<span class="tier-key">'+t.name+'</span><div class="tier-name">'+title+'</div><div class="tier-sub">'+sub+'</div>'+h+'<button class="tier-btn" data-tierbtn="'+k+'">'+(myTier().key===k?'✓ Aktif':btnTxt)+'</button></div>';
+}
+function renderTiers(){
+  const html=['free','booster','premium'].map(k=>tierCard(k)).join('');
+  if($('tier-grid-dash'))$('tier-grid-dash').innerHTML=html;
+  if($('tier-grid-page'))$('tier-grid-page').innerHTML=html;
+ document.querySelectorAll('[data-tierbtn]').forEach(b=>b.onclick=()=>{
+   const n=S.user?S.user.name:'guest'+Math.floor(Math.random()*999);
+   S.user={name:n,tier:b.dataset.tierbtn};S.usage={date:todayStr(),count:0};save(S);refreshUser();renderTiers();
+ });
+ const rows=[['Batas file','<b>100 MB</b>','<b>200 MB</b>','Tanpa batas'],['Unggahan','Tanpa batas','Tanpa batas','Tanpa batas'],['Resolusi maks','<b>1080p</b>','<b>4K</b>','<b>4K</b>'],['FPS maks','<b>60</b>','<b>60</b>','<b>120</b>'],['Antrean prioritas','<span class=no>✕</span>','<span class=no>✕</span>','<span class=yes>✓</span>'],['Dukungan prioritas','<span class=no>✕</span>','<span class=no>✕</span>','<span class=yes>✓</span>']];
+ $('compare-body').innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>').join('');
+}
+
+/* ============ FAQ ============ */
+const FAQS=[
+ ['Kenapa video saya PECAH setelah upload ke TikTok?','Pecah hampir selalu berasal dari file SUMBER: resolusi kecil (<720p), bitrate rendah (bekas download WA/TikTok), atau dimensi ganjil. TikTok me-encode ulang semua video, jadi sumber jelek = hasil pecah. Solusi tuntas: pakai halaman TikTok Optimizer → upload file → lihat panel "Cek Pecah" → jalankan Mode Anti-Pecah (render ulang 1080×1920 H.264 bitrate tinggi), lalu upload hasilnya via tiktok.com dengan Upload HD aktif dan tanpa edit di aplikasi.'],
+ ['What does the Guoke Engine Optimizer actually do?','It optimizes the MP4 container and modifies key metadata to help TikTok reduce the amount of compression applied to your video. The original frames and resolution remain completely untouched — no re-encoding, zero quality loss.'],
+ ['TikTok still compressed my video. Why?','After optimizing, do NOT edit the video (sounds, trimming, filters). Upload the optimized file exactly as downloaded with visibility "Everyone", not "Only Me". Upload via tiktok.com for best results.'],
+ ['What formats work best?','Use MP4 or MOV with H.264 or H.265 (HEVC). Best: 1080p+, constant 60fps, high bitrate.'],
+ ["What's the recommended bitrate?",'Recommended 10–40 Mbps depending on resolution — maximum quality with the lowest file size.'],
+ ['How do I upload TikTok videos with 4K quality?','Export in 4K, optimize with the TikTok Optimizer, then upload the file as-is. Premium tier supports up to 4K 120fps.'],
+ ['How do I upload TikTok videos without compression?','Optimize with the TikTok Optimizer, enable Upload HD, post publicly via TikTok web. DO NOT EDIT the video after optimizing.']
+];
+$('faq-list').innerHTML=FAQS.map(f=>'<div class="faq-item"><button class="faq-q">'+f[0]+'<span>▴</span></button><div class="faq-a">'+f[1]+'</div></div>').join('');
+document.querySelectorAll('.faq-q').forEach(b=>b.onclick=()=>b.parentElement.classList.toggle('open'));
+
+/* ============ COMPARE SLIDER ============ */
+(()=>{const c=$('cmp');let drag=false;
+ const set=x=>{const r=c.getBoundingClientRect();let p=(x-r.left)/r.width*100;p=Math.max(2,Math.min(98,p));c.style.setProperty('--pos',p+'%');};
+ c.addEventListener('pointerdown',e=>{drag=true;c.setPointerCapture(e.pointerId);set(e.clientX);});
+ c.addEventListener('pointermove',e=>{if(drag)set(e.clientX);});
+ c.addEventListener('pointerup',()=>drag=false);c.addEventListener('pointercancel',()=>drag=false);
+})();
+
+/* ============ OPTIMIZER (no re-encode: faststart + metadata) ============ */
+let curFile=null,curMeta=null,outBlob=null,cancelled=false;
+const dz=$('dropZone'),fi=$('fileInput');
+dz.onclick=()=>fi.click();
+['dragover','dragenter'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.add('drag');}));
+['dragleave','drop'].forEach(e=>dz.addEventListener(e,ev=>{ev.preventDefault();dz.classList.remove('drag');}));
+dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])pickFile(e.dataTransfer.files[0]);});
+fi.onchange=()=>{if(fi.files[0])pickFile(fi.files[0]);};
+
+function log(m){const l=$('procLog');l.innerHTML+='<div>> '+m+'</div>';l.scrollTop=l.scrollHeight;}
+function setP(p,stage){$('progressPct').textContent=Math.round(p)+'%';$('progressFill').style.width=p+'%';if(stage)$('progressStage').textContent=stage;}
+
+function videoMeta(file){return new Promise((res,rej)=>{
+ const v=document.createElement('video');v.preload='metadata';v.muted=true;
+ v.onloadedmetadata=()=>{res({w:v.videoWidth,h:v.videoHeight,d:v.duration});URL.revokeObjectURL(v.src);};
+ v.onerror=()=>rej(new Error('Format tidak terbaca'));
+ v.src=URL.createObjectURL(file);
+});}
+
+async function pickFile(f){
+ const okExt=/\.(mp4|mov|m4v|mkv|avi|webm|3gp|flv|mts|ts)$/i.test(f.name)||/^video\//.test(f.type)||!f.type;
+ if(!okExt){alert('Format harus video: MP4 / MOV / MKV / AVI / WEBM / 3GP / FLV / MTS / TS');return;}
+ // Non-MP4 (mkv/avi/webm/dll) wajib lewat Anti-Pecah karena mode cepat hanya untuk container MP4 (ftyp/moov).
+ const needAP=/\.(mkv|avi|webm|3gp|flv|mts|ts)$/i.test(f.name);
+ curFile=f;outBlob=null;
+ $('dlBtn').style.display='none';$('againBtn').style.display='none';
+ let meta={w:0,h:0,d:0};
+ try{meta=await videoMeta(f);}catch(e){meta={w:0,h:0,d:0};}
+ curMeta=meta;
+ $('sv-size').textContent=fmtMB(f.size);
+ $('sv-res').textContent=meta.w?meta.w+'×'+meta.h:'—';
+ $('sv-dur').textContent=(meta.d&&isFinite(meta.d))?meta.d.toFixed(1)+'s':'—';
+ const t=myTier();
+ const overSize=f.size>t.mb*1048576;
+ const shortM=(meta.w&&meta.h)?Math.min(meta.w,meta.h):0;
+ const overRes=shortM>tierShortMax(myTier().key)&&shortM>0;
+ let health='EXCELLENT',col='var(--green)';
+ if(overSize||overRes){health='OVER TIER LIMIT';col='var(--red)';}
+ else if(f.size<1048576){health='LOW QUALITY SRC';col='var(--amber)';}
+ $('sv-health').textContent=health;$('sv-health').style.color=col;
+ $('scanView').classList.add('show');
+ $('limitBar').style.display='flex';
+ $('limitFill').style.width=t.mb===Infinity?'4%':Math.min(100,f.size/(t.mb*1048576)*100)+'%';
+  $('limitText').textContent=fmtMB(f.size)+' / '+(t.mb===Infinity?'tanpa batas':t.mb+' MB');
+ $('runBtn').disabled=false;$('clearBtn').style.display='inline-flex';
+ $('modeRow').style.display='grid';
+ const v=cekPecah(meta,f.size);
+ const vb=$('verdictBox');vb.className='verdict show '+v.level;
+ vb.innerHTML='<b>'+v.title+'</b><ul>'+v.reasons.map(r=>'<li>'+r+'</li>').join('')+'</ul>'+(v.rec==='ap'?'<div style="margin-top:8px;font-size:13px">💡 <b>Disarankan: Mode Anti-Pecah</b> di bawah.</div>':'');
+ if(needAP||v.rec==='ap')$('modeAP').click();else $('modeFast').click();
+ if(needAP)vb.innerHTML+='<div style="margin-top:8px;font-size:13px">📦 File non-MP4 terdeteksi — otomatis pakai <b>Mode Anti-Pecah</b> (re-encode ke MP4 HD).</div>';
+}
+$('clearBtn').onclick=resetPatch;
+$('againBtn').onclick=resetPatch;
+let lastResultURL=null;
+function revokeResultURL(){if(lastResultURL){try{URL.revokeObjectURL(lastResultURL);}catch(e){}lastResultURL=null;}}
+function resetPatch(){curFile=null;outBlob=null;revokeResultURL();fi.value='';$('scanView').classList.remove('show');$('limitBar').style.display='none';$('runBtn').disabled=true;$('dlBtn').style.display='none';$('clearBtn').style.display='none';$('againBtn').style.display='none';$('dropZoneWrap').style.display='block';$('processingView').style.display='none';$('verdictBox').className='verdict';$('verdictBox').innerHTML='';$('modeRow').style.display='none';$('apOpt').classList.remove('show');}
+let hbTimer=null,wakeLock=null,lastProgT=0;
+function stopHeartbeat(){if(hbTimer){clearInterval(hbTimer);hbTimer=null;}}
+async function releaseWake(){try{if(wakeLock){await wakeLock.release();wakeLock=null;}}catch(e){}}
+function stopProcessingUI(){$('dropZoneWrap').style.display='block';$('processingView').style.display='none';stopHeartbeat();releaseWake();}
+function startHeartbeat(t0){
+ stopHeartbeat();lastProgT=Date.now();
+ hbTimer=setInterval(()=>{
+  if(!$('processingView')||$('processingView').style.display==='none'){stopHeartbeat();return;}
+  const s=Math.floor((Date.now()-t0)/1000);
+  const mm=String(Math.floor(s/60)).padStart(2,'0'),ss=String(s%60).padStart(2,'0');
+  const base=$('progressStage').textContent.replace(/ · \d\d:\d\d ●$/,'');
+  $('progressStage').textContent=base+' · '+mm+':'+ss+' ●';
+  if(Date.now()-lastProgT>180000){lastProgT=Date.now();log('⚠️ 3 menit tanpa progres — file besar di HP memang lama. Biarkan berjalan, atau tekan Batal lalu coba video lebih pendek.');}
+ },1000);
+}
+$('cancelBtn').onclick=()=>{cancelled=true;apRunToken++;terminateAPWorker();stopProcessingUI();setP(0,'Dibatalkan.');log('Dibatalkan pengguna — worker.terminate() dipanggil, memori dibebaskan. Worker baru dibuat otomatis saat proses berikutnya.');};
+
+/* --- MP4 box helpers --- */
+function readBoxes(buf,start,end){
+ const boxes=[];const dv=new DataView(buf);let o=start;
+ while(o+8<=end){
+  let size=dv.getUint32(o);
+  const type=String.fromCharCode(dv.getUint8(o+4),dv.getUint8(o+5),dv.getUint8(o+6),dv.getUint8(o+7));
+  let hdr=8;
+  if(size===1){if(o+16>end)break;size=Number(dv.getBigUint64(o+8));hdr=16;}
+  else if(size===0){size=end-o;}
+  if(size<8||o+size>end)break;
+  boxes.push({type,start:o,size,hdr});o+=size;
+ }
+ return boxes;
+}
+/* tambah delta ke semua stco/co64 di dalam moov */
+function patchChunkOffsets(moovBytes,delta){
+ const dv=new DataView(moovBytes.buffer,moovBytes.byteOffset,moovBytes.byteLength);
+ const stack=[[0,moovBytes.length]];
+ const containers=new Set(['moov','trak','mdia','minf','stbl']);
+ while(stack.length){
+  const [s,e]=stack.pop();let o=s;
+  while(o+8<=e){
+   let size=dv.getUint32(o);
+   const t=String.fromCharCode(dv.getUint8(o+4),dv.getUint8(o+5),dv.getUint8(o+6),dv.getUint8(o+7));
+   if(size<8)break;if(o+size>e)break;
+   if(t==='stco'){const n=dv.getUint32(o+12);for(let i=0;i<n;i++){const p=o+16+i*4;const nv=dv.getUint32(p)+delta;if(nv>0xFFFFFFFF||nv<0)throw new Error('Offset melebihi batas 32-bit — file terlalu besar untuk mode cepat, pakai Mode Anti-Pecah.');dv.setUint32(p,nv);}}
+   else if(t==='co64'){const n=dv.getUint32(o+12);for(let i=0;i<n;i++){const p=o+16+i*8;const nv=dv.getBigUint64(p)+BigInt(delta);if(nv<0)throw new Error('Offset negatif — file rusak.');dv.setBigUint64(p,nv);}}
+   else if(containers.has(t))stack.push([o+8,o+size]);
+   o+=size;
+  }
+ }
+}
+function strBytes(s){return new TextEncoder().encode(s);}
+function makeUuidBox(){
+ const payload=strBytes('GUOKE-Engine-v2.0-no-reencode');
+ const b=new Uint8Array(8+16+payload.length);const dv=new DataView(b.buffer);
+ dv.setUint32(0,b.length);
+ b.set([0x75,0x75,0x69,0x64],4); // 'uuid'
+ b.set([0x52,0x54,0x58,0x46,0x55,0x52,0x59,0x32,0x30,0x32,0x36,0x00,0x00,0x00,0x00,0x00],8);
+ b.set(payload,24);return b;
+}
+async function optimizeMP4(file,onP){
+ const ab=await file.arrayBuffer();
+ onP(12,'Reading container…');await tick();
+ const boxes=readBoxes(ab,0,ab.byteLength);
+ if(!boxes.length)throw new Error('File kosong / tidak terbaca.');
+ onP(28,'Parsing boxes: '+boxes.map(b=>b.type).join(' / '));await tick();
+ const get=t=>boxes.find(b=>b.type===t);
+ const ftyp=get('ftyp'),moov=get('moov');
+ if(!ftyp)throw new Error('Bukan file MP4 valid (ftyp tidak ditemukan).');
+ if(!moov)throw new Error('Box moov tidak ditemukan.');
+ const moovBytes=new Uint8Array(ab.slice(moov.start,moov.start+moov.size));
+ const uuid=makeUuidBox();
+ // faststart: ftyp + moov + uuid + sisa (tanpa ftyp/moov lama)
+ const rest=boxes.filter(b=>b.type!=='ftyp'&&b.type!=='moov').map(b=>new Uint8Array(ab.slice(b.start,b.start+b.size)));
+ const ftypBytes=new Uint8Array(ab.slice(ftyp.start,ftyp.start+ftyp.size));
+ const headLen=ftypBytes.length+moovBytes.length+uuid.length;
+ // delta offset chunk = posisi baru mdat - posisi lama mdat
+ const oldMdat=get('mdat');
+ let delta=0;
+ if(oldMdat)delta=headLen-(0); // mdat akan mulai di headLen; offset lama relatif 0 → koreksi = headLen - 0? chunk offset bersifat absolut dari awal file
+ // offset absolut baru = headLen + (offsetLama - oldMdat.start - 8?) → sederhananya tambah (headLen - oldMdat.start)
+ if(oldMdat)delta=headLen-oldMdat.start;
+ if(delta!==0){onP(48,'Adjusting chunk offsets ('+(delta>0?'+':'')+delta+')…');patchChunkOffsets(moovBytes,delta);await tick();}
+ onP(66,'Injecting Guoke Engine metadata…');await tick();
+ const total=headLen+rest.reduce((a,b)=>a+b.length,0);
+ const out=new Uint8Array(total);let o=0;
+ out.set(ftypBytes,o);o+=ftypBytes.length;
+ out.set(moovBytes,o);o+=moovBytes.length;
+ out.set(uuid,o);o+=uuid.length;
+ for(const r of rest){out.set(r,o);o+=r.length;if(cancelled)throw new Error('Dibatalkan pengguna.');}
+ onP(88,'Finalizing faststart…');await tick();
+ return new Blob([out],{type:'video/mp4'});
+}
+const tick=()=>new Promise(r=>setTimeout(r,60));
+/* pastikan hasil benar-benar bisa diputar sebelum tombol unduh muncul */
+function verifyPlayable(blob,timeoutMs){
+ return new Promise((res)=>{
+  let done=false;
+  const url=URL.createObjectURL(blob);
+  const v=document.createElement('video');
+  v.preload='metadata';v.muted=true;v.playsInline=true;
+  const to=setTimeout(()=>{if(!done){done=true;cleanup();res(false);}},timeoutMs||20000);
+  function cleanup(){clearTimeout(to);try{v.removeAttribute('src');v.load();}catch(e){}try{URL.revokeObjectURL(url);}catch(e){}}
+  v.onloadedmetadata=()=>{if(done)return;done=true;const ok=(v.videoWidth||0)>0&&(v.videoHeight||0)>0;cleanup();res(ok);};
+  v.onerror=()=>{if(done)return;done=true;cleanup();res(false);};
+  v.src=url;
+ });
+}
+
+/* --- Anti-Pecah: cek + filter (pure, testable) --- */
+function cekPecah(meta,sizeBytes){
+ const w=meta.w||0,h=meta.h||0;const d=(meta.d&&isFinite(meta.d))?meta.d:0;
+ if(!w||!h)return{level:'warn',title:'⚠️ Metadata tidak terbaca',reasons:['Browser tidak bisa membaca info video ini. Aman: pakai Mode Anti-Pecah.'],rec:'ap'};
+ const mbps=d>0?sizeBytes*8/d/1e6:null;
+ const reasons=[];let level='aman';
+ if(mbps===null){level='warn';reasons.push('Durasi tak terbaca — bitrate tak bisa dinilai, vonis berdasar resolusi saja.');}
+ const longest=Math.max(w,h);
+ if(longest<720){level='rawan';reasons.push('Resolusi kecil ('+w+'×'+h+', di bawah 720p) — pasti pecah saat diperbesar TikTok ke layar penuh.');}
+ else if(longest<1080){if(level==='aman')level='warn';reasons.push('Resolusi di bawah Full HD ('+w+'×'+h+') — rawan pecah di HP layar besar.');}
+ if(mbps!==null&&mbps<2){level='rawan';reasons.push('Bitrate sangat rendah ('+mbps.toFixed(1)+' Mbps) — ciri video sudah dikompres (bekas download WA/TikTok/FB).');}
+ else if(mbps!==null&&mbps<6){if(level==='aman')level='warn';reasons.push('Bitrate sedang ('+mbps.toFixed(1)+' Mbps) — detail tipis, mudah patah saat gerak cepat.');}
+ if(w%2===1||h%2===1){if(level==='aman')level='warn';reasons.push('Dimensi ganjil ('+w+'×'+h+') — sering bikin encoder TikTok gagal → muncul kotak-kotak.');}
+ if(level==='aman')return{level:'aman',title:'✅ Sumber sudah bagus',reasons:['Resolusi '+w+'×'+h+', bitrate '+mbps.toFixed(1)+' Mbps, dimensi genap. Cukup pakai Mode Cepat.'],rec:'fast'};
+ const title=level==='rawan'?'🔴 RAWAN PECAH':'🟡 KURANG AMAN';
+ return{level, title, reasons, rec:'ap'};
+}
+function tierShortMax(tierKey){return tierKey==='free'?1080:2160;} // selaras server: free 1080, booster/premium 2160 (sisi pendek)
+function buildVf(srcW,srcH,resSel,fit,tierKey){
+ const even=n=>Math.max(2,Math.round(n/2)*2);
+ if(resSel&&resSel!=='keep'){
+  const p=resSel.split('x'),tw=+p[0],th=+p[1];
+  if(fit==='pad')return{tw,th,vf:'scale='+tw+':'+th+':force_original_aspect_ratio=decrease,pad='+tw+':'+th+':(ow-iw)/2:(oh-ih)/2,setsar=1'};
+  return{tw,th,vf:'scale='+tw+':'+th+':force_original_aspect_ratio=increase,crop='+tw+':'+th+',setsar=1'};
+ }
+ // Otomatis: resolusi ASLI dipertahankan (tidak diturunkan/dinaikkan).
+ // Hanya genapkan dimensi + setsar + format agar encoder tidak gagal.
+ // HDR->SDR (zscale tonemap) dilewat: tak terdeteksi dari <video> & zscale umumnya
+ // tak ada di build FFmpeg.wasm. fps diteruskan apa adanya via opsi -r di runAP.
+ const f=[];
+ f.push('scale=trunc(iw/2)*2:trunc(ih/2)*2'); // dimensi wajib genap, resolusi asli tetap
+ f.push('setsar=1');
+ f.push('format=yuv420p'); // juga mengubah 10-bit ke 8-bit
+ return{tw:0,th:0,vf:f.join(',')};
+}
+/* --- mode state --- */
+let apMode=false;
+$('modeFast').onclick=()=>{apMode=false;$('modeFast').classList.add('sel');$('modeAP').classList.remove('sel');$('apOpt').classList.remove('show');};
+$('modeAP').onclick=()=>{if(window.__noAP){alert('Mode Anti-Pecah tidak didukung browser ini (perlu Web Worker + WebAssembly). Mode Cepat tetap bisa dipakai.');return;}apMode=true;$('modeAP').classList.add('sel');$('modeFast').classList.remove('sel');$('apOpt').classList.add('show');};
+
+/* --- FFmpeg.wasm di Web Worker: 0.11 UMD + core-ST single-thread.
+       core-ST tidak butuh SharedArrayBuffer / header COOP-COEP,
+       jalan di hosting statis apapun (tidak perlu ubah header Cloudflare;
+       header COOP/COEP hanya wajib bila pakai core multi-thread).
+       Seluruh unduh engine + encode jalan di worker, main thread bebas
+       sehingga halaman tetap bisa di-scroll/disentuk saat render. --- */
+const AP_TIMEOUT_MS=90000; // timeout bila 90 detik tanpa progres render
+const AP_FETCH_TIMEOUT_MS=90000; // timeout per percobaan unduh 1 file engine
+const AP_LOAD_TIMEOUT_MS=120000; // timeout memuat engine ke memori
+const AP_INIT_TIMEOUT_MS=180000; // timeout total init (jebakan importScripts macet)
+const AP_ATTEMPTS=3; // retry otomatis per kombinasi sumber
+let apInitTimer=null,apLastEngineErr='';
+function apSources(){
+ const v=function(p){try{return new URL(p,location.href).href;}catch(e){return p;}};
+ const umd='@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+ const core=function(base,ver){return{label:ver,js:base+'/@ffmpeg/core-st@'+ver+'/dist/ffmpeg-core.js',wasm:base+'/@ffmpeg/core-st@'+ver+'/dist/ffmpeg-core.wasm',worker:base+'/@ffmpeg/core-st@'+ver+'/dist/ffmpeg-core.worker.js'};};
+ const LV='vendor/';
+ return[
+  {label:'server lokal (vendor/)',umd:[v(LV+'ffmpeg.min.js')],cores:[{label:'0.11.1 (lokal)',js:v(LV+'ffmpeg-core.js'),wasm:v(LV+'ffmpeg-core.wasm'),worker:v(LV+'ffmpeg-core.worker.js')}]},
+  {label:'jsDelivr',umd:['https://cdn.jsdelivr.net/npm/'+umd,'https://fastly.jsdelivr.net/npm/'+umd],cores:[core('https://cdn.jsdelivr.net/npm','0.11.1'),core('https://fastly.jsdelivr.net/npm','0.11.1'),core('https://cdn.jsdelivr.net/npm','0.11.0')]},
+  {label:'unpkg',umd:['https://unpkg.com/'+umd],cores:[core('https://unpkg.com','0.11.1'),core('https://unpkg.com','0.11.0')]}
+ ];
+}
+let apWorker=null,apWorkerURL=null,apReadyState='idle',apReadyWaiters=[],apPending=null,apRunToken=0;
+/* Badan worker didefinisikan sebagai fungsi agar lolos syntax-check & gampang dibaca.
+   WAJIB mandiri: tidak boleh memakai variabel di luar fungsi ini. */
+function apWorkerFn(){
+ let inst=null;
+ self.onmessage=function(e){
+  const m=e.data||{};
+  function ewSleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+  function ewCache(){try{if(typeof caches!=='undefined')return caches.open('guoke-engine-v1');}catch(e){}return Promise.resolve(null);}
+  function ewFetch(url,kind,timeoutMs,onProg){
+   return (async function(){
+    // 1. Cache API dulu (offline-ready setelah unduhan pertama berhasil)
+    try{
+     const c=await ewCache();
+     if(c){const hit=await c.match(url);if(hit){const b=await hit.arrayBuffer();onProg({loaded:b.byteLength,total:b.byteLength,cached:true,kind:kind});return{bytes:b,cached:true};}}
+    }catch(e){}
+    // 2. Jaringan dengan progres MB + timeout per percobaan
+    const ctl=(typeof AbortController!=='undefined')?new AbortController():null;
+    const to=setTimeout(function(){if(ctl)ctl.abort();},timeoutMs);
+    const t0=Date.now();let loaded=0,slowWarned=false;
+    try{
+     const r=await fetch(url,{signal:ctl?ctl.signal:undefined,credentials:'same-origin'});
+     if(!r.ok)return{error:{kind:'http',status:r.status,detail:(r.statusText||'')+' — '+url}};
+     const ct=r.headers.get('content-type')||'';
+     if(kind==='wasm'&&ct&&ct.indexOf('wasm')<0)return{error:{kind:'mime',status:r.status,detail:'Content-Type "'+ct+'" bukan application/wasm — '+url}};
+     if(kind==='js'&&ct&&(ct.indexOf('javascript')<0&&ct.indexOf('ecmascript')<0))return{error:{kind:'mime',status:r.status,detail:'Content-Type "'+ct+'" bukan javascript — '+url}};
+     const total=+r.headers.get('content-length')||0;
+     if(!r.body){const ab=await r.arrayBuffer();onProg({loaded:ab.byteLength,total:ab.byteLength||total,cached:false,kind:kind});try{const c=await ewCache();if(c)await c.put(url,new Response(ab,{headers:{'content-type':ct||'application/octet-stream'}}));}catch(e){}return{bytes:ab,cached:false};}
+     const rd=r.body.getReader();const chunks=[];
+     for(;;){
+      const st=await rd.read();if(st.done)break;
+      chunks.push(st.value);loaded+=st.value.length;
+      const el=Date.now()-t0;
+      if(el>10000&&!slowWarned&&(loaded/Math.max(1,el/1000))<300*1024){slowWarned=true;self.postMessage({type:'engine-slow',kbps:Math.round(loaded/Math.max(1,el/1000))});}
+      onProg({loaded:loaded,total:total,cached:false,kind:kind});
+     }
+     clearTimeout(to);
+     let n=0;for(const c2 of chunks)n+=c2.length;
+     const all=new Uint8Array(n);let o=0;for(const c2 of chunks){all.set(c2,o);o+=c2.length;}
+     try{const c=await ewCache();if(c)await c.put(url,new Response(all,{headers:{'content-type':ct||'application/octet-stream'}}));}catch(e){}
+     return{bytes:all.buffer,cached:false};
+    }catch(err){
+     clearTimeout(to);
+     if(err&&(err.name==='AbortError'))return{error:{kind:'timeout',detail:'timeout '+Math.round(timeoutMs/1000)+' dtk — '+url}};
+     return{error:{kind:'network',detail:'network/CORS/DNS ('+String((err&&err.message)||err)+') — '+url}};
+    }
+   })();
+  }
+  function ewErrStr(e){return '['+e.kind+'] '+e.detail+(e.status?' (HTTP '+e.status+')':'');}
+  if(m.type==='init'){
+   (async function(){
+    const timeoutMs=m.timeout||90000,attempts=m.attempts||3,loadTimeout=m.loadTimeout||120000;
+    function prog(p){self.postMessage({type:'engine-progress',loaded:p.loaded,total:p.total,cached:!!p.cached,kind:p.kind});}
+    let lastErr={kind:'unknown',detail:'tidak diketahui'};
+    try{
+     for(const s of m.sources){
+      self.postMessage({type:'log',message:'Sumber: '+s.label});
+      if(!self.FFmpeg){
+       let umdOk=false;
+       for(const u of s.umd){
+        try{self.postMessage({type:'log',message:'Memuat shim '+u});importScripts(u);umdOk=!!self.FFmpeg;if(umdOk)break;}
+        catch(err){self.postMessage({type:'log',message:'GAGAL shim: '+u+' — '+String((err&&err.message)||err)});lastErr={kind:'network',detail:'shim gagal: '+u};}
+       }
+       if(!umdOk){self.postMessage({type:'log',message:'Shim gagal dari '+s.label+', lanjut sumber berikut…'});continue;}
+      }
+      let heldBlobs=[];
+      const dropBlobs=function(){for(const u of heldBlobs){try{URL.revokeObjectURL(u);}catch(e){}}heldBlobs=[];};
+      const toBlobURL=function(bytes,type){const u=URL.createObjectURL(new Blob([bytes],{type:type}));heldBlobs.push(u);return u;};
+      for(const cv of s.cores){
+       for(let att=1;att<=attempts;att++){
+        dropBlobs();
+        try{
+         self.postMessage({type:'log',message:'Percobaan '+att+'/'+attempts+': core '+cv.label+' …'});
+         const js=await ewFetch(cv.js,'js',timeoutMs,prog);
+         if(js.error){self.postMessage({type:'log',message:'GAGAL core.js: '+ewErrStr(js.error)});lastErr=js.error;throw new Error('fetch-gagal');}
+         const wasm=await ewFetch(cv.wasm,'wasm',timeoutMs,prog);
+         if(wasm.error){self.postMessage({type:'log',message:'GAGAL core.wasm: '+ewErrStr(wasm.error)});lastErr=wasm.error;throw new Error('fetch-gagal');}
+         const wk=await ewFetch(cv.worker,'bin',timeoutMs,prog);
+         if(wk.error){self.postMessage({type:'log',message:'GAGAL core.worker.js: '+ewErrStr(wk.error)});lastErr=wk.error;throw new Error('fetch-gagal');}
+         const mb=((js.bytes.byteLength||0)+(wasm.bytes.byteLength||0))/1048576;
+         self.postMessage({type:'log',message:'File siap ('+mb.toFixed(1)+' MB'+(wasm.cached?', dari cache ✓':'')+') — memuat engine ke memori (tanpa unduh ulang)…'});
+         // Blob URL lokal: load() tidak perlu jaringan sama sekali.
+         const f=self.FFmpeg.createFFmpeg({corePath:toBlobURL(js.bytes,'application/javascript'),wasmPath:toBlobURL(wasm.bytes,'application/wasm'),workerPath:toBlobURL(wk.bytes,'application/javascript'),mainName:'main',log:false});
+         let timer=null;
+         try{await Promise.race([f.load(),new Promise(function(_,rej){timer=setTimeout(function(){rej(new Error('load-timeout'));},loadTimeout);})]);}
+         finally{if(timer)clearTimeout(timer);}
+         dropBlobs(); // engine sudah ter-instantiate; bebaskan ref blob utk hemat RAM
+         inst=f;self.postMessage({type:'ready'});return;
+        }catch(err){
+         dropBlobs();
+         const msg=String((err&&err.message)||err);
+         if(msg==='load-timeout'){self.postMessage({type:'log',message:'GAGAL: load() timeout '+Math.round(loadTimeout/1000)+' dtk.'});lastErr={kind:'timeout',detail:'load() timeout'};}
+         else if(/out of memory|enlarge memory|allocation failed|memory access/i.test(msg)){self.postMessage({type:'log',message:'GAGAL: memori HP tidak cukup untuk compile engine 24MB.'});lastErr={kind:'memory',detail:msg+' — tutup aplikasi lain / pakai HP RAM ≥4GB / pakai Mode Cepat'};}
+         else if(msg!=='fetch-gagal'){self.postMessage({type:'log',message:'GAGAL load: '+msg});lastErr={kind:'load',detail:msg};}
+         if(att<attempts){const wait=1500*att;self.postMessage({type:'log',message:'Retry otomatis '+att+' dalam '+(wait/1000)+' dtk…'});await ewSleep(wait);}
+        }
+       }
+      }
+      dropBlobs();
+     }
+     self.postMessage({type:'error',message:'Engine gagal dimuat dari semua sumber.',info:lastErr});
+    }catch(err){self.postMessage({type:'error',message:'Init worker gagal: '+String((err&&err.message)||err),info:lastErr});}
+   })();
+   return;
+  }
+  if(m.type==='run'){
+   if(!inst){self.postMessage({type:'error',message:'Engine belum siap.'});return;}
+   (async function(){
+    try{
+     self.postMessage({type:'log',message:'File diterima worker ('+(m.file.size/1048576).toFixed(1)+' MB). Menulis ke FS… (main thread bebas)'});
+     inst.FS('writeFile',m.inName,await self.FFmpeg.fetchFile(m.file));
+     let last=-1,lastT=0;
+     inst.setProgress(function(pr){const r=Math.max(0,Math.min(1,((pr&&pr.ratio)||0)));const now=Date.now();if(r-last>=0.01||now-lastT>500){last=r;lastT=now;self.postMessage({type:'progress',ratio:r});}});
+     self.postMessage({type:'log',message:'Rendering di worker…'});
+     await inst.run.apply(inst,m.args);
+     self.postMessage({type:'log',message:'Menyimpan hasil & membersihkan memori worker…'});
+     const data=inst.FS('readFile',m.outName);
+     const view=data instanceof Uint8Array?data:new Uint8Array(data);
+     try{inst.FS('unlink',m.inName);}catch(_){}
+     try{inst.FS('unlink',m.outName);}catch(_){}
+     let buf;
+     if(view.byteOffset===0&&view.buffer.byteLength===view.byteLength){buf=view.buffer;}
+     else{const c=view.slice();buf=c.buffer;}
+     self.postMessage({type:'done',buffer:buf,size:view.byteLength},[buf]);
+    }catch(err){self.postMessage({type:'error',message:String((err&&err.message)||err)});}
+   })();
+   return;
+  }
+ };
+}
+function terminateAPWorker(reason){
+ const msg=reason||'Dibatalkan pengguna.';
+ if(apPending){const p=apPending;apPending=null;try{p.rej(new Error(msg));}catch(e){}}
+ if(apWorker){try{apWorker.terminate();}catch(e){}apWorker=null;}
+ if(apWorkerURL){try{URL.revokeObjectURL(apWorkerURL);}catch(e){}apWorkerURL=null;}
+ apReadyState='idle';
+ const ws=apReadyWaiters;apReadyWaiters=[];
+ ws.forEach(function(x){try{x.rej(new Error(msg));}catch(e){}});
+}
+function apFinishWaiters(ok,msg){
+ if(apInitTimer){clearTimeout(apInitTimer);apInitTimer=null;}
+ const ws=apReadyWaiters;apReadyWaiters=[];
+ ws.forEach(function(x){try{ok?x.res():x.rej(new Error(msg||'Worker gagal.'));}catch(e){}});
+}
+function apWorkerMsg(e){
+ const m=(e&&e.data)||{};
+ if(m.type==='log'){log('[worker] '+m.message);lastProgT=Date.now();return;}
+ if(m.type==='progress'){
+  lastProgT=Date.now();
+  if(apPending){const r=m.ratio||0;setP(10+r*85,'Me-render Anti-Pecah… '+Math.round(r*100)+'% (worker, UI tetap responsif)');}
+  return;
+ }
+ if(m.type==='engine-progress'){
+  lastProgT=Date.now();
+  const mb=function(b){return (b/1048576).toFixed(1);};
+  const dl=$('engDl');if(dl)dl.style.display='block';
+  const lbl=$('engDlLabel'),txt=$('engDlText'),fill=$('engDlFill');
+  if(m.cached){if(lbl)lbl.textContent='Engine dari cache ✓ ('+m.kind+')';if(txt)txt.textContent=mb(m.loaded)+' MB · tanpa unduh';if(fill)fill.style.width='100%';}
+  else{
+   if(lbl)lbl.textContent='Mengunduh engine… ('+m.kind+')';
+   if(txt)txt.textContent=mb(m.loaded)+(m.total?' / '+mb(m.total)+' MB':' MB');
+   if(fill)fill.style.width=m.total?Math.min(100,m.loaded/m.total*100)+'%':'4%';
+  }
+  return;
+ }
+ if(m.type==='engine-slow'){
+  log('⚠️ Koneksi lambat (~'+m.kbps+' KB/s) — unduhan engine tetap berjalan di background. Halaman tetap bisa dipakai.');
+  const s=$('engSlow');if(s)s.style.display='block';
+  return;
+ }
+ if(m.type==='ready'){log('Engine siap ✓ (di worker — UI tidak akan macet)');const dl=$('engDl');if(dl)dl.style.display='none';apReadyState='ready';apFinishWaiters(true);return;}
+ if(m.type==='done'){const p=apPending;apPending=null;if(p)p.res(m.buffer);return;}
+ if(m.type==='error'){
+  const msg=m.message||'Worker error.';
+  apLastEngineErr=(m.info&&('['+m.info.kind+'] '+m.info.detail))||msg;
+  const dl=$('engDl');if(dl)dl.style.display='none';
+  if(apPending){const p=apPending;apPending=null;p.rej(new Error(msg+(m.info?' · '+apLastEngineErr:'')));}
+  else{apReadyState='idle';apFinishWaiters(false,msg+(m.info?' · '+apLastEngineErr:''));}
+  return;
+ }
+}
+function ensureAPWorker(){
+ if(apWorker&&apReadyState==='ready')return Promise.resolve();
+ if(apWorker&&apReadyState==='loading')return new Promise(function(res,rej){apReadyWaiters.push({res:res,rej:rej});});
+ terminateAPWorker();
+ log('Membuat Web Worker FFmpeg… (encode pindah ke background thread)');
+ const src='('+apWorkerFn.toString()+')();';
+ apWorkerURL=URL.createObjectURL(new Blob([src],{type:'text/javascript'}));
+ const w=new Worker(apWorkerURL);apWorker=w;apReadyState='loading';
+ w.onmessage=function(e){apWorkerMsg(e);};
+ w.onerror=function(){log('ERROR: worker gagal dibuat/dijalankan.');if(apInitTimer){clearTimeout(apInitTimer);apInitTimer=null;}apReadyState='idle';apFinishWaiters(false,'Worker gagal dibuat. Coba muat ulang halaman.');};
+ if($('engSlow'))$('engSlow').style.display='none';
+ w.postMessage({type:'init',sources:apSources(),timeout:AP_FETCH_TIMEOUT_MS,attempts:AP_ATTEMPTS,loadTimeout:AP_LOAD_TIMEOUT_MS});
+ if(apInitTimer)clearTimeout(apInitTimer);
+ apInitTimer=setTimeout(function(){
+  apInitTimer=null;
+  if(apReadyState==='loading'){log('ERROR: init engine timeout '+Math.round(AP_INIT_TIMEOUT_MS/1000)+' dtk tanpa kabar (kemungkinan unduhan macet total).');terminateAPWorker('Init engine timeout '+Math.round(AP_INIT_TIMEOUT_MS/1000)+' dtk tanpa kabar.');}
+ },AP_INIT_TIMEOUT_MS);
+ return new Promise(function(res,rej){apReadyWaiters.push({res:res,rej:rej});});
+}
+
+function showEngErr(msg){
+ const b=$('engErr');if(!b)return;
+ $('engErrMsg').textContent=msg;
+ b.style.display='block';
+}
+function hideEngErr(){const b=$('engErr');if(b)b.style.display='none';}
+if($('engRetryBtn'))$('engRetryBtn').onclick=function(){hideEngErr();runAP();};
+if($('engFastBtn'))$('engFastBtn').onclick=function(){hideEngErr();$('modeFast').click();log('Beralih ke Mode Cepat (offline, tanpa engine). Pilih video lalu tekan Proses Video.');};
+if('serviceWorker' in navigator){
+ navigator.serviceWorker.register('sw.js').then(function(){try{console.log('[guoke] SW aktif — engine di-cache.');}catch(e){}}).catch(function(e){try{console.log('[guoke] SW gagal: '+(e&&e.message||e));}catch(_){}});
+}
+$('runBtn').onclick=async()=>{
+ if(!curFile)return;
+ hideEngErr();
+ if(apMode)return runAP();
+ const t=myTier();
+  if(S.usage.count>=t.perDay){alert('Batas unggahan harianmu sudah habis. Coba lagi besok atau lihat halaman Paket.');return;}
+  if(curFile.size>t.mb*1048576){alert('File '+fmtMB(curFile.size)+' melebihi batas paket '+t.name+' ('+t.mb+' MB). Lihat halaman Paket.');return;}
+  if(curMeta&&curMeta.w&&curMeta.h&&Math.min(curMeta.w,curMeta.h)>tierShortMax(t.key)){alert('Resolusi '+curMeta.w+'×'+curMeta.h+' melebihi batas '+t.name+' (maks sisi pendek '+tierShortMax(t.key)+'p). Mode cepat tidak mengubah resolusi — pakai Mode Anti-Pecah.');return;}
+  cancelled=false;
+  $('dropZoneWrap').style.display='none';$('processingView').style.display='block';
+  $('procLog').innerHTML='';setP(2,'Menyiapkan Guoke Engine v2.0…');log('Engine v2.0 · resolusi & fps dipertahankan');
+  try{
+   const stages=[[6,'Memuat file…'],[12,'Membaca container…']];
+   for(const [p,s] of stages){if(cancelled)throw new Error('Dibatalkan.');setP(p,s);await tick();}
+   outBlob=await optimizeMP4(curFile,(p,s)=>{if(cancelled)throw new Error('Dibatalkan.');setP(p,s);log(s);});
+   if(cancelled)throw new Error('Dibatalkan.');
+   setP(94,'Memeriksa hasil bisa diputar…');log('Verifikasi playability…');
+   if(!await verifyPlayable(outBlob)){outBlob=null;throw new Error('Hasil mode cepat tidak terbaca sebagai video di perangkatmu. Coba Mode Anti-Pecah.');}
+   setP(100,'Selesai! Unggah file ini apa adanya ke TikTok, tanpa diedit. ✓');log('Selesai · '+fmtMB(curFile.size)+' → '+fmtMB(outBlob.size)+' · terverifikasi bisa diputar');
+  revokeResultURL();
+  const url=URL.createObjectURL(outBlob);lastResultURL=url;
+  const dl=$('dlBtn');dl.style.display='inline-flex';dl.onclick=()=>{
+   const a=document.createElement('a');a.href=url;a.download=curFile.name.replace(/\.[^.]+$/,'')+'_GUOKE_HD.mp4';a.click();
+   S.total++;S.today++;S.usage.count++;S.lastOpt=new Date().toLocaleTimeString('id-ID');save(S);refreshUser();renderStats();
+  };
+  $('againBtn').style.display='inline-flex';
+  $('dropZoneWrap').style.display='block';$('processingView').style.display='none';
+  }catch(e){setP(0,'Gagal: '+e.message);log('ERROR: '+e.message);alert('Proses gagal. Pastikan file berformat MP4/MOV dan ukurannya sesuai batas paketmu. ('+e.message+')');$('dropZoneWrap').style.display='block';$('processingView').style.display='none';}
+};
+
+/* ============ MODE ANTI-PECAH (re-encode FFmpeg) ============ */
+async function finishDownload(blob,suffix){
+ setP(97,'Memeriksa hasil bisa diputar…');log('Verifikasi playability…');
+ if(!await verifyPlayable(blob)){setP(0,'Gagal: hasil tidak bisa diputar');log('ERROR: hasil tidak lolos verifikasi playability');alert('Hasil proses ternyata tidak bisa diputar di perangkatmu. Coba lagi atau pakai file lain.');stopHeartbeat();releaseWake();$('dropZoneWrap').style.display='block';$('processingView').style.display='none';return;}
+ outBlob=blob;
+ revokeResultURL();
+ const url=URL.createObjectURL(blob);lastResultURL=url;
+ const dl=$('dlBtn');dl.style.display='inline-flex';
+ const base=(curFile.name||'video.mp4').replace(/\.[^.]+$/,'');
+ dl.onclick=()=>{
+  const a=document.createElement('a');a.href=url;a.download=base+suffix;a.click();
+  S.total++;S.today++;S.usage.count++;S.lastOpt=new Date().toLocaleTimeString('id-ID');save(S);refreshUser();renderStats();
+ };
+ $('againBtn').style.display='inline-flex';
+ stopHeartbeat();releaseWake();
+ $('dropZoneWrap').style.display='block';$('processingView').style.display='none';
+}
+async function runAP(){
+ if(window.__noAP){alert('Mode Anti-Pecah tidak didukung browser ini. Pakai Mode Cepat.');$('modeFast').click();return;}
+ const t=myTier();
+  if(S.usage.count>=t.perDay){alert('Batas unggahan harianmu sudah habis. Coba lagi besok atau lihat halaman Paket.');return;}
+  if(curFile.size>t.mb*1048576){alert('File '+fmtMB(curFile.size)+' melebihi batas paket '+t.name+'.');return;}
+ const fps=+($('apFps').value)||60; // fps user diteruskan APA ADANYA ke FFmpeg, tanpa dibatasi
+ const isMobile=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent||'');
+ const preset=isMobile?'ultrafast':'veryfast'; // HP: ultrafast 3-5x lebih cepat & ringan, anti macet
+ const shortSide=(curMeta&&curMeta.w&&curMeta.h)?Math.min(curMeta.w,curMeta.h):0;
+ const capM=shortSide>=2160?60:40; // selaras server: 60M untuk 4K, 40M selebihnya
+ const dur=(curMeta&&curMeta.d&&isFinite(curMeta.d))?curMeta.d:0;
+ if(t.mb!==Infinity&&dur>0){
+  // CRF 14 + maxrate capM bisa makan hingga ~capM Mbps di adegan ramai.
+  const est=capM*dur/8*1.02+0.256*dur/8;
+  if(est>t.mb){alert('Estimasi hasil ('+est.toFixed(0)+' MB, hingga '+capM+' Mbps) melebihi batas paket '+t.name+' ('+t.mb+' MB). Pendekkan durasi atau pilih paket lebih tinggi.');return;}
+ }
+  cancelled=false;
+  $('dropZoneWrap').style.display='none';$('processingView').style.display='block';
+  $('procLog').innerHTML='';$('dlBtn').style.display='none';$('againBtn').style.display='none';
+  const t0ap=Date.now();startHeartbeat(t0ap);
+  try{if(navigator.wakeLock)wakeLock=await navigator.wakeLock.request('screen').catch(()=>null);}catch(e){}
+ setP(3,'Menyiapkan worker FFmpeg…');log('Mode Anti-Pecah · H.264 CRF 14 · max '+capM+'M · '+preset+(isMobile?' (mode HP)':'')+' · '+fps+'fps (fps & resolusi asli dipertahankan)');
+ const token=++apRunToken;
+ let watch=null;
+ try{await ensureAPWorker();}
+ catch(ie){
+  if(cancelled){stopProcessingUI();return;}
+  stopProcessingUI();$('againBtn').style.display='inline-flex';
+  setP(0,'Engine gagal dimuat');log('ERROR engine: '+((ie&&ie.message)||ie));
+  showEngErr('Unduhan engine gagal. Penyebab terakhir: '+(apLastEngineErr||((ie&&ie.message)||ie))+'. Rincian tiap percobaan (HTTP status / network / MIME) ada di panel log. Bila internet normal tapi tetap gagal, kemungkinan operator/DNS/adblock memblokir sumber unduhan.');
+  return;
+ }
+ try{
+  if(cancelled||token!==apRunToken)throw new Error('Dibatalkan pengguna.');
+  setP(8,'Mengirim file ke worker…');log('Input: '+fmtMB(curFile.size)+' · File dikirim langsung ke worker (tidak dibaca di main thread)');
+  lastProgT=Date.now();
+  const spec=buildVf(curMeta.w,curMeta.h,$('apRes').value,$('apFit').value,t.key);
+  log('Filter: '+spec.vf);
+  // Kualitas HD: CRF 14 + maxrate dinamis + warna BT.709 + audio 256k/48kHz.
+  // -r memakai fps pilihan user apa adanya. -level dilepas agar 4K tidak gagal.
+  // -sn/-dn/-map_metadata buang subtitle, data & metadata ala server.
+  const args=['-i','input.mp4','-vf',spec.vf,'-r',String(fps),'-c:v','libx264','-preset',preset,'-crf','14','-maxrate',capM+'M','-bufsize','80M','-pix_fmt','yuv420p','-profile:v','high','-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709','-c:a','aac','-b:a','256k','-ar','48000','-ac','2','-sn','-dn','-map_metadata','-1','-movflags','+faststart','-f','mp4','-y','out.mp4'];
+  log('Rendering di worker… (halaman tetap bisa di-scroll/disentuk)');
+  watch=setInterval(function(){
+   if(token!==apRunToken||cancelled){clearInterval(watch);watch=null;return;}
+   if(Date.now()-lastProgT>AP_TIMEOUT_MS){
+    clearInterval(watch);watch=null;apRunToken++;terminateAPWorker();stopProcessingUI();
+    $('againBtn').style.display='inline-flex';
+    setP(0,'Timeout: 90 detik tanpa progres');log('ERROR: timeout 90 detik tanpa progres — worker dimatikan, memori dibebaskan.');
+    alert('Proses berhenti: tidak ada progres selama 90 detik. Kemungkinan HP kewalahan atau unduhan engine tersendat. Tekan "Proses Video Lain" untuk coba lagi, atau pakai video lebih pendek.');
+   }
+  },5000);
+  const buf=await new Promise(function(res,rej){
+   apPending={token:token,res:res,rej:rej};
+   apWorker.postMessage({type:'run',file:curFile,args:args,inName:'input.mp4',outName:'out.mp4'});
+  });
+  if(watch){clearInterval(watch);watch=null;}
+  if(cancelled||token!==apRunToken)throw new Error('Dibatalkan pengguna.');
+  setP(97,'Menyimpan hasil…');
+  const blob=new Blob([new Uint8Array(buf)],{type:'video/mp4'});
+  log('Hasil diterima dari worker · '+fmtMB(blob.size)+' · file FS worker sudah di-unlink');
+   log('Render selesai · hasil '+fmtMB(blob.size)+(spec.tw?' · '+spec.tw+'×'+spec.th:''));
+  await finishDownload(blob,'_ANTIPECAH_HD.mp4');
+  if(outBlob){setP(100,'Anti-Pecah selesai ✓');log('Terverifikasi bisa diputar ✓');}
+  }catch(e){
+   if(watch){clearInterval(watch);watch=null;}
+   if(token!==apRunToken)return; // basi: timeout/cancel sudah menangani UI
+   if(!cancelled)terminateAPWorker(); // bebaskan memori worker setelah gagal (FS + wasm)
+  setP(0,'Gagal: '+e.message);log('ERROR: '+e.message);
+  if(/CDN|engine|load|fetch|network|Failed to fetch|dimuat|worker/i.test(e.message||'')){
+   stopProcessingUI();$('againBtn').style.display='inline-flex';
+   showEngErr('Proses gagal di tahap engine. Penyebab: '+(apLastEngineErr||e.message)+'. Kamu bisa coba lagi atau langsung pakai Mode Cepat (offline, tanpa engine).');
+  }
+   else if(!cancelled)alert('Gagal: '+e.message);
+   stopProcessingUI();
+  }
+}
+
+/* ============ ANALYTICS (data asli via proxy, tanpa tebakan) ============ */
+const PROXY=(window.GUOKE_PROXY||'').replace(/\/$/,'');
+const NA='Data tidak tersedia';
+function ttErr(msg){const e=$('ttError');e.textContent=msg;e.classList.add('show');}
+function ttNum(v){return (typeof v==='number'&&isFinite(v))?v.toLocaleString('id-ID'):null;}
+function setVal(id,v,suffix){const el=$(id);if(v===null||v===undefined||v===''){el.textContent=NA;el.classList.add('na');}else{el.textContent=v+(suffix||'');el.classList.remove('na');}}
+function fmtWIB(ts){ // satu pola & satu zona waktu dari createTime asli
+ try{return new Intl.DateTimeFormat('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'}).format(new Date(ts*1000)).replace('.','.')+' WIB';}catch(e){return null;}
+}
+function fmtBytesID(b){if(!(typeof b==='number'&&isFinite(b)&&b>0))return null;const u=['B','KB','MB','GB'];let i=0;while(b>=1024&&i<3){b/=1024;i++;}return b.toFixed(b>=100?0:1)+' '+u[i];}
+async function apiGet(path,timeoutMs){
+ const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),timeoutMs||60000);
+ try{const r=await fetch(PROXY+'/api/'+path,{signal:ctl.signal});
+  const j=await r.json().catch(()=>({ok:false,code:'NETWORK',message:'Respons proxy rusak.'}));
+  if(!j.ok)throw j;return j;
+ }catch(e){if(e&&e.code)throw e;throw{ok:false,code:'NETWORK',message:'Proxy tidak terjangkau ('+(e&&e.message||e)+').'};}
+ finally{clearTimeout(to);}
+}
+function extractTikTokUrl(text){
+ // user sering paste teks chat ("nih videonya ...") — ambil link TikTok pertama
+ const m=String(text||'').match(/https?:\/\/[^\s"'<>]*tiktok\.[^\s"'<>]*/i);
+ let u=(m&&m[0]||String(text||'').trim()).replace(/[.,!?)\]]+$/,'');
+ if(u&&!/^https?:\/\//i.test(u))u='https://'+u;
+ return u;
+}
+function inputVideoId(url){
+ const m=String(url||'').match(/\/video\/(\d{8,})/);
+ return m?m[1]:null;
+}
+async function fetchTikwm(url,timeoutMs){
+ let lastErr=null;
+ for(let attempt=1;attempt<=3;attempt++){
+  const ctl=new AbortController();const to=setTimeout(()=>ctl.abort(),timeoutMs||45000);
+  try{
+   const r=await fetch('https://www.tikwm.com/api/?url='+encodeURIComponent(url),{signal:ctl.signal});
+   const j=await r.json().catch(()=>null);
+   clearTimeout(to);
+   if(j&&j.code===0&&j.data)return j.data;
+   const msg=(j&&(j.msg||j.message))||('HTTP '+r.status);
+   if(/limit|too many|rate|busy|1 request/i.test(msg)){lastErr={ok:false,code:'RATE_LIMIT',message:msg};await new Promise(x=>setTimeout(x,1600*attempt));continue;}
+   throw{ok:false,code:'NOT_FOUND',message:'TikTok: '+msg};
+  }catch(e){
+   clearTimeout(to);
+   if(e&&e.code) { if(e.code==='RATE_LIMIT'){lastErr=e;continue;} throw e; }
+   lastErr={ok:false,code:'NETWORK',message:'API TikWM tidak terjangkau ('+(e&&e.message||e)+').'};
+   await new Promise(x=>setTimeout(x,1200));
+  }
+ }
+ throw lastErr||{ok:false,code:'RATE_LIMIT',message:'Server API sibuk.'};
+}
+function measureStream(playUrl){
+ // Ukur resolusi & FPS ASLI dari stream via <video> (tanpa CORS, tanpa backend).
+ return new Promise((resolve)=>{
+  if(!playUrl){resolve({w:null,h:null,fps:null});return;}
+  const v=document.createElement('video');
+  v.muted=true;v.playsInline=true;v.preload='auto';
+  const done=(o)=>{try{v.pause();v.removeAttribute('src');v.load();}catch(e){}resolve(o);};
+  const to=setTimeout(()=>done({w:null,h:null,fps:null}),20000);
+  const fin=(o)=>{clearTimeout(to);done(o);};
+  v.onloadedmetadata=()=>{
+   const w=v.videoWidth||null,h=v.videoHeight||null;
+   if(w&&h&&'requestVideoFrameCallback' in v){
+    let frames=0;const t0=performance.now();
+    const loop=()=>{frames++;if(performance.now()-t0<2500){try{v.requestVideoFrameCallback(loop);}catch(e){fin({w,h,fps:null});}}else{fin({w,h,fps:frames/((performance.now()-t0)/1000)});}};
+    v.play().then(()=>{try{v.requestVideoFrameCallback(loop);}catch(e){fin({w,h,fps:null});}}).catch(()=>fin({w,h,fps:null}));
+   }else{v.play().catch(()=>{});setTimeout(()=>fin({w,h,fps:null}),800);}
+  };
+  v.onerror=()=>fin({w:null,h:null,fps:null});
+  v.src=playUrl;
+ });
+}
+const TT_MSGS={
+ BAD_URL:'Link tidak valid. Tempel link video TikTok (boleh link pendek vt.tiktok.com / vm.tiktok.com).',
+ NOT_FOUND:'Video tidak ditemukan, privat, sudah dihapus, atau link pendeknya kedaluwarsa. Pastikan video publik lalu coba lagi.',
+ TIKTOK_BLOCKED:'TikTok memblokir permintaan server (bot-check) untuk sementara. Tunggu beberapa menit lalu tekan Analisis lagi.',
+ PARSE_CHANGED:'TikTok mengubah struktur halamannya sehingga data tidak bisa dibaca. Fitur ini perlu pembaruan parser.',
+ UPSTREAM:'Server TikTok bermasalah. Coba lagi sebentar lagi.',
+ NETWORK:'Tidak bisa menghubungi backend. Pastikan server.py berjalan / worker terdeploy.',
+ RATE_LIMIT:'Server API sibuk (batas 1x/detik). Tunggu 3 detik lalu tekan Analisis sekali saja.'};
+let lastBestUrl=null;
+$('ttAnalyzeBtn').onclick=async()=>{
+ const raw=$('ttUrlInput').value;
+ const url=extractTikTokUrl(raw);
+ const wantId=inputVideoId(url);
+ $('ttError').classList.remove('show');$('ttResult').classList.remove('show');
+ if(!/tiktok\.com|tiktokv\.com/i.test(url)){ttErr(TT_MSGS.BAD_URL);return;}
+ const btn=$('ttAnalyzeBtn');btn.disabled=true;
+ const loading=$('ttLoading');
+ const setLoad=(t)=>{loading.querySelector('div:last-child').textContent=t;};
+ loading.classList.add('show');setLoad('Mengambil data asli dari TikTok…');
+ try{
+  let tw=null,twErr=null;
+  try{tw=await fetchTikwm(url);}catch(e){twErr=e;}
+  if(!tw){
+   try{
+    const r=await apiGet('video?url='+encodeURIComponent(url),60000);
+    renderTT(r);$('ttResult').classList.add('show');return;
+   }catch(e2){
+    const m=(twErr&&twErr.code&&TT_MSGS[twErr.code]||twErr&&twErr.message||'')+' | Alternatif backend: '+((e2&&e2.code&&TT_MSGS[e2.code])||(e2&&e2.message)||'gagal');
+    ttErr(m+' — coba lagi, atau jalankan server.py untuk jalur backend.');return;
+   }finally{loading.classList.remove('show');}
+  }
+  setLoad('Mengukur resolusi & FPS langsung dari stream…');
+  const meas=await measureStream(tw.play||tw.wmplay);
+  let enrich=null;
+  try{enrich=await apiGet('video?url='+encodeURIComponent(url),30000);}catch(e){}
+  loading.classList.remove('show');
+  renderTKW(tw,meas,enrich,wantId,url);
+  $('ttResult').classList.add('show');
+ }finally{btn.disabled=false;}
+};
+function snapFps(m){ // cocokan ke standar broadcast bila dekat (pengukuran browser bisa goyang)
+ const std=[24,25,30,60,120,23.976,29.97,50,59.94]; // integer didulukan (khas video TikTok)
+ for(const s of std){if(Math.abs(m-s)<=Math.max(0.9,s*0.07))return{v:s,raw:m};}
+ return{v:m,raw:null};
+}
+function renderTKW(d,meas,enrich,wantId,srcUrl){
+ const isPhoto=!d.play&&!d.wmplay&&Array.isArray(d.images)&&d.images.length>0;
+ const a=d.author||{},mi=d.music_info||{};
+ $('ttAuthorName').textContent=a.nickname||a.unique_id||NA;
+ $('ttHandle').textContent=a.unique_id?'@'+a.unique_id:NA;
+ const ev=enrich&&enrich.data;
+ $('ttVerified').style.display=(ev&&ev.verified)?'inline-flex':'none';
+ $('ttPrivate').style.display=(ev&&ev.privateAccount)?'inline-flex':'none';
+ const av=$('ttAvatar');
+ if(a.avatar){av.src=a.avatar;av.style.display='block';}else{av.removeAttribute('src');av.style.display='none';}
+ const dur=typeof d.duration==='number'?d.duration:null;
+ $('ttDuration').textContent=dur!==null?Math.floor(dur/60)+':'+String(dur%60).padStart(2,'0')+' mnt':'—';
+ setVal('ttUploadedAt',d.create_time?fmtWIB(d.create_time):null);
+ const cap=d.title||d.content_desc||'';
+ $('ttTitle').textContent=cap||'(tanpa caption)';
+ $('ttHashtags').textContent=((cap.match(/#\w+/g)||[]).slice(0,8).join(' '));
+ setVal('st-views',ttNum(d.play_count));setVal('st-likes',ttNum(d.digg_count));
+ setVal('st-comments',ttNum(d.comment_count));setVal('st-shares',ttNum(d.share_count));
+ setVal('st-collects',ttNum(d.collect_count));setVal('st-downloads',ttNum(d.download_count));
+ setVal('tech-res',isPhoto?('Foto '+d.images.length+' slide (tanpa stream video)'):((meas.w&&meas.h)?meas.w+'×'+meas.h+' (diukur dari stream)':null));
+ let fpsTxt=null;
+ if(!isPhoto&&typeof meas.fps==='number'&&isFinite(meas.fps)&&meas.fps>0){
+  const sn=snapFps(meas.fps);
+  fpsTxt=String(sn.v).replace('.',',')+' fps (diukur dari stream)'+((sn.raw&&Math.abs(sn.raw-sn.v)>0.05)?' · terukur '+sn.raw.toFixed(1).replace('.',','):'');
+ }
+ setVal('tech-fps',fpsTxt);
+ setVal('tech-size',fmtBytesID(d.size)+(d.size?' (byte TikTok)':null));
+ setVal('tech-format',/video_mp4/.test(d.play||'')?'MP4 (dari URL file)':null);
+ setVal('tech-region',d.region||null);
+ setVal('tech-music',(mi.title||d.music||'').slice(0,60)||null);
+ // sel teknis proxy (kodek/bitrate/varian) bila pengayaan berhasil
+ const gears=(enrich&&enrich.data&&enrich.data.tech&&enrich.data.tech.gears)||[];
+ const codecs=[...new Set(gears.map(g=>g.codec).filter(Boolean))];
+ setVal('tech-codec',codecs.length?codecs.join(' / ')+' (via backend)':null);
+ setVal('tech-bitrate',gears.length?((Math.max(...gears.map(g=>g.bitrateBps||0)))/1e6).toFixed(2)+' Mbps (via backend)':null);
+ $('ttGears').innerHTML=gears.length?'<table class="gear-table"><tr><th>Varian</th><th>Resolusi</th><th>FPS</th><th>Kodek</th><th>Bitrate</th><th>Ukuran</th></tr>'+
+  gears.map(g=>'<tr><td>'+(g.gear||'—')+'</td><td>'+g.width+'×'+g.height+'</td><td>'+(g.fps||'—')+'</td><td>'+(g.codec||'—')+'</td><td>'+(g.bitrateBps?(g.bitrateBps/1e6).toFixed(2)+' Mbps':'—')+'</td><td>'+(fmtBytesID(g.sizeBytes)||'—')+'</td></tr>').join('')+'</table>'
+  :'<span class="na">Butuh backend (server.py / worker) untuk detail varian — angka utama di atas tetap data asli.</span>';
+ const reach=$('ttReach');
+ if(typeof d.play_count==='number'&&d.play_count>0&&typeof d.digg_count==='number'){
+  const er=d.digg_count/d.play_count*100;
+  reach.innerHTML='Rasio like/view video ini <b>'+er.toFixed(2).replace('.',',')+'%</b> ('+ttNum(d.digg_count)+' dari '+ttNum(d.play_count)+' views). '+
+   (er>=5?'Termasuk tinggi untuk ukuran videonya.':er>=1?'Dalam kisaran wajar.':'Rendah — distribusi kemungkinan terbatas, TAPI ini bukan vonis shadowban: umur video, niche, dan jam upload ikut menentukan.')+
+   '<br>TikTok tidak menyediakan status shadow-ban resmi; abaikan klaim pasti dari tools mana pun.';
+ }else{reach.innerHTML='<span class="na">'+NA+' (butuh angka views & likes asli)</span>';}
+ const now=Math.floor(Date.now()/1000);
+ const idOk=wantId&&d.id?(String(wantId)===String(d.id)):null;
+ $('ttSrc').innerHTML='Sumber: <b>API TikWM (data TikTok)</b> + <b>pengukuran langsung di browser</b> (resolusi & FPS dari stream)'+
+  (enrich?'+ <b>backend proxy</b> (detail varian & verified)':'')+
+  '<br>Diambil: <b>'+(fmtWIB(now)||NA)+'</b> · live'+
+  '<br>Video ID: '+(d.id||NA)+(idOk===true?' · <b>✓ cocok dengan link input</b>':idOk===false?' · <b style="color:var(--red)">⚠ ID berbeda dari link input!</b>':' · (link pendek: ID dari hasil resolve)');
+ const ob=$('ttOpenBtn');
+ const canon=(a.unique_id&&d.id)?'https://www.tiktok.com/@'+a.unique_id+'/video/'+d.id:null;
+ if(canon){ob.href=canon;ob.style.display='inline-flex';}else ob.style.display='none';
+ lastBestUrl=d.play||d.wmplay||null;
+ const cb=$('ttCopyBtn');cb.textContent='📋 Salin link file tanpa watermark';cb.style.display=lastBestUrl?'inline-flex':'none';
+}
+function renderTT(r){
+ const v=r.data,s=v.stats,t=v.tech;
+ $('ttAuthorName').textContent=v.nickname||v.username||NA;
+ $('ttHandle').textContent=v.username?'@'+v.username:NA;
+ $('ttVerified').style.display=v.verified?'inline-flex':'none';
+ $('ttPrivate').style.display=v.privateAccount?'inline-flex':'none';
+ const av=$('ttAvatar');
+ if(v.avatar){av.src=v.avatar;av.style.display='block';}else{av.removeAttribute('src');av.style.display='none';}
+ $('ttDuration').textContent=(typeof v.durationSec==='number')?Math.floor(v.durationSec/60)+':'+String(v.durationSec%60).padStart(2,'0')+' mnt':'—';
+ setVal('ttUploadedAt',v.createTime?fmtWIB(v.createTime):null);
+ $('ttTitle').textContent=v.caption||'(tanpa caption)';
+ const tags=((v.caption||'').match(/#\w+/g)||[]);
+ $('ttHashtags').textContent=tags.slice(0,8).join(' ');
+ ['views','likes','comments','shares','collects'].forEach(k=>setVal('st-'+k,ttNum(s[k])));
+ setVal('tech-res',(t.width&&t.height)?t.width+'×'+t.height+(t.ratio?' · '+t.ratio:''):null);
+ const g0=(t.gears||[])[0];
+ setVal('tech-fps',g0&&g0.fps?g0.fps+' fps (metadata TikTok)':null);
+ const codecs=[...new Set((t.gears||[]).map(g=>g.codec).filter(Boolean))];
+ setVal('tech-codec',codecs.length?codecs.join(' / '):null);
+ const br=(t.gears||[]).map(g=>g.bitrateBps).filter(Boolean);
+ setVal('tech-bitrate',br.length?(Math.max(...br)/1e6).toFixed(2)+' Mbps (maks)':null);
+ const sz=(t.gears||[]).map(g=>g.sizeBytes).filter(Boolean);
+ setVal('tech-size',sz.length?fmtBytesID(Math.max(...sz))+' (varian terbesar)':null);
+ setVal('tech-format',t.format||null);
+ // tabel varian kualitas (data nyata dari bitrateInfo)
+ const gears=(t.gears||[]).filter(g=>g.width&&g.height);
+ $('ttGears').innerHTML=gears.length?'<table class="gear-table"><tr><th>Varian</th><th>Resolusi</th><th>FPS</th><th>Kodek</th><th>Bitrate</th><th>Ukuran</th></tr>'+
+  gears.map(g=>'<tr><td>'+(g.gear||'—')+'</td><td>'+g.width+'×'+g.height+'</td><td>'+(g.fps||'—')+'</td><td>'+(g.codec||'—')+'</td><td>'+(g.bitrateBps?(g.bitrateBps/1e6).toFixed(2)+' Mbps':'—')+'</td><td>'+(fmtBytesID(g.sizeBytes)||'—')+'</td></tr>').join('')+'</table>'
+  :'<span class="na">'+NA+'</span>';
+ // Indikasi jangkauan: HANYA dari angka nyata, label jelas perkiraan
+ const reach=$('ttReach');
+ if(typeof s.views==='number'&&s.views>0&&typeof s.likes==='number'){
+  const er=(s.likes/s.views*100);
+  reach.innerHTML='Rasio like/view video ini <b>'+er.toFixed(2)+'%</b> ('+ttNum(s.likes)+' dari '+ttNum(s.views)+' views). '+
+   (er>=5?'Termasuk tinggi untuk ukuran videonya.':er>=1?'Dalam kisaran wajar.':'Rendah — distribusi kemungkinan terbatas, TAPI ini bukan vonis shadowban: umur video, niche, dan jam upload ikut menentukan.')+
+   '<br>TikTok tidak menyediakan status shadow-ban resmi; abaikan klaim pasti dari tools mana pun.';
+ }else{reach.innerHTML='<span class="na">'+NA+' (butuh angka views & likes asli)</span>';}
+ // sumber + waktu pengambilan
+ const taken=r.fetchedAt?fmtWIB(r.fetchedAt):null;
+ $('ttSrc').innerHTML='Sumber: <b>halaman video TikTok</b> (author, caption, tanggal, statistik, metadata teknis)'+
+  (r.oembed&&(r.oembed.title||r.oembed.author)?' + <b>oEmbed resmi</b> (pembanding judul & author)':'')+
+  '<br>Diambil: <b>'+(taken||NA)+'</b>'+(r.cached?' · dari cache &lt;5 mnt':' · live')+
+  '<br>URL final: '+(r.resolved&&r.resolved.finalUrl?r.resolved.finalUrl:NA);
+ // tombol
+ const ob=$('ttOpenBtn');
+ if(r.resolved&&r.resolved.finalUrl){ob.href=r.resolved.finalUrl;ob.style.display='inline-flex';}else ob.style.display='none';
+ const best=(t.gears||[]).filter(g=>g.playUrl&&g.sizeBytes).sort((a,b)=>b.sizeBytes-a.sizeBytes)[0]||(t.gears||[]).find(g=>g.playUrl);
+ lastBestUrl=best?best.playUrl:null;
+ const cb=$('ttCopyBtn');cb.style.display=lastBestUrl?'inline-flex':'none';
+}
+$('ttCopyBtn').onclick=async()=>{
+ if(!lastBestUrl)return;
+ try{await navigator.clipboard.writeText(lastBestUrl);$('ttCopyBtn').textContent='✓ Tersalin!';}
+ catch(e){prompt('Salin manual link file ini (berlaku sementara):',lastBestUrl);return;}
+ setTimeout(()=>$('ttCopyBtn').textContent='📋 Salin link file kualitas terbaik',2000);
+};
+
+/* ============ INIT ============ */
+$('hero-date').textContent='';
+try{console.log('[guoke] build v2.1-worker · '+location.href);}catch(e){}
+/* Cek kemampuan browser SEKALI di awal: Tanpa Web Worker / WebAssembly,
+   Mode Anti-Pecah tidak mungkin jalan → kunci opsinya + paksa Mode Cepat
+   dengan penjelasan, daripada gagal misterius belakangan. */
+(function envCheck(){
+ const okWorker=(typeof Worker!=='undefined');
+ let okWasm=(typeof WebAssembly!=='undefined');
+ if(okWasm){try{okWasm=!!new WebAssembly.Module(new Uint8Array([0,97,115,109,1,0,0,0]));}catch(e){okWasm=false;}}
+ try{console.log('[guoke] env: Worker='+okWorker+' WASM='+okWasm+' SW='+('serviceWorker' in navigator));}catch(e){}
+ if(okWorker&&okWasm)return;
+ try{
+  window.__noAP=true;apMode=false;
+  const mf=$('modeFast'),ma=$('modeAP');
+  if(mf)mf.classList.add('sel');if(ma){ma.classList.remove('sel');ma.style.opacity='.45';ma.title='Browser tidak mendukung Web Worker / WebAssembly';}
+  const ap=$('apOpt');if(ap)ap.classList.remove('show');
+  log('ℹ️ Browser/HP ini tidak mendukung Web Worker atau WebAssembly — Mode Anti-Pecah dinonaktifkan, Mode Cepat (offline, tanpa engine) dipakai otomatis.');
+ }catch(e){}
+})();
+refreshUser();renderStats();renderTiers();route();
+</script>
+</body>
+</html>
