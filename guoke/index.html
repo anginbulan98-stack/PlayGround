@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guoke — Membuka…</title>
+<meta name="description" content="Link pendek Guoke AMHDQ — nonton anime & baca manhwa.">
+<link rel="icon" href="../logo.svg" type="image/svg+xml">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0e17;color:#eef1f6;font:15px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.card{max-width:420px;width:100%;background:#141821;border:1px solid #232a3a;border-radius:16px;padding:24px;text-align:center}
+.logo{font-size:40px}
+h1{font-size:20px;margin:8px 0 4px}
+p{color:#8b94a7;font-size:13px;margin:6px 0}
+code{background:#1c2230;border:1px solid #232a3a;border-radius:8px;padding:2px 8px;font-size:12px;word-break:break-all;color:#eef1f6}
+.btn{display:inline-block;margin:8px 4px 0;padding:10px 18px;border-radius:10px;border:0;font-weight:700;cursor:pointer;text-decoration:none;font-size:14px}
+.btn-p{background:#2d7ff9;color:#fff}
+.btn-g{background:#1c2230;color:#eef1f6;border:1px solid #232a3a}
+.spin{width:32px;height:32px;border:3px solid #232a3a;border-top-color:#2d7ff9;border-radius:50%;margin:14px auto;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🍥</div>
+  <h1>Guoke AMHDQ</h1>
+  <p id="msg">Membuka link pendek…</p>
+  <div class="spin" id="spin"></div>
+  <p><code id="url">…</code></p>
+  <div>
+    <a id="openBtn" class="btn btn-p" href="../index.html">Buka Sekarang →</a>
+    <button id="copyBtn" class="btn btn-g" type="button">📋 Salin Link</button>
+  </div>
+  <p style="margin-top:12px">Link pendek • jelas <b style="color:#eef1f6">guoke</b> • contoh:<br>
+  <code>/guoke/#/b/solo-leveling</code><br><code>/guoke/#/t/naruto/e3</code></p>
+</div>
+<script>
+// Pintu pendek Guoke: /guoke/  (+ hash/query pendek)
+//   /guoke/                 -> index.html#/semua
+//   /guoke/#/b/slug[/idx]   -> index.html#/baca/slug[/idx]
+//   /guoke/#/t/id[/eN]      -> index.html#/tonton/id[/eN]
+//   /guoke/?b=slug&c=idx    -> index.html#/baca/slug/idx
+//   /guoke/?t=id&e=N        -> index.html#/tonton/id/eN
+// Bentuk #/baca & #/tonton lama tetap didukung.
+(function(){
+  var msg = document.getElementById('msg');
+  var urlEl = document.getElementById('url');
+  var openBtn = document.getElementById('openBtn');
+  function expand(h){
+    var m;
+    if ((m = String(h||'').match(/^#\/b\/([^/]+)(?:\/(\d+))?/))) return '#/baca/'+m[1]+(m[2]===undefined?'':'/'+m[2]);
+    if ((m = String(h||'').match(/^#\/t\/([^/]+)(?:\/e(.+))?/))) return '#/tonton/'+m[1]+(m[2]===undefined?'':'/e'+m[2]);
+    return h;
+  }
+  function target(){
+    var h = location.hash || '';
+    var s = location.search || '';
+    try {
+      var q = new URLSearchParams(s);
+      var b = q.get('b'), c = q.get('c'), t = q.get('t'), e = q.get('e'), g = q.get('guoke');
+      if (b) return '../index.html#/baca/'+encodeURIComponent(b)+(c!=null&&c!==''?'/'+encodeURIComponent(c):'');
+      if (t) return '../index.html#/tonton/'+encodeURIComponent(t)+(e!=null&&e!==''?'/e'+encodeURIComponent(e):'');
+      if (g) {
+        if (/^b[:/]/.test(g)) return '../index.html#/baca/'+g.slice(2);
+        if (/^t[:/]/.test(g)) return '../index.html#/tonton/'+g.slice(2);
+      }
+    } catch(err){}
+    if (h) return '../index.html'+expand(h);
+    return '../index.html#/semua';
+  }
+  var to = target();
+  urlEl.textContent = to;
+  openBtn.href = to;
+  msg.textContent = 'Mengalihkan ke Guoke…';
+  document.getElementById('copyBtn').onclick = function(){
+    var full;
+    try { full = new URL(to, location.href).href; }
+    catch(err){ full = to; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(full).then(function(){ msg.textContent = 'Link disalin! Tempel di mana saja.'; });
+    } else {
+      prompt('Salin link pendek Guoke ini:', full);
+    }
+  };
+  setTimeout(function(){ location.replace(to); }, 900);
+})();
+</script>
+</body>
+</html>

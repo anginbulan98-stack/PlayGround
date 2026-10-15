@@ -1,9 +1,9 @@
 /* Guoke AMHDQ service worker: cache aplikasi + data agar bisa dibuka
    offline / dipasang ke layar HP. Gambar chapter TIDAK di-cache
    (hemat penyimpanan); selalu diambil langsung saat online. */
-const CACHE = 'guoke-amhdq-v20';
+const CACHE = 'guoke-amhdq-v21';
 const CORE = [
-  './', './index.html', './styles.css', './app.js', './proses.js', './data-anime.js',
+  './', './index.html', './guoke/', './guoke/index.html', './styles.css', './app.js', './proses.js', './data-anime.js',
   './manifest.webmanifest', './sitemap.xml', './ikon/ikon-01.jpg', './ikon/ikon-02.png',
   './data/anime.json', './data/anikoto.json', './data/manhwa.json', './data/ikon.json',
   './data/ikon-couple.json', './data/ikon-couple-manhwa.json', './data/ikon-couple-manhwa-pin.json', './data/ikon-marin.json',

@@ -2341,6 +2341,16 @@ function route(fromPop) {
   }
   lastRouteKey = key;
   let m;
+  // 0) LINK PENDEK: #/b/slug[/idx] = #/baca/.. • #/t/id[/eN] = #/tonton/..
+  //    Tetap kompatibel dengan link panjang lama. Otomatis dinormalisasi
+  //    ke bentuk panjang agar riwayat/SEO konsisten.
+  if ((m = h.match(/^#\/b\/([^/]+)(?:\/(\d+))?/))) {
+    h = '#/baca/' + m[1] + (m[2] === undefined ? '' : '/' + m[2]);
+    try { history.replaceState(history.state, '', h); } catch (e) {}
+  } else if ((m = h.match(/^#\/t\/([^/]+)(?:\/e(.+))?/))) {
+    h = '#/tonton/' + m[1] + (m[2] === undefined ? '' : '/e' + m[2]);
+    try { history.replaceState(history.state, '', h); } catch (e) {}
+  }
   // 1) Reader / detail manhwa
   if ((m = h.match(/^#\/baca\/([^/]+)(?:\/(\d+))?/))) {
     const id = decodeURIComponent(m[1]), idx = m[2] === undefined ? null : Number(m[2]);
@@ -2485,7 +2495,8 @@ function openDetailAnime(showId, nav) {
       ? '<button class="btn btn-small btn-ghost" type="button" disabled>📅 ' + esc(T('soon_meta')) + (s.rilis ? ' • ' + esc(String(s.rilis)) : (s.year ? ' • ' + esc(String(s.year)) : '')) + '</button>'
       : '<button class="btn btn-primary" data-dvplay="' + esc(showId) + '" type="button">▶ ' + esc(T('card_watch')) + '</button>') +
     '<button class="btn btn-small' + (bm ? '' : ' btn-ghost') + '" data-bm-detail="' + esc(showId) + '" type="button" aria-pressed="' + bm + '">' +
-    (bm ? esc(T('bm_detail_on')) : esc(T('bm_detail_off'))) + '</button></div>' +
+    (bm ? esc(T('bm_detail_on')) : esc(T('bm_detail_off'))) + '</button>' +
+    '<button class="btn btn-small btn-ghost" data-shortlink="t:' + esc(showId) + '" type="button" title="Salin link pendek">🔗 Link Pendek</button></div>' +
     (isSoonDet ? '<p class="muted small" style="margin:8px 0 0">📅 ' + esc(T('soon_note')) + '</p>' : '') +
     '<div class="dv-stats"><div><small>EPISODE</small><strong>' + esc(String(DV.total)) + '</strong></div>' +
     '<div><small>STATUS</small><strong>' + esc(statStatus) + '</strong></div>' +
@@ -3646,6 +3657,7 @@ function openDetailMw(id, pushHash) {
     (upd ? ' • ' + esc(fmtTglID(upd)) : '') + ' • ' + t.total + ' chapter</p>' +
     '<div class="btn-row"><button class="btn btn-small' + (bm ? '' : ' btn-ghost') + '" data-bm-detail="' + id + '" type="button" aria-pressed="' + bm + '">' +
     (bm ? T('bm_detail_on') : T('bm_detail_off')) + '</button>' +
+    '<button class="btn btn-small btn-ghost" data-shortlink="b:' + id + '" type="button" title="Salin link pendek">🔗 Link Pendek</button>' +
     '<button class="btn btn-small btn-ghost" data-acaktitle type="button">' + esc(T('acak_lain')) + '</button></div>' +
     '<div class="bm-status" role="group" aria-label="' + esc(T('f_bmstatus')) + '">' +
     stBtn('ongoing', T('bm_ongoing')) + stBtn('wishlist', T('bm_wish')) + stBtn('done', T('bm_done')) + '</div></div></div>' +
@@ -6006,7 +6018,64 @@ function catFromHash(h) {
   const m = String(h || '').match(/^#\/(semua|anime|manhwa|segera|tiktok|ikon)(?:[\/?]|$)/);
   return m ? m[1] : '';
 }
-function isViewHash(h) { return /^#\/(baca|tonton)\//.test(String(h || '')); }
+function isViewHash(h) { return /^#\/(baca|tonton|b|t)\//.test(String(h || '')); }
+/* --- LINK PENDEK Guoke (jelas ada kata guoke di pintu /guoke) ---
+   shortHash('#/baca/solo-leveling/12') -> '#/b/solo-leveling/12'
+   shortHash('#/tonton/naruto/e3') -> '#/t/naruto/e3'
+   shortUrl() -> origin+path pendek + hash pendek (untuk tombol Bagikan).
+   expandShort() dipakai saat halaman dimuat via ?b= ?t= ?guoke= */
+function shortHash(h) {
+  h = String(h || '');
+  let m;
+  if ((m = h.match(/^#\/baca\/([^/]+)(?:\/(\d+))?/))) return '#/b/' + m[1] + (m[2] === undefined ? '' : '/' + m[2]);
+  if ((m = h.match(/^#\/tonton\/([^/]+)(?:\/e(.+))?/))) return '#/t/' + m[1] + (m[2] === undefined ? '' : '/e' + m[2]);
+  return h;
+}
+function shortUrl(longHash) {
+  try {
+    const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+    return base + 'guoke/' + shortHash(longHash || location.hash || '#/semua');
+  } catch (e) { return String(longHash || ''); }
+}
+function expandShortParams() {
+  try {
+    const q = new URLSearchParams(location.search || '');
+    const b = q.get('b'), c = q.get('c'), t = q.get('t'), e = q.get('e'), g = q.get('guoke');
+    if (b) { location.replace(location.pathname + '#/b/' + encodeURIComponent(b) + (c != null && c !== '' ? '/' + encodeURIComponent(c) : '')); return true; }
+    if (t) { location.replace(location.pathname + '#/t/' + encodeURIComponent(t) + (e != null && e !== '' ? '/e' + encodeURIComponent(e) : '')); return true; }
+    if (g) {
+      if (/^b[:/]/.test(g)) { const p = g.slice(2); location.replace(location.pathname + '#/b/' + p); return true; }
+      if (/^t[:/]/.test(g)) { const p = g.slice(2); location.replace(location.pathname + '#/t/' + p); return true; }
+    }
+  } catch (err) {}
+  return false;
+}
+/* Tombol 🔗 Link Pendek: salin URL pendek yang jelas ada kata "guoke".
+   Format: {origin}{base}guoke/#/b/slug  atau  .../guoke/#/t/id
+   Bila navigator.share ada (HP), pakai share-sheet; kalau tidak, clipboard. */
+document.addEventListener('click', (e) => {
+  const b = e.target && e.target.closest ? e.target.closest('[data-shortlink]') : null;
+  if (!b) return;
+  e.preventDefault();
+  try {
+    const kind = String(b.dataset.shortlink || '');
+    let hash = '#/semua';
+    if (kind.indexOf('b:') === 0) hash = '#/b/' + kind.slice(2);
+    else if (kind.indexOf('t:') === 0) hash = '#/t/' + kind.slice(2);
+    else hash = shortHash(location.hash);
+    let url = '';
+    try {
+      const base = location.origin + location.pathname.replace(/[^/]*$/, '');
+      url = base + 'guoke/' + hash;
+    } catch (_) { url = hash; }
+    const judul = (document.title || 'Guoke AMHDQ');
+    if (navigator.share) {
+      navigator.share({ title: judul, text: judul + ' — buka di sini:', url: url }).catch(() => {});
+    } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => toast('Link pendek disalin: ' + url)).catch(() => { prompt('Salin link pendek ini:', url); });
+    } else { prompt('Salin link pendek ini:', url); }
+  } catch (_) {}
+});
 /* Simpan posisi scroll + jumlah item termuat milik kategori yang ditinggalkan */
 function memSaveList() {
   CATMEM[CURCAT] = CATMEM[CURCAT] || {};
@@ -6138,6 +6207,9 @@ function keluarReader() {
 /* Inisialisasi dari URL (bukan selalu "Semua"): hash kategori > session > semua.
    Sengaja di ujung file agar semua var/const sudah terinisialisasi. */
 (function initFromUrl() {
+  // Link pendek via query: ?b=slug&c=idx • ?t=id&e=ep • ?guoke=b:slug/c
+  // Dipakai oleh pintu /guoke/ dan shortener luar (s.id/guoke-...).
+  try { if (typeof expandShortParams === 'function' && expandShortParams()) return; } catch (e) {}
   const lim = sessGet('gq_lim', null);
   if (lim) {
     if (lim.mw && typeof MW_UI !== 'undefined' && MW_UI.limit < lim.mw) MW_UI.limit = lim.mw;
