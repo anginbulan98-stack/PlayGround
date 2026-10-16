@@ -9,7 +9,17 @@ import json, re, time, urllib.request, urllib.parse, os, sys
 
 UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) HDPlus/1.0"}
 TODAY = time.strftime("%Y-%m-%d")
+try:
+    import datetime as _dt
+    NOW_ISO = _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+except Exception:
+    NOW_ISO = TODAY
 CAP_NEW_ANIME, CAP_NEW_MW = 8, 3
+
+# Daily rotation for the per-show episode check (thousands of shows cannot be
+# checked in one short run). 0 = check all (legacy manual behavior).
+ANIME_CURSOR = "data/anime_refresh_cursor.txt"
+ANIME_BUDGET = int(os.environ.get("ANIME_BUDGET", "0"))
 
 
 def get(url, timeout=30, data=None):
@@ -41,7 +51,20 @@ def refresh_anime():
     anime = json.load(open("data/anime.json"))
     by_show = {s["title"]: s for s in anime["shows"]}
     changed = False
-    for o in ak:
+    # Rotate daily: check ANIME_BUDGET shows per run, cursor wraps around.
+    orig_len = len(ak)
+    if ANIME_BUDGET > 0 and orig_len > ANIME_BUDGET:
+        try:
+            cursor = int(open(ANIME_CURSOR).read().strip() or 0)
+        except Exception:
+            cursor = 0
+        if cursor >= orig_len:
+            cursor = 0
+        batch = (ak[cursor:] + ak[:cursor])[:ANIME_BUDGET]
+        print("  refresh anime: %d judul (kursor %d/%d)" % (len(batch), cursor, orig_len))
+    else:
+        cursor, batch = 0, ak
+    for o in batch:
         if not o.get("id"):
             continue
         try:
@@ -100,7 +123,7 @@ def refresh_anime():
             time.sleep(1.2)
             continue
         if [e["n"] for e in eps] != [e["n"] for e in old]:
-            json.dump({"id": o["id"], "updated": TODAY, "episodes": eps},
+            json.dump({"id": o["id"], "updated": NOW_ISO, "episodes": eps},
                       open(fp, "w"), ensure_ascii=False)
             print("  anime update: %s %d -> %d eps" % (o["show"], len(old), len(eps)))
             changed = True
@@ -111,6 +134,11 @@ def refresh_anime():
                 hit["episodes"] = watch_n
                 changed = True
         time.sleep(1.2)
+    if ANIME_BUDGET > 0 and orig_len > ANIME_BUDGET:
+        try:
+            open(ANIME_CURSOR, "w").write(str((cursor + len(batch)) % max(orig_len, 1)))
+        except Exception:
+            pass
     # --- temukan serial baru ---
     try:
         seen_ids = {o["id"] for o in ak if o.get("id")}
@@ -147,7 +175,7 @@ def refresh_anime():
             anime["shows"].append({"id": sid, "title": title,
                                    "cover": it.get("poster") or anilist_cover(title),
                                    "akid": it["id"], "episodes": watch_n})
-            json.dump({"id": it["id"], "updated": TODAY, "episodes":
+            json.dump({"id": it["id"], "updated": NOW_ISO, "episodes":
                        [{"n": e.get("number"), "t": e.get("title"), "e": e.get("embed_url") or {}}
                         for e in eps]}, open("data/eps/%d.json" % it["id"], "w"), ensure_ascii=False)
             print("  anime BARU: %s (%d eps)" % (title, len(eps)))

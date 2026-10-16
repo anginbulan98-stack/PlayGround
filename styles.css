@@ -14,6 +14,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
+html,body{height:auto;min-height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 html{scroll-behavior:smooth}
 body{
   margin:0; background:var(--bg); color:var(--text);
@@ -46,6 +47,7 @@ body.ah-hide .topbar{transform:translateY(-110%)}
 .brand-mark{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;
   background:rgba(255,255,255,.06);border:1px solid var(--line);box-shadow:none;overflow:hidden;flex:none}
 .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
+.logo { height: 36px; width: 36px; object-fit: cover; border-radius: 50%; }
 .brand-text{font-weight:800;letter-spacing:-.01em;line-height:1;font-size:16px}
 .brand-text span{color:var(--blue-bright);text-shadow:none}
 .brand-text small{display:block;font-size:9px;color:var(--dim);font-weight:700;letter-spacing:.1em;margin-top:3px}
@@ -96,7 +98,9 @@ main{position:relative;max-width:1020px;margin:0 auto;padding:0 20px 60px}
 .rein-note{margin-top:10px!important;color:#a78f9a!important}
 /* Bottom bar persis SS: floating pill, 5 tombol icon+label */
 .rein-hero{padding-bottom:96px}
-.rein-tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:60;width:min(540px,calc(100% - 20px));display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:#1b1519;border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:12px 8px 10px;margin:0;box-shadow:0 12px 40px rgba(0,0,0,.55);backdrop-filter:blur(12px)}
+/* Bottom bar: tidak ada elemen .rein-tabs di markup — aturan fixed dihapus agar
+   tidak ada bilah hantu yang menutupi .bottomnav / memblokir sentuhan. */
+.rein-tabs{display:none!important}
 .rein-tabs a{display:flex;flex-direction:column;align-items:center;gap:5px;color:#8d8087;text-decoration:none;padding:4px 2px;border-radius:12px;min-width:0}
 .rein-tabs a .rt-ico{display:grid;place-items:center;width:40px;height:32px;border-radius:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);transition:.18s}
 .rein-tabs a .rt-ico svg{width:20px;height:20px;display:block}
@@ -283,8 +287,6 @@ body.ah-hide .catbar{transform:translate(-50%,calc(-100% - var(--tbh) - 4px))}
 .cat{flex:none;padding:9px 16px;border-radius:999px;font-size:12.5px;font-weight:700;cursor:pointer;
   background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
 .cat.active{background:#fff;color:#0A1220;border-color:#fff}
-/* Upload TikTok Quality disembunyikan dari catbar */
-.cat-tiktok{display:none!important}
 /* HALAMAN DETAIL (pengganti daftar di bawah) */
 .pageview{position:fixed;inset:0;z-index:90;background:var(--bg);overflow-y:auto;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
@@ -306,7 +308,7 @@ body.ah-hide .catbar{transform:translate(-50%,calc(-100% - var(--tbh) - 4px))}
 .dv-pro{margin-top:14px;background:var(--panel);border:1px solid var(--line);
   border-radius:18px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 .dv-pro-top{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.dv-back2{width:38px;height:38px;flex:none;border-radius:12px;cursor:pointer;
+.dv-back2{width:44px;height:44px;flex:none;border-radius:12px;cursor:pointer;
   background:rgba(255,255,255,.06);border:1px solid var(--line);color:#fff;font-size:17px}
 .dv-back2:hover{border-color:var(--blue-bright)}
 .dv-crumb{flex:1;font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
@@ -1033,3 +1035,123 @@ html[data-theme="light"] .cmt-label input{background:#F2F5FA;color:var(--text);b
 .rd-img-fail{background:#0a0d14;border:1px dashed var(--line-neon);border-radius:12px;
   aspect-ratio:3/4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px}
 .rd-img-fail small{color:var(--dim);font-size:11.5px}
+
+/* ============================================================
+   GQ UX 2026 — perbaikan bug + home/hero/rows + unifikasi aksen
+   (ditambahkan tanpa menghapus gaya lama; override di bawah menang)
+   ============================================================ */
+/* 1a. Nav bawah tidak menutup konten/footer: padding = tinggi nav + jeda */
+:root{--bnav-h:76px}
+body{padding-bottom:calc(var(--bnav-h) + 28px + env(safe-area-inset-bottom,0px))!important}
+main{padding-bottom:calc(var(--bnav-h) + 56px)!important}
+/* 1c. Konten selalu di tengah, lebar sama di semua halaman */
+main,.pv-inner{max-width:1020px!important;margin-left:auto!important;margin-right:auto!important}
+.pv-inner{padding-left:20px!important;padding-right:20px!important}
+@media(max-width:520px){.pv-inner{padding-left:8px!important;padding-right:8px!important}}
+#cek,#proses,#kalkulator,#presetSiap,#panduan,.compare,#faq{max-width:1020px!important}
+/* 1d. Avatar header tidak terpotong */
+.topbar{overflow:visible!important;gap:10px!important}
+.profile-btn{flex:none!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;overflow:hidden!important;position:relative!important;margin-left:auto!important}
+.profile-avatar{width:100%!important;height:100%!important}
+/* 1e. Footer: tautan lebih besar + aman dari nav */
+.footer{font-size:14px!important;padding-bottom:24px!important}
+.footer-links{gap:6px 10px!important}
+.footer-links .linkbtn,.footer-links button{font-size:14px!important;font-weight:700!important;min-height:44px!important;padding:10px 12px!important;text-decoration:underline!important}
+/* SATU aksen: biru. Timpa gradien pink lama */
+#pzGo,.cta-row .btn-primary,.btn-primary,#pzDl{background:var(--blue)!important;background-image:none!important;border-color:transparent!important;box-shadow:0 6px 20px rgba(46,124,246,.35)!important}
+.rein-card,.rein-tabs,.rein-eyebrow,.rein-h1{border-color:var(--line)!important}
+.rein-eyebrow{color:var(--blue-bright)!important}
+.rein-h1{color:#fff!important}
+/* Animasi halus kartu & tombol (150-200ms) */
+.show-card,.ikon-grid .show-card,.btn,.bnav,.door,.door-mini,.ep-btn,.gchip,.f-genre{transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease!important}
+.show-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.35)}
+.btn:active,.bnav:active,.ep-btn:active{transform:scale(.97)}
+/* Fade tepi kanan untuk tab horizontal (petunjuk geser) */
+.src-tabs,#aniStatusTabs,#ikonSrcChips,.genre-chips-row{position:relative}
+.src-tabs::after,#aniStatusTabs::after{content:"";position:absolute;top:0;right:0;bottom:0;width:44px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(10,14,23,.9))}
+/* Hero beranda */
+.gq-hero{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;margin:12px 0 6px;min-height:220px;display:flex;align-items:flex-end;background:#0B1220}
+.gq-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gq-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,8,14,.1) 20%,rgba(5,8,14,.88) 85%)}
+.gq-hero-t{position:relative;z-index:1;padding:18px;display:grid;gap:8px;max-width:640px}
+.gq-hero-t h2{margin:0;font-size:clamp(20px,5vw,30px);line-height:1.2}
+.gq-hero-t p{margin:0;color:#D6E1EF;font-size:13px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.gq-hero-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px;color:#9DC2FF;font-weight:700}
+/* Baris horizontal beranda */
+.hrow{margin:16px 0 4px}
+.hrow-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}
+.hrow-head h3{margin:0;font-size:15px}
+.hrow-scroller{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,170px);gap:10px;overflow-x:auto;padding:4px 2px 10px;scroll-snap-type:x mandatory}
+@media(max-width:520px){.hrow-scroller{grid-auto-columns:minmax(128px,140px)}}
+.hrow-scroller .show-card{scroll-snap-align:start}
+/* Hindari kartu yatim: grid utama selalu kelipatan kolom via scroll di mobile */
+@media(max-width:520px){.show-grid{grid-template-columns:repeat(3,1fr)}}
+/* Label kartu: EP bernomor + SUB/DUB + HD + rating */
+.show-badges{position:absolute;top:6px;left:6px;display:flex;gap:4px;flex-wrap:wrap}
+.show-badges .show-badge{position:static}
+.mini-tag{font-size:9px;font-weight:800;padding:3px 6px;border-radius:6px;background:rgba(0,0,0,.65);color:#fff;border:1px solid rgba(255,255,255,.18);letter-spacing:.03em}
+.mini-tag.hd{color:#9DC2FF;border-color:var(--line-neon)}
+.show-rating{position:absolute;bottom:6px;left:6px;font-size:10.5px;font-weight:800;background:rgba(0,0,0,.7);color:#FFC94D;border-radius:7px;padding:3px 7px}
+/* Genre chips + judul 2 baris + tooltip */
+.genre-chips-row{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:none}
+.genre-chips-row::-webkit-scrollbar{display:none}
+.show-info strong[title]{cursor:help}
+/* Skeleton */
+.skel-card{border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+/* Episode: lebih besar + status tonton */
+.ep-grid{grid-template-columns:repeat(auto-fill,minmax(56px,1fr))!important;gap:8px!important}
+.ep-btn{min-height:48px!important;font-size:14px!important}
+.ep-btn.watched{opacity:.45;text-decoration:line-through}
+.ep-btn.current{border-color:var(--blue-bright)!important;box-shadow:0 0 0 2px var(--blue-bright)!important;background:rgba(46,124,246,.2)!important}
+/* Detail: blok info samping poster */
+.dv-extra{display:grid;gap:10px;margin-top:12px}
+.dv-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:520px){.dv-info-grid{grid-template-columns:1fr 1fr}}
+.dv-info-grid div{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:10px}
+.dv-info-grid small{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--dim)}
+.dv-info-grid strong{display:block;margin-top:4px;font-size:13px;line-height:1.5}
+/* Riwayat: tombol hapus per item */
+.hist-del{flex:none;width:44px;height:44px;border-radius:10px;background:transparent;border:1px solid var(--line);color:var(--dim);cursor:pointer;font-size:15px}
+.hist-del:hover{color:#fff;border-color:var(--bad,#E5485D)}
+/* Ikon: 4-6 kolom desktop, 2-3 mobile */
+@media(min-width:1020px){.ikon-grid{grid-template-columns:repeat(6,1fr)!important}}
+@media(min-width:720px) and (max-width:1019px){.ikon-grid{grid-template-columns:repeat(4,1fr)!important}}
+@media(max-width:719px) and (min-width:480px){.ikon-grid{grid-template-columns:repeat(3,1fr)!important}}
+@media(max-width:479px){.ikon-grid{grid-template-columns:repeat(2,1fr)!important}}
+/* Player: server + status unduh */
+#pServers{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
+#pServers[hidden]{display:none!important}
+.srv-label{font-size:12px;font-weight:800;color:var(--muted);width:100%}
+#pDl:disabled{opacity:.55;cursor:not-allowed}
+#pDlStatus{white-space:pre-line}
+.p-timeout{margin:10px 0;padding:12px;border-radius:10px;background:rgba(217,162,27,.1);border:1px solid rgba(217,162,27,.4);font-size:13px}
+
+/* FASE 1 — token desain + kontras AA + target sentuh + fokus + gerak */
+:root{
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px; --sp-7:48px;
+  --r-1:8px; --r-2:12px; --r-3:16px; --r-4:24px;
+  --shadow-1:0 12px 40px rgba(0,0,0,.45);
+  --fs-cap:12.5px; --fs-body:14px; --fs-sub:16px; --fs-h:20px;
+  --dim:#A9B8CC; --muted:#C6D2E2;
+}
+.bnav small,.show-info small,.hist-sub,.footer .muted{color:var(--muted)!important}
+button,.btn,.bnav,.cat,.gchip,.ep-btn,.linkbtn,.f-genre,.bm-btn{min-height:44px!important;min-width:44px!important}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--blue-bright)!important;outline-offset:2px;border-radius:10px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.skel-cover,.skel-line{animation:none!important}}
+.show-cover{aspect-ratio:2/3}
+
+/* FASE 2 — performa: content-visibility + skeleton hero */
+.show-card,.ikon-grid .show-card{content-visibility:auto;contain-intrinsic-size:200px 300px}
+.gq-hero{min-height:220px}
+.gq-hero.loading::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,#141b29 40%,#1d2637 50%,#141b29 60%);background-size:200% 100%;animation:skel 1.2s infinite}
+img{content-visibility:auto}
+
+/* FASE 3 — hero rotasi + rows panah */
+.bottomnav{grid-template-columns:repeat(5,1fr)!important}
+@media(max-width:380px){.bottomnav{grid-template-columns:repeat(5,minmax(52px,1fr))!important}}
+.gq-hero-dots{display:flex;gap:6px;margin-top:10px}
+.gq-hero-dots i{width:7px;height:7px;border-radius:99px;background:rgba(255,255,255,.35)}
+.gq-hero-dots i.on{width:22px;background:#fff}
+.hrow{position:relative}
+.hrow-arrow{position:absolute;top:34%;z-index:2;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(10,14,23,.9);color:#fff;font-size:18px;cursor:pointer;display:none}
+@media(min-width:720px){.hrow-arrow{display:grid;place-items:center}.hrow-arrow.prev{left:-8px}.hrow-arrow.next{right:-8px}}
